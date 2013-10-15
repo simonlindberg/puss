@@ -56,6 +56,7 @@ public class HTMLWriter {
 	 */
 	public void printTimeReports(List<TimeReport> timereports, Command command,
 			Role role) {
+		
 	}
 
 	/**
