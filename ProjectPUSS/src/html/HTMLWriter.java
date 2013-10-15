@@ -173,6 +173,14 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printAdminUserList(List<User> users) {
+		if(users != null && users.size() > 0) {
+			writer.print("<table><tr><th>Användare</th><th>Passwords</th></tr>");
+			for (User u : users) {
+				writer.print("<tr><td>" + u.getUsername() + "</td><td>"
+						+ u.getPassword() + "</td></tr>");
+			}
+			writer.print("</table>");
+		}
 	}
 
 	/**
@@ -181,6 +189,10 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printAddUserForm() {
+		writer.print("<form method=\"POST\" action=\"/Administration?action=createUser\">" + 
+				"<label>Användarnamn</label><input name=\"username\" type=\"text\" />" +
+				"<input type=\"submit\" value=\"Skapa\" />" + 
+				"</form>");
 	}
 
 	/**

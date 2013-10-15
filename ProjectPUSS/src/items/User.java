@@ -7,12 +7,17 @@ package items;
  * informationen.
  */
 public class User {
+	
+	private String username;
+	private String password;
 	/**
 	 * 
 	 Användarens konstruktor
 	 * 
 	 */
 	public User(String username, String password) {
+		this.username = username;
+		this.password = password;
 	}
 
 	/**
@@ -21,7 +26,7 @@ public class User {
 	 Returnerar användarens namn.
 	 */
 	public String getUsername() {
-		return null;
+		return username;
 	}
 
 	/**
@@ -30,6 +35,6 @@ public class User {
 	 Returnerar användarens lösenord
 	 */
 	public String getPassword() {
-		return null;
+		return password;
 	}
 }
