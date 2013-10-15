@@ -16,6 +16,9 @@ import java.util.List;
  * 
  */
 public class HTMLWriter {
+	
+	private PrintWriter writer;
+	
 	/**
 	 * HTMLs enda konstruktor. Tar emot en PrintWriter som allt kommer att
 	 * skrivas till.
@@ -24,6 +27,7 @@ public class HTMLWriter {
 	 *            dit allting kommer att skrivas.
 	 */
 	public HTMLWriter(PrintWriter writer) {
+		this.writer = writer;
 	}
 
 	/**
@@ -114,6 +118,7 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printHead(User user) {
+		writer.print("...");
 	}
 
 	/**
