@@ -31,13 +31,13 @@ public class LogIn extends ServletBase {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) {
 		String username = request.getParameter(HTMLWriter.LOGIN_USERNAME);
 		String password = request.getParameter(HTMLWriter.LOGIN_PASSWORD);
-		try {
-			if (Database.getInstance().login(username, password)) {
+		if (database.login(username, password)) {
+			try {
 				response.sendRedirect("mainPage"); // Dunno if will works.
 				return;
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (SQLException | IOException e) {
-			e.printStackTrace();
 		}
 		logginError = true;
 
@@ -54,7 +54,7 @@ public class LogIn extends ServletBase {
 			HTMLWriter writer = new HTMLWriter(response.getWriter());
 			writer.printHead((User) request.getSession().getAttribute(USER));
 			if (logginError) {
-				writer.printErrorMessage("Invalid loggin!");
+				writer.printErrorMessage("Felaktigt användarnamn eller lösenord!");
 			}
 			doWork(request, writer);
 			writer.printFoot();

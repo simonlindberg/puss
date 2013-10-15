@@ -24,18 +24,12 @@ import database.Database;
  * administratörer.
  */
 public class CreateTimeReport extends ServletBase {
-	
-	
+
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
 		String userName = ((ServletRequest) request.getSession()).getParameter("user");
-		try {
-			User user = Database.getInstance().getUser(userName);
-			//Role r = Database.getInstance().getRole(user);
-		} catch (SQLException e) {
-			System.out.println("fel i CreateTimeReport.java");
-			e.printStackTrace();
-		}
+		User user = database.getUser(userName);
+		// Role r = Database.getInstance().getRole(user);
 		TimeReport t = null;
 		html.printTimeReport(t, Command.create, null);
 	}
