@@ -174,10 +174,11 @@ public class HTMLWriter {
 	 */
 	public void printAdminUserList(List<User> users) {
 		if(users != null && users.size() > 0) {
-			writer.print("<table><tr><th>Användare</th><th>Passwords</th></tr>");
+			writer.print("<table><tr><th>Användare</th><th>Passwords</th><th></th></tr>");
 			for (User u : users) {
 				writer.print("<tr><td>" + u.getUsername() + "</td><td>"
-						+ u.getPassword() + "</td></tr>");
+						+ u.getPassword() + "</td><td>"
+						+ "<a href=\"/Administration?action=deleteUser&username=" + u.getUsername() + "\">Ta bort</a></td></tr>");
 			}
 			writer.print("</table>");
 		}
@@ -210,6 +211,10 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printAddProjectGroupForm() {
+		writer.print("<form method=\"POST\" action=\"/ProjectAdmin?action=createProjectGroup\">"
+				+ "<label>Projekgruppnamn</label><input name=\"projectname\" type=\"text\" />"
+				+ "<input type=\"submit\" value=\"Skapa\" />"
+						+ "</form>");
 	}
 
 	/**
