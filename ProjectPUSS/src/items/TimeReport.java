@@ -12,6 +12,13 @@ import java.util.List;
  * informationen.
  */
 public class TimeReport {
+	
+	private User user;
+	private List<Activity> activities;
+	private boolean isSigned;
+	private int ID, week;
+	private String projectgroup;
+	
 	/**
 	 * 
 	 Tidrapportens konstruktor.
@@ -19,6 +26,12 @@ public class TimeReport {
 	 */
 	public TimeReport(User user, List<Activity> activities, boolean signed,
 			int ID, int week, String projectgroup) {
+		this.user=user;
+		this.activities=activities;
+		this.isSigned=isSigned;
+		this.ID=ID;
+		this.week=week;
+		this.projectgroup=projectgroup;
 	}
 
 	/**
@@ -27,7 +40,7 @@ public class TimeReport {
 	 * 
 	 */
 	public int getWeek() {
-		return 0;
+		return week;
 	}
 
 	/**
@@ -36,7 +49,7 @@ public class TimeReport {
 	 Returnerar tidrapportens ID
 	 */
 	public int getID() {
-		return 0;
+		return ID;
 	}
 
 	/**
@@ -45,7 +58,7 @@ public class TimeReport {
 	 Returner true om tidrapporten är signerad. Annars false.
 	 */
 	public boolean getSigned() {
-		return false;
+		return isSigned;
 	}
 
 	/**
@@ -54,7 +67,7 @@ public class TimeReport {
 	 Returnerar alla aktiviteter som är associerade med denna tidrapport
 	 */
 	public List<Activity> getActivities() {
-		return null;
+		return activities;
 	}
 
 	/**
@@ -63,7 +76,7 @@ public class TimeReport {
 	 Hämtar användaren.
 	 */
 	public User getUser() {
-		return null;
+		return user;
 	}
 
 	/**
@@ -72,6 +85,6 @@ public class TimeReport {
 	 Hämtar projektgruppens namn
 	 */
 	public String getProjectGroup() {
-		return null;
+		return projectgroup;
 	}
 }
