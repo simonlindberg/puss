@@ -37,4 +37,12 @@ public class User {
 	public String getPassword() {
 		return password;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof User) {
+			return username.equals(((User) obj).username);
+		}
+		return false;
+	}
 }

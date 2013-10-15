@@ -180,6 +180,22 @@ public class Database {
 	public List<User> getUsersInProject(String projectName) {
 		return null;
 	}
+	
+	/**
+	 * 
+	 * Försöker hämta alla projektledare från ett projekt.
+	 * 
+	 * @param projectName
+	 *            projektet att hämta ifrån. Hämtar en lista av alla användare i
+	 *            ett projekt som är projektledare.
+	 * 
+	 * @return Returnerar null om projektet inte finns.
+	 * 
+	 * 
+	 */
+	public List<User> getProjectManagersInProject(String projectName) {
+		return null;
+	}
 
 	/**
 	 * Försöker lägga till en användare till ett projekt.
@@ -317,7 +333,25 @@ public class Database {
 	 * 
 	 */
 	public User getUser(String username) {
-		return null;
+		User user = null;
+		
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + username + "'");
+		    while (rs.next()) {
+			    String name = rs.getString("username");
+			    String password = rs.getString("password");
+			    user = new User(name, password);
+		    }
+		    stmt.close();
+		} catch (SQLException ex) {
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+		}		    
+	    
+		return user;
 	}
 
 	/**
@@ -361,6 +395,19 @@ public class Database {
 	public void rollback() throws SQLException {
 		conn.rollback();
 		conn.setAutoCommit(true);
+	}
+
+	public Role getRole(User user) {
+		Role r = null;
+		Statement stmt = null;
+		try {
+			stmt = conn.createStatement();
+			//kod
+		} catch (SQLException e) {
+			System.out.println("fel i getRole() i Database.java");
+			e.printStackTrace();
+		}
+		return r;
 	}
 
 }

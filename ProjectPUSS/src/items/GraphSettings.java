@@ -6,12 +6,23 @@ package items;
  * används temporärt för att bifoga informationen.
  */
 public class GraphSettings {
+	private String graphType;
+	private int xType;
+	private int yType;
+	private String xName;
+	private String yName;
+	
 	/**
 	 * Konstruktor som skapar en instans av klassen och sätter värden till
 	 * respektive variabler.
 	 */
 	public GraphSettings(String graphType, int xType, int yType, String xName,
 			String yName) {
+		this.graphType = graphType;
+		this.xType = xType;
+		this.yType = yType;
+		this.xName = xName;
+		this.yName = yName;
 	}
 
 	/**
@@ -20,7 +31,7 @@ public class GraphSettings {
 	 * 
 	 */
 	public String getGraphType() {
-		return null;
+		return graphType;
 	}
 
 	/**
@@ -29,7 +40,7 @@ public class GraphSettings {
 	 * 
 	 */
 	public int getXType() {
-		return 0;
+		return xType;
 	}
 
 	/**
@@ -38,7 +49,7 @@ public class GraphSettings {
 	 * 
 	 */
 	public int getYType() {
-		return 0;
+		return yType;
 	}
 
 	/**
@@ -47,7 +58,7 @@ public class GraphSettings {
 	 Returnerar det namn som ska stå på X-axeln.
 	 */
 	public String getXName() {
-		return null;
+		return xName;
 	}
 
 	/**
@@ -56,6 +67,6 @@ public class GraphSettings {
 	 * 
 	 */
 	public String getYName() {
-		return null;
+		return yName;
 	}
 }

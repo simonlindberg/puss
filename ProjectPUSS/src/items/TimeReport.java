@@ -28,7 +28,7 @@ public class TimeReport {
 			int ID, int week, String projectgroup) {
 		this.user=user;
 		this.activities=activities;
-		this.isSigned=isSigned;
+		this.isSigned=signed;
 		this.ID=ID;
 		this.week=week;
 		this.projectgroup=projectgroup;
