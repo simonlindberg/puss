@@ -127,5 +127,32 @@ public class HTMLWriterTest {
 				+ "<td><a href=\"/ProjectOverview?action=deleteUser&project=whatever&username=Alpha\">Ta bort</a></td>"
 				+ "</tr></table>", sw.toString());
 	}
+	
+	@Test
+	public void testPrintProjectGroups() {
+		List<String> groups = new ArrayList<String>();
+		groups.add(new String("Project1"));
+		groups.add(new String("Project2"));
+		
+		hw.printProjectGroups(groups);
+		
+		assertEquals("<table><tr><th>Projektgrupper</th><th></th></tr>"
+				+ "<tr><td>Project1</td><td><a href=\"/ProjectAdmin?action=removeProjectGroup&projectName=Project1\">Ta bort</a></td></tr>"
+				+ "<tr><td>Project2</td><td><a href=\"/ProjectAdmin?action=removeProjectGroup&projectName=Project2\">Ta bort</a></td></tr></table>",sw.toString());
+		
+		
+	}
+	
+	@Test
+	public void testPrintSuccessMessage() {
+		hw.printSuccessMessage("Success in some successful action");
+		assertEquals("<font color=\"green\">Success in some successful action</font>", sw.toString());
+	}
+	
+	@Test
+	public void testPrintErrorMessage() {
+		hw.printErrorMessage("Error");
+		assertEquals("<font color=\"red\">Error</font>", sw.toString());
+	}
 
 }
