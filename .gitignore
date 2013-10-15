@@ -6,9 +6,5 @@
 *.ear
 
 # Project files
-bin
-gen
-target
-.settings
+build
 .classpath
-.project
