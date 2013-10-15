@@ -1,8 +1,20 @@
 package servlets;
 
+import items.Command;
+import items.Role;
+import items.TimeReport;
+import items.User;
+
+import java.beans.Statement;
+import java.sql.SQLException;
+
 import html.HTMLWriter;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import database.Database;
 
 /**
  * Denna klass bygger ut ServletBase och renderar en sida, via HTMLWriter, för
@@ -12,11 +24,20 @@ import javax.servlet.http.HttpServletRequest;
  * administratörer.
  */
 public class CreateTimeReport extends ServletBase {
-
+	
+	
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
-		// TODO Auto-generated method stub
-
+		String userName = ((ServletRequest) request.getSession()).getParameter("user");
+		try {
+			User user = Database.getInstance().getUser(userName);
+			//Role r = Database.getInstance().getRole(user);
+		} catch (SQLException e) {
+			System.out.println("fel i CreateTimeReport.java");
+			e.printStackTrace();
+		}
+		TimeReport t = null;
+		html.printTimeReport(t, Command.create, null);
 	}
 
 }
