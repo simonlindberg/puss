@@ -305,6 +305,13 @@ public class HTMLWriter {
 	 * @return HTML code for the form
 	 */
 	public void printLoginRequestForm() {
+		writer.println("<p>Användarnamn och Lösenord, tack!</p>");
+		writer.println("<form method=\"POST\" action=\"login\">");
+		writer.println("<p>Namn: <input type=\"text\" name = " + LOGIN_USERNAME + "></p>");
+		writer.println("<p>Lösenord: <input type=\"password\" name = " + LOGIN_PASSWORD + "></p>");
+		writer.println("<input type=\"submit\" value=\"Skicka\">");
+		writer.println("</form>");
+
 	}
 
 }
