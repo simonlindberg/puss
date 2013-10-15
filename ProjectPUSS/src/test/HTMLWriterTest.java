@@ -16,13 +16,13 @@ public class HTMLWriterTest {
 	private HTMLWriter htmlwriter;
 	
 	@Before
-	public void setup() {
+	public void setUp() throws Exception {
 		stringwriter = new StringWriter();
 		htmlwriter = new HTMLWriter(new PrintWriter(stringwriter));
 	}
 	
 	@After
-	public void teardown() {
+	public void tearDown() throws Exception {
 		stringwriter = null;
 		htmlwriter = null;
 	}
