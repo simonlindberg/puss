@@ -24,7 +24,8 @@ public class Database {
 
 	private Connection conn = null;
 
-	private Database() throws SQLException {
+	private Database() throws SQLException, ClassNotFoundException {
+		Class.forName("com.mysql.jdbc.Driver");
 		conn = DriverManager.getConnection("jdbc:mysql://vm26.cs.lth.se/puss1301?"
 				+ "user=puss1301&password=8jh398fs");
 		conn.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
@@ -32,8 +33,9 @@ public class Database {
 
 	/**
 	 * Hämtar singletoninstansen av Database
+	 * @throws ClassNotFoundException 
 	 */
-	public static Database getInstance() throws SQLException {
+	public static Database getInstance() throws SQLException, ClassNotFoundException {
 		if (instance == null) {
 			instance = new Database();
 		}
