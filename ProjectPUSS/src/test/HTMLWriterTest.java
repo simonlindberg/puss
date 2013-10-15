@@ -29,10 +29,17 @@ public class HTMLWriterTest {
 	
 	@Test
 	public void testPrintHead() {
-		// TODO: write proper test..
 		htmlwriter.printHead(null);
-		assertEquals("", stringwriter.toString());
+		assertEquals("<html><head><title>E-PUSS 1301</title></head><body><h1>E-PUSS 1301</h1>", stringwriter.toString());
 	}
+	
+	@Test
+	public void testPrintFoot() {
+		htmlwriter.printFoot();
+		assertEquals("</body></html>", stringwriter.toString());
+	}
+	
+	
 
 
 }

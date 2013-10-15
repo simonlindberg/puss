@@ -118,7 +118,7 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printHead(User user) {
-		writer.print("...");
+		writer.print("<html><head><title>E-PUSS 1301</title></head><body><h1>E-PUSS 1301</h1>");
 	}
 
 	/**
@@ -127,6 +127,7 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printFoot() {
+		writer.print("</body></html>");
 	}
 
 	/**
