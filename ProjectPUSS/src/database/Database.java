@@ -3,6 +3,11 @@ package database;
 import items.TimeReport;
 import items.User;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import javax.management.relation.Role;
@@ -15,15 +20,24 @@ import javax.management.relation.Role;
  */
 public class Database {
 
-	private Database() {
+	private static Database instance;
 
+	private Connection conn = null;
+
+	private Database() throws SQLException {
+		conn = DriverManager.getConnection("jdbc:mysql://vm26.cs.lth.se/puss1301?"
+				+ "user=puss1301&password=8jh398fs");
+		conn.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
 	}
 
 	/**
 	 * Hämtar singletoninstansen av Database
 	 */
-	public Database getInstance() {
-		return null;
+	public static Database getInstance() throws SQLException {
+		if (instance == null) {
+			instance = new Database();
+		}
+		return instance;
 	}
 
 	/**
@@ -257,13 +271,27 @@ public class Database {
 	 * 
 	 * @param username
 	 *            användarnamnet som ska läggas till i systemet. Lägger till en
-	 *            användare i systemet.
+	 *        	  användare i systemet.
+	 * @param password
+	 * 				användarlösenordet som ska läggas till i systemet.
 	 * @return true om den lyckas annars false.
 	 * 
-	 * 
 	 */
-	public boolean addUser(String username) {
-		return false;
+	public boolean addUser(String username, String password) {
+		
+	    try {
+	    	Statement stmt = conn.createStatement();
+	    	String statement = "INSERT INTO Users (username, password) VALUES('" + username + "', '" + password + "')";
+	    	stmt.executeUpdate(statement);
+			stmt.close();
+		} catch (SQLException ex) {
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+			return false;
+		}
+	   
+		return true;
 	}
 
 	/**
@@ -306,6 +334,33 @@ public class Database {
 	 */
 	public boolean login(String username, String password) {
 		return false;
+	}
+	
+	
+	/**
+	* Start a transaction to the database
+	 * @throws SQLException 
+	*/
+	public void startTransaction() throws SQLException {
+		conn.setAutoCommit(false);
+	}
+
+	/**
+	* Commit the current transactions to the database
+	 * @throws SQLException 
+	*/
+	public void commit() throws SQLException {
+		conn.commit();
+		conn.setAutoCommit(true);
+	}
+
+	/**
+	* Rollback current transactions from the database
+	 * @throws SQLException 
+	*/
+	public void rollback() throws SQLException {
+		conn.rollback();
+		conn.setAutoCommit(true);
 	}
 
 }
