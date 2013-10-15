@@ -16,9 +16,9 @@ import javax.servlet.http.HttpSession;
  */
 public abstract class ServletBase extends HttpServlet {
 
-	final private String USER = "user";
-	final private String LOGGEDIN = "loggedin";
-	final private String PROJECT = "project";
+	final static protected String USER = "user";
+	final static protected String LOGGEDIN = "loggedin";
+	final static protected String PROJECT = "project";
 
 	/**
 	 * Kollar om man är inloggad.
@@ -29,7 +29,7 @@ public abstract class ServletBase extends HttpServlet {
 	 */
 	protected boolean loggedIn(HttpServletRequest request) {
 		HttpSession session = request.getSession();
-		
+
 		User user = (User) session.getAttribute(USER);
 		boolean loggedIn = (boolean) session.getAttribute(LOGGEDIN);
 
