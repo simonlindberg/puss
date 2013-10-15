@@ -49,7 +49,7 @@ public abstract class ServletBase extends HttpServlet {
 		try {
 			writer = new HTMLWriter(response.getWriter());
 			// TODO: Get the user from session variable
-			writer.printHead(null);
+			writer.printHead((User) request.getSession().getAttribute(USER));
 			doWork(request, writer);
 			writer.printFoot();
 		} catch (IOException e) {
