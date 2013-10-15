@@ -11,8 +11,12 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,7 +40,6 @@ public class DatabaseTest {
 				+ "user=puss1301&password=8jh398fs");
 		conn.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
 		conn.setAutoCommit(false);
-		
 		db = Database.getInstance();
 		db.startTransaction();
 	}
@@ -53,14 +56,13 @@ public class DatabaseTest {
 	@Test
 	public void testGetUser() throws SQLException {
 		String name = "Christian";
-		String psw = "psw";
+		String psw = "123";
 		String result = "";
 		
 		Statement stmt = conn.createStatement();
     	String statement = "INSERT INTO Users (username, password) VALUES('" + name + "', '" + psw + "')";
     	stmt.executeUpdate(statement);
 		stmt.close();
-		
 		User user = db.getUser(name);
 		result = user.getUsername();
 		assertEquals(name, result);
@@ -69,18 +71,52 @@ public class DatabaseTest {
 	@Test
 	public void testAddUser() throws SQLException {
 		String name = "Christian";
-		String psw = "psw";
+		String psw = "123";
 		String result = "";
 		
 		db.addUser(name, psw);
-		
 		Statement stmt = conn.createStatement();		    
 	    ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + name + "'");
 	    while (rs.next()) {
 		    result = rs.getString("username");
 	    }
 	    stmt.close();
-	    
 	    assertEquals(name, result);
+	}
+	
+	@Test
+	public void testDeleteUser() throws SQLException {
+		String name = "Christian";
+		String psw = "123";
+		String result = "";
+		
+		db.addUser(name, psw);
+		db.deleteUser(name);
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + name + "'");
+	    while (rs.next()) {
+		    result = rs.getString("username");
+	    }
+	    stmt.close();
+	    
+	    assertEquals("", result);
+	}
+	
+	@Test
+	public void testGetUsers() throws SQLException {
+		List<String> expected = Arrays.asList("Christian", "Oskar");
+		List<String> actual = new ArrayList<String>();
+
+		for (String s: expected)
+			db.addUser(s, "123");
+		
+		List<User> result = db.getUsers();
+		
+		for (User u: result)
+			actual.add(u.getUsername());
+			
+		for (String s: expected)
+			assertTrue(actual.contains(s));
+		
 	}
 }
