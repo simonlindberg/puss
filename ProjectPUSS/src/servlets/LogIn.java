@@ -6,6 +6,7 @@ import items.User;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -18,6 +19,7 @@ import database.Database;
  * dessutom funktionaliteten för att logga in och ut ur system och används av
  * alla som försöker ansluta till systemet.
  */
+@WebServlet("login")
 public class LogIn extends ServletBase {
 
 	private boolean logginError = false;
