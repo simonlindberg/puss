@@ -156,17 +156,6 @@ public class HTMLWriter {
 
 	/**
 	 * 
-	 Skriver ut ett felmeddelande.
-	 * 
-	 * @param message
-	 *            det meddelande som skall skrivas ut.
-	 * 
-	 */
-	public void printFailureMessage(String message) {
-	}
-
-	/**
-	 * 
 	 @param users
 	 *            lista över användare i systemet. Skriver ut en lista över alla
 	 *            användare i systemet.
@@ -272,6 +261,14 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printErrorMessage(String message) {
+	}
+
+	/**
+	 * Generates a form for login.
+	 * 
+	 * @return HTML code for the form
+	 */
+	public void printLoginRequestForm() {
 	}
 
 }
