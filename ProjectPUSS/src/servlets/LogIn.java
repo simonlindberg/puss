@@ -30,9 +30,7 @@ public class LogIn extends ServletBase {
 		String username = request.getParameter(HTMLWriter.LOGIN_USERNAME);
 		String password = request.getParameter(HTMLWriter.LOGIN_PASSWORD);
 		try {
-			Database database = Database.getInstance();
-			User user = database.getUser(username);
-			if (user != null && user.getPassword().equals(password)) {
+			if (Database.getInstance().login(username, password)) {
 				response.sendRedirect("mainPage"); // Dunno if will works.
 				return;
 			}
