@@ -317,7 +317,25 @@ public class Database {
 	 * 
 	 */
 	public User getUser(String username) {
-		return null;
+		User user = null;
+		
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + username + "'");
+		    while (rs.next()) {
+			    String name = rs.getString("username");
+			    String password = rs.getString("password");
+			    user = new User(name, password);
+		    }
+		    stmt.close();
+		} catch (SQLException ex) {
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+		}		    
+	    
+		return user;
 	}
 
 	/**

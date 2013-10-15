@@ -4,6 +4,7 @@
 package test;
 
 import static org.junit.Assert.*;
+import items.User;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -35,6 +36,7 @@ public class DatabaseTest {
 				+ "user=puss1301&password=8jh398fs");
 		conn.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
 		conn.setAutoCommit(false);
+		
 		db = Database.getInstance();
 		db.startTransaction();
 	}
@@ -45,11 +47,23 @@ public class DatabaseTest {
 	@After
 	public void tearDown() throws Exception {
 		db.rollback();
+		conn.rollback();
 	}
 
 	@Test
 	public void testGetUser() throws SQLException {
+		String name = "Christian";
+		String psw = "psw";
+		String result = "";
 		
+		Statement stmt = conn.createStatement();
+    	String statement = "INSERT INTO Users (username, password) VALUES('" + name + "', '" + psw + "')";
+    	stmt.executeUpdate(statement);
+		stmt.close();
+		
+		User user = db.getUser(name);
+		result = user.getUsername();
+		assertEquals(name, result);
 	}
 	
 	@Test
@@ -61,12 +75,12 @@ public class DatabaseTest {
 		db.addUser(name, psw);
 		
 		Statement stmt = conn.createStatement();		    
-	    ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='Christian'");
+	    ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + name + "'");
 	    while (rs.next()) {
 		    result = rs.getString("username");
 	    }
 	    stmt.close();
 	    
-	    assertEquals("Christian", result);
+	    assertEquals(name, result);
 	}
 }
