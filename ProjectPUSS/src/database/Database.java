@@ -397,4 +397,17 @@ public class Database {
 		conn.setAutoCommit(true);
 	}
 
+	public Role getRole(User user) {
+		Role r = null;
+		Statement stmt = null;
+		try {
+			stmt = conn.createStatement();
+			//kod
+		} catch (SQLException e) {
+			System.out.println("fel i getRole() i Database.java");
+			e.printStackTrace();
+		}
+		return r;
+	}
+
 }
