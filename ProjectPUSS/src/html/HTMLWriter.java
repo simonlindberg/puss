@@ -218,21 +218,51 @@ public class HTMLWriter {
 	}
 
 	/**
+	 * 	Skriver ut en lista över en projektgrupps medlemmar.
 	 * 
-	 @param users
-	 *            lista över medlemmar i en projektgrupp. Skriver ut en lista
-	 *            över en projektgrupps medlemmar.
+	 * 	@param users
+	 *            lista över medlemmar i en projektgrupp. 
+	 *            
+	 *  @param projectManagers
+	 *  		  lista över projektledare i en projektgrupp.          	
 	 * 
 	 */
-	public void printProjectGroupMembers(List<User> users) {
+	public void printProjectGroupMembers(List<User> users, List<User> projectManagers, String projectName) {
+		if (!(users.size() == 0 && projectManagers.size() == 0)) {
+			writer.print("<table><tr><th>Användarnamn</th><th></th><th></th></tr>");
+			for (User u : projectManagers) {
+				writer.print("<tr><td>" + u.getUsername() + "</td><td><a href=\"/ProjectOverview?action=makeUser&project=" 
+						+ projectName + "&username=" + u.getUsername() 
+						+ "\">Gör till användare</a></td><td>"
+						+ "<a href=\"/ProjectOverview?action=deleteUser&project=" + projectName 
+						+ "&username=" + u.getUsername() + "\">Ta bort</a>"
+						+ "</td></tr>");
+			}
+			for (User u : users) {
+				if (!projectManagers.contains(u)) {
+					writer.print("<tr><td>" + u.getUsername() + "</td><td><a href=\"/ProjectOverview?action=makeManager&project=" 
+							+ projectName + "&username=" + u.getUsername() 
+							+ "\">Gör till projektledare</a></td><td>"
+							+ "<a href=\"/ProjectOverview?action=deleteUser&project=" + projectName 
+							+ "&username=" + u.getUsername() + "\">Ta bort</a>"
+							+ "</td></tr>");
+				}
+			}
+			writer.print("</table>");
+		}
 	}
 
 	/**
 	 * 
 	 Skriver ut ett formulär för att lägga till en användare i en grupp.
+	 * @param projectName 
 	 * 
 	 */
-	public void printAddUserToProjectGroupForm() {
+	public void printAddUserToProjectGroupForm(String projectName) {
+		writer.print("<form method=\"POST\" action=\"/ProjectOverview?action=addUser&project=" + projectName + "\">"
+				+ "<label>Användarnamn</label><input name=\"username\" type=\"text\" />"
+				+ "<input type=\"submit\" value=\"Lägg till\" />"
+						+ "</form>");
 	}
 
 	/**

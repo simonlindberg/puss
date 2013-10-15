@@ -7,6 +7,7 @@ import items.User;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -93,6 +94,38 @@ public class HTMLWriterTest {
 				+ "<tr><td>abcde2</td><td>password2</td><td><a href=\"/Administration?action=deleteUser&username=abcde2\">Ta bort</a></td></tr>" 
 				+ "</table>",
 				sw.toString());
+	}
+	
+	@Test
+	public void testPrintAddUserToProjectGroupForm() {
+		hw.printAddUserToProjectGroupForm("whatever");
+		assertEquals(
+				"<form method=\"POST\" action=\"/ProjectOverview?action=addUser&project=whatever\">"
+				+ "<label>Användarnamn</label><input name=\"username\" type=\"text\" />"
+				+ "<input type=\"submit\" value=\"Lägg till\" />"
+						+ "</form>", sw.toString());
+	}
+	
+	@Test
+	public void testPrintProjectGroupEmpty() {
+		hw.printProjectGroupMembers(new ArrayList<User>(), new ArrayList<User>(), "whatever");
+		assertEquals("", sw.toString());
+	}
+	
+	@Test
+	public void testPrintProjectGroupMembersOneUser() {
+		List<User> users = new ArrayList<User>();
+		List<User> projectManagers = new ArrayList<User>();
+		users.add(new User("Alpha", "Numerisk"));
+		projectManagers.add(new User("Alpha", "Numerisk"));
+
+		hw.printProjectGroupMembers(users, projectManagers, "whatever");
+		
+		assertEquals("<table><tr><th>Användarnamn</th><th></th><th></th></tr><tr>"
+				+ "<td>Alpha</td><td>"
+				+ "<a href=\"/ProjectOverview?action=makeUser&project=whatever&username=Alpha\">Gör till användare</a></td>"
+				+ "<td><a href=\"/ProjectOverview?action=deleteUser&project=whatever&username=Alpha\">Ta bort</a></td>"
+				+ "</tr></table>", sw.toString());
 	}
 
 }

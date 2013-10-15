@@ -166,6 +166,22 @@ public class Database {
 	public List<User> getUsersInProject(String projectName) {
 		return null;
 	}
+	
+	/**
+	 * 
+	 * Försöker hämta alla projektledare från ett projekt.
+	 * 
+	 * @param projectName
+	 *            projektet att hämta ifrån. Hämtar en lista av alla användare i
+	 *            ett projekt som är projektledare.
+	 * 
+	 * @return Returnerar null om projektet inte finns.
+	 * 
+	 * 
+	 */
+	public List<User> getProjectManagersInProject(String projectName) {
+		return null;
+	}
 
 	/**
 	 * Försöker lägga till en användare till ett projekt.
