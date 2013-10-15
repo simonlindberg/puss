@@ -1,18 +1,24 @@
 package servlets;
 
-import java.io.IOException;
-
 import html.HTMLWriter;
+import items.User;
+
+import java.io.IOException;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
- *  Den abstrakta superklassen som utökas av servlets.
- *
+ * Den abstrakta superklassen som utökas av servlets.
+ * 
  */
 public abstract class ServletBase extends HttpServlet {
+
+	final private String USER = "user";
+	final private String LOGGEDIN = "loggedin";
+	final private String PROJECT = "project";
 
 	/**
 	 * Kollar om man är inloggad.
@@ -22,7 +28,12 @@ public abstract class ServletBase extends HttpServlet {
 	 *         <code>false</code>.
 	 */
 	protected boolean loggedIn(HttpServletRequest request) {
-		return true;
+		HttpSession session = request.getSession();
+		
+		User user = (User) session.getAttribute(USER);
+		boolean loggedIn = (boolean) session.getAttribute(LOGGEDIN);
+
+		return user != null && loggedIn;
 	}
 
 	/**
