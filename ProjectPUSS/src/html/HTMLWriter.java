@@ -16,9 +16,12 @@ import java.util.List;
  * 
  */
 public class HTMLWriter {
-	
+
+	final static public String LOGIN_USERNAME = "username";
+	final static public String LOGIN_PASSWORD = "password";
+
 	private PrintWriter writer;
-	
+
 	/**
 	 * HTMLs enda konstruktor. Tar emot en PrintWriter som allt kommer att
 	 * skrivas till.
@@ -162,12 +165,12 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printAdminUserList(List<User> users) {
-		if(users != null && users.size() > 0) {
+		if (users != null && users.size() > 0) {
 			writer.print("<table><tr><th>Användare</th><th>Passwords</th><th></th></tr>");
 			for (User u : users) {
-				writer.print("<tr><td>" + u.getUsername() + "</td><td>"
-						+ u.getPassword() + "</td><td>"
-						+ "<a href=\"/Administration?action=deleteUser&username=" + u.getUsername() + "\">Ta bort</a></td></tr>");
+				writer.print("<tr><td>" + u.getUsername() + "</td><td>" + u.getPassword()
+						+ "</td><td>" + "<a href=\"/Administration?action=deleteUser&username="
+						+ u.getUsername() + "\">Ta bort</a></td></tr>");
 			}
 			writer.print("</table>");
 		}
@@ -179,10 +182,9 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printAddUserForm() {
-		writer.print("<form method=\"POST\" action=\"/Administration?action=createUser\">" + 
-				"<label>Användarnamn</label><input name=\"username\" type=\"text\" />" +
-				"<input type=\"submit\" value=\"Skapa\" />" + 
-				"</form>");
+		writer.print("<form method=\"POST\" action=\"/Administration?action=createUser\">"
+				+ "<label>Användarnamn</label><input name=\"username\" type=\"text\" />"
+				+ "<input type=\"submit\" value=\"Skapa\" />" + "</form>");
 	}
 
 	/**
@@ -202,8 +204,7 @@ public class HTMLWriter {
 	public void printAddProjectGroupForm() {
 		writer.print("<form method=\"POST\" action=\"/ProjectAdmin?action=createProjectGroup\">"
 				+ "<label>Projekgruppnamn</label><input name=\"projectname\" type=\"text\" />"
-				+ "<input type=\"submit\" value=\"Skapa\" />"
-						+ "</form>");
+				+ "<input type=\"submit\" value=\"Skapa\" />" + "</form>");
 	}
 
 	/**
