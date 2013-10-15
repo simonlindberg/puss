@@ -1,5 +1,7 @@
 package servlets;
 
+import java.io.IOException;
+
 import html.HTMLWriter;
 
 import javax.servlet.http.HttpServlet;
@@ -32,7 +34,16 @@ public abstract class ServletBase extends HttpServlet {
 	 *            samling av datan som ska skickas tillbaka.
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
-
+		HTMLWriter writer;
+		try {
+			writer = new HTMLWriter(response.getWriter());
+			// TODO: Get the user from session variable
+			writer.printHead(null);
+			doWork(request, writer);
+			writer.printFoot();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
