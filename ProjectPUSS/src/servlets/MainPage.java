@@ -11,11 +11,13 @@ import javax.servlet.http.HttpServletRequest;
  * projektgrupp man ska använda, samt tar sig vidare till funktionalitet, tex
  * skapa en ny tidrapport, administrera över användare eller visa statistik.
  */
+@WebServlet("/Main")
 public class MainPage extends ServletBase {
 
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
 		// TODO Auto-generated method stub
+		
 
 	}
 

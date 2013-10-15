@@ -367,7 +367,8 @@ public class Database {
 	 * 
 	 */
 	public boolean login(String username, String password) {
-		return false;
+		User user = getUser(username);
+		return user != null && user.getPassword().equals(password);
 	}
 	
 	

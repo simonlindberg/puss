@@ -17,6 +17,11 @@ import java.util.List;
  */
 public class HTMLWriter {
 
+
+	final static public String LOGIN_USERNAME = "username";
+	final static public String LOGIN_PASSWORD = "password";
+
+
 	private PrintWriter writer;
 
 	/**
