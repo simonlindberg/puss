@@ -3,11 +3,6 @@ package database;
 import items.TimeReport;
 import items.User;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 import javax.management.relation.Role;
@@ -20,24 +15,15 @@ import javax.management.relation.Role;
  */
 public class Database {
 
-	private static Database instance;
+	private Database() {
 
-	private Connection conn = null;
-
-	private Database() throws SQLException {
-		conn = DriverManager.getConnection("jdbc:mysql://vm26.cs.lth.se/puss1301?"
-				+ "user=puss1301&password=8jh398fs");
-		conn.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
 	}
 
 	/**
 	 * Hämtar singletoninstansen av Database
 	 */
-	public static Database getInstance() throws SQLException {
-		if (instance == null) {
-			instance = new Database();
-		}
-		return instance;
+	public Database getInstance() {
+		return null;
 	}
 
 	/**
@@ -180,22 +166,6 @@ public class Database {
 	public List<User> getUsersInProject(String projectName) {
 		return null;
 	}
-	
-	/**
-	 * 
-	 * Försöker hämta alla projektledare från ett projekt.
-	 * 
-	 * @param projectName
-	 *            projektet att hämta ifrån. Hämtar en lista av alla användare i
-	 *            ett projekt som är projektledare.
-	 * 
-	 * @return Returnerar null om projektet inte finns.
-	 * 
-	 * 
-	 */
-	public List<User> getProjectManagersInProject(String projectName) {
-		return null;
-	}
 
 	/**
 	 * Försöker lägga till en användare till ett projekt.
@@ -287,27 +257,13 @@ public class Database {
 	 * 
 	 * @param username
 	 *            användarnamnet som ska läggas till i systemet. Lägger till en
-	 *        	  användare i systemet.
-	 * @param password
-	 * 				användarlösenordet som ska läggas till i systemet.
+	 *            användare i systemet.
 	 * @return true om den lyckas annars false.
 	 * 
+	 * 
 	 */
-	public boolean addUser(String username, String password) {
-		
-	    try {
-	    	Statement stmt = conn.createStatement();
-	    	String statement = "INSERT INTO Users (username, password) VALUES('" + username + "', '" + password + "')";
-	    	stmt.executeUpdate(statement);
-			stmt.close();
-		} catch (SQLException ex) {
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
-			return false;
-		}
-	   
-		return true;
+	public boolean addUser(String username) {
+		return false;
 	}
 
 	/**
@@ -333,25 +289,7 @@ public class Database {
 	 * 
 	 */
 	public User getUser(String username) {
-		User user = null;
-		
-		Statement stmt;
-		try {
-			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + username + "'");
-		    while (rs.next()) {
-			    String name = rs.getString("username");
-			    String password = rs.getString("password");
-			    user = new User(name, password);
-		    }
-		    stmt.close();
-		} catch (SQLException ex) {
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
-		}		    
-	    
-		return user;
+		return null;
 	}
 
 	/**
@@ -367,47 +305,8 @@ public class Database {
 	 * 
 	 */
 	public boolean login(String username, String password) {
-		return false;
-	}
-	
-	
-	/**
-	* Start a transaction to the database
-	 * @throws SQLException 
-	*/
-	public void startTransaction() throws SQLException {
-		conn.setAutoCommit(false);
-	}
-
-	/**
-	* Commit the current transactions to the database
-	 * @throws SQLException 
-	*/
-	public void commit() throws SQLException {
-		conn.commit();
-		conn.setAutoCommit(true);
-	}
-
-	/**
-	* Rollback current transactions from the database
-	 * @throws SQLException 
-	*/
-	public void rollback() throws SQLException {
-		conn.rollback();
-		conn.setAutoCommit(true);
-	}
-
-	public Role getRole(User user) {
-		Role r = null;
-		Statement stmt = null;
-		try {
-			stmt = conn.createStatement();
-			//kod
-		} catch (SQLException e) {
-			System.out.println("fel i getRole() i Database.java");
-			e.printStackTrace();
-		}
-		return r;
+		User user = getUser(username);
+		return user != null && user.getPassword().equals(password);
 	}
 
 }
