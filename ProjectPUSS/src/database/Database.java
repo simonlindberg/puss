@@ -2,6 +2,7 @@ package database;
 
 import items.TimeReport;
 import items.User;
+import items.Role;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -12,7 +13,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.management.relation.Role;
+
 
 /**
  * Denna klassen innehåller länken till databasen. Klassen innehåller den
@@ -23,6 +24,7 @@ import javax.management.relation.Role;
 public class Database {
 
 	public static final String ADMIN = "admin";
+	public static final String ADMIN_PW = "adminpw";
 
 	private static Database instance;
 
@@ -67,7 +69,23 @@ public class Database {
 	 * @return en lista med tidrepporter eller null om något går fel.
 	 */
 	public List<TimeReport> getTimeReports(String userID, String projectGroup) {
-		return null;
+		List<TimeReport> reports = new ArrayList<TimeReport>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Timereports WHERE "
+					+ "Username='"+userID+"' AND GroupName='"+projectGroup+"'");
+		    while (rs.next()) {
+			    int id = rs.getInt("id");
+			    reports.add(getTimeReport(id));
+		    }
+		    stmt.close();
+		} catch (SQLException ex) {
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+		}
+		return reports;
 	}
 
 	/**
@@ -322,7 +340,18 @@ public class Database {
 	 @return true om den lyckas annars false.
 	 */
 	public boolean createProjectGroup(String projectName) {
-		return false;
+		try {
+	    	Statement stmt = conn.createStatement();
+	    	String statement = "INSERT INTO ProjectGroups (GroupName) VALUES(' " + projectName + "')";
+	    	stmt.executeUpdate(statement);
+			stmt.close();
+		} catch (SQLException ex) {
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -377,10 +406,11 @@ public class Database {
 	 * 
 	 */
 	public boolean deleteUser(String username) {
+		int result = 0;
 		try {
-			Statement stmt = conn.createStatement();
-			String statement = "DELETE FROM Users WHERE username='" + username + "'";
-			stmt.executeUpdate(statement);
+	    	Statement stmt = conn.createStatement();
+	    	String statement = "DELETE FROM Users WHERE username='" + username + "'";
+	    	result = stmt.executeUpdate(statement);
 			stmt.close();
 		} catch (SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
@@ -388,8 +418,7 @@ public class Database {
 			System.out.println("VendorError: " + ex.getErrorCode());
 			return false;
 		}
-
-		return true;
+		return result == 1;
 	}
 
 	/**
@@ -406,6 +435,10 @@ public class Database {
 
 		Statement stmt;
 		try {
+			if (username.equals(ADMIN)) {
+				return new User(ADMIN, ADMIN_PW);
+			}
+			
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + username
 					+ "'");
@@ -416,6 +449,7 @@ public class Database {
 			}
 			stmt.close();
 		} catch (SQLException ex) {
+
 			System.out.println("SQLException: " + ex.getMessage());
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
@@ -492,6 +526,33 @@ public class Database {
 			e.printStackTrace();
 		}
 		return r;
+	}
+	
+	/**
+	 * Returns the role of the given username in the given project.
+	 * @param username
+	 * @param projectgroup
+	 * @return
+	 */
+	public Role getRole(String username, String projectgroup) {
+		String role = "";
+		Statement stmt = null;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Memberships WHERE username='" + username + "' AND groupname='"+projectgroup+"'");
+			while(rs.next()){
+				role = rs.getString("role");
+			}
+		} catch (SQLException e) {
+			System.out.println("fel i getRole() i Database.java");
+			e.printStackTrace();
+		}
+		try {
+			return Role.valueOf(role);
+		} catch(IllegalArgumentException e){
+			return null;
+		}
+		
 	}
 
 }

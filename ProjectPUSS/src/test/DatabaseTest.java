@@ -131,6 +131,13 @@ public class DatabaseTest {
 	}
 
 	@Test
+	public void testDeleteUserDoesntExist() throws SQLException {
+		String name = "_Christian";	// Underscore to ensure user is outside SRS scope		
+		boolean success = db.deleteUser(name);
+		Assert.assertFalse(success);
+	}
+	
+	@Test
 	public void testGetUsers() throws SQLException {
 		List<String> expected = Arrays.asList("Christian", "Oskar");
 		List<String> actual = new ArrayList<String>();
@@ -199,5 +206,21 @@ public class DatabaseTest {
 		assertEquals(actualTime, time);
 		rs.close();
 		stmt.close();
+	}
+	
+	@Test
+	public void testCreateProjectGroup() {
+		String projectName = "_projectName";
+		Assert.assertTrue(db.createProjectGroup(projectName));
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM ProjectGroups WHERE GroupName='" + projectName + "'");
+			rs.next();
+			assertEquals(projectName, rs.getString(0));
+		} catch (SQLException e) {
+			e.printStackTrace();
+			assertTrue(false);
+		}
 	}
 }

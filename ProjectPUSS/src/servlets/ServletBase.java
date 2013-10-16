@@ -48,6 +48,12 @@ public abstract class ServletBase extends HttpServlet {
 
 		return user != null && loggedIn != null && (boolean) loggedIn;
 	}
+	
+	protected boolean isAdmin(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		return database.getUser(Database.ADMIN).equals(session.getAttribute(USER));
+	}
+	
 
 	/**
 	 * Kallas när servern får ett <code>GET</code> anrop.
@@ -60,10 +66,9 @@ public abstract class ServletBase extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		response.setCharacterEncoding("UTF-8");
-		
-		if (loggedIn(request)) {
-			response.sendRedirect("/login");
-			System.out.println("hello!");
+		if (!loggedIn(request)) {
+			response.sendRedirect("login");
+			return;
 		}
 		
 		HTMLWriter writer = new HTMLWriter(response.getWriter());

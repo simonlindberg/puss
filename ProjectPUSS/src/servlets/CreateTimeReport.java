@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import html.HTMLWriter;
 
 import javax.servlet.ServletRequest;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -23,15 +24,19 @@ import database.Database;
  * skapa tidrapporten. Sidan är tillgänglig för användare, men ej för
  * administratörer.
  */
+@WebServlet("/CreateTimeReport")
 public class CreateTimeReport extends ServletBase {
 
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
-		String userName = ((ServletRequest) request.getSession()).getParameter("user");
-		User user = database.getUser(userName);
-		// Role r = Database.getInstance().getRole(user);
+		String userName = (String) request.getSession().getAttribute(ServletBase.USER);
+		String projectgroup = (String) request.getSession().getAttribute(ServletBase.PROJECT);
 		TimeReport t = null;
-		html.printTimeReport(t, Command.create, null);
+		Role role = null;
+		role = database.getRole(userName, projectgroup);
+
+		html.printTimeReport(t, Command.create, role);
+
 	}
 
 }
