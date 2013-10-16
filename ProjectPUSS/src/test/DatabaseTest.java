@@ -97,4 +97,11 @@ public class DatabaseTest {
 		
 		Assert.assertFalse(db.login("", ""));
 	}
+	
+	@Test
+	public void testLoginAdmin() throws Exception {
+		Assert.assertTrue(db.login("admin", "adminpw"));
+		Assert.assertFalse(db.login("admin", "adminpwpwpw"));
+		Assert.assertFalse(db.login("admin", ""));
+	}
 }

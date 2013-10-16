@@ -19,6 +19,8 @@ import javax.management.relation.Role;
  * servlets som behöver den.
  */
 public class Database {
+	
+	public static final String ADMIN = "admin";
 
 	private static Database instance;
 
@@ -369,6 +371,17 @@ public class Database {
 	 * 
 	 */
 	public boolean login(String username, String password) {
+		if (ADMIN.equals(username) && password != null) {
+			try {
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery("SELECT Password FROM Administrator");
+				rs.next();
+				String adminPass = rs.getString("Password");
+				return password.equals(adminPass);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		User user = getUser(username);
 		return user != null && user.getPassword().equals(password);
 	}
