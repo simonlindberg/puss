@@ -225,11 +225,13 @@ public class DatabaseTest {
 
 		// Test values in Table:TimeReports
 		Statement stmt = conn.createStatement();
+
 		ResultSet rs = stmt
 				.executeQuery("SELECT * FROM TimeReports WHERE Username='Oskar' AND WeekNumber=1");
 		assertTrue(rs.next());
 		assertEquals(rs.getString("GroupName"), "testgroup");
 		assertEquals(rs.getInt("Signed"), 0);
+
 		rs.close();
 		stmt.close();
 
@@ -332,5 +334,19 @@ public class DatabaseTest {
 		}
 		
 		Assert.assertEquals(users.size(), expectedUsername.size());
+	}
+		
+	@Test
+	public void testDeleteUserFromProjectGroup() throws SQLException {
+		String username = "Oskar";
+		String groupname = "testgroup";
+		db.createProjectGroup(groupname);
+		db.addUser(username, "");
+		db.addUserToProject(groupname, username);
+		db.deleteUserFromProject(groupname, username);
+		
+		ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM Memberships WHERE Username='" + username + "'");
+		assertTrue(!rs.next());
+		rs.close();
 	}
 }

@@ -31,18 +31,18 @@ public class ListTimeReports extends ServletBase {
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
 		User user = (User) request.getSession().getAttribute(ServletBase.USER);
 		String projectGroup = (String) request.getSession().getAttribute(ServletBase.PROJECT);
-		String page = (String) request.getParameter("page") == null ? "" : (String) request.getParameter("page");
-		html.printSuccessMessage(page+"<br/>");
+		String page = (String) request.getParameter("page") == null ? "" : (String) request
+				.getParameter("page");
+		Role userRole = database.getRole(user.getUsername(), projectGroup);
+		html.printSuccessMessage(page + "<br/>");
 		// Role userRole = Database.getInstance().getRole(user);
 		if (page.equals("delete")) {
 			List<TimeReport> timereports;
-				timereports = database.getTimeReports(user.getUsername(), projectGroup);
-				// /####GLÖM INTE ATT ROLE SKA HÄMTAS FRÅN SESSION!#####
-				html.printTimeReports(timereports, Command.delete, Role.Developer);
-
-
+			timereports = database.getTimeReports(user.getUsername(), projectGroup);
+			// /####GLÖM INTE ATT ROLE SKA HÄMTAS FRÅN SESSION!#####
+			html.printTimeReports(timereports, Command.delete, userRole);
 		} else if (page.equals("update")) {
-			
+
 		} else {
 			html.printErrorMessage("Nothing here to see");
 		}

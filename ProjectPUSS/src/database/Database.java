@@ -2,6 +2,7 @@ package database;
 
 import static org.junit.Assert.assertTrue;
 import items.Activity;
+import items.ActivityType;
 import items.TimeReport;
 import items.User;
 import items.Role;
@@ -57,8 +58,39 @@ public class Database {
 	 * 
 	 */
 	public TimeReport getTimeReport(int id) {
-		// TODO - Hard to know what the id of a TimeReport is
-		return null;
+		Statement stmt;
+		TimeReport tr = null;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Id='" + id + "'");
+//			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports");
+//			System.out.println("rs: " +rs.next());
+//			System.out.println(rs.getInt("Id"));
+		    while (rs.next()) {
+			    User u = getUser(rs.getString("Username"));
+			    boolean signed = rs.getBoolean("Signed");
+			    String projectGroup = rs.getString("GroupName");
+			    List<Activity> activities = new ArrayList<Activity>();
+			    Statement stmt2 = conn.createStatement();
+			    ResultSet rs2 = stmt2.executeQuery("SELECT * FROM Activity WHERE Id='" + id + "'");
+			    while (rs2.next()) {
+			    	ActivityType tp = ActivityType.valueOf(rs2.getString("ActivityName"));
+			    	int worked = rs2.getInt("MinutesWorked");
+			    	activities.add(new Activity(tp, worked));
+			    }
+			    
+			    tr = new TimeReport(u, activities, signed, rs.getInt("Id"), rs.getInt("WeekNumber") , projectGroup);
+			    rs2.close();
+			    stmt2.close();
+		    }
+		    rs.close();
+		    stmt.close();
+		} catch (SQLException ex) {
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+		}
+		return tr;
 	}
 
 	/**
@@ -119,6 +151,7 @@ public class Database {
 		try {
 			Statement stmt = conn.createStatement();
 			String statement = "INSERT INTO TimeReports (Username, Groupname, WeekNumber, Date, Signed) VALUES('"
+
 					+ timereport.getUser().getUsername()
 					+ "','"
 					+ timereport.getProjectGroup()
@@ -365,6 +398,14 @@ public class Database {
 	 * 
 	 */
 	public boolean deleteUserFromProject(String projectName, String userName) {
+		try {
+			return conn.createStatement().execute(
+					"delete from Memberships where Groupname='" + projectName + "' AND Username='" + userName + "'");
+		} catch (SQLException e) {
+			System.out.println("");
+			e.printStackTrace();
+		}
+
 		return false;
 	}
 
