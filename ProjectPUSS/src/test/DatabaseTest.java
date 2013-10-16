@@ -122,16 +122,41 @@ public class DatabaseTest {
 		db.deleteUser(name);
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + name + "'");
+		assertTrue(!rs.next());
+	}
+	
+	@Test
+	public void testDeleteUserWithTimeReport() throws SQLException {
+		String name = "Christian";
+		String psw = "123";
+		String result = "";
+
+		List<Activity> activity = new ArrayList<Activity>();
+		activity.add(new Activity(ActivityType.SRS, 60));
+
+		TimeReport report = new TimeReport(new User(name, psw), activity, false, 0, 1,
+				"testgroup");
+
+		db.createProjectGroup("testgroup");
+		db.addUser(name, psw);
+		db.createTimeReport(report);
+		db.deleteUser(name);
+
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + name + "'");
 		while (rs.next()) {
 			result = rs.getString("username");
 		}
 		stmt.close();
 
 		assertEquals("", result);
-
-		// TODO - Test if all TimeReports for the user were deleted.
-		assertTrue(false);
-
+		
+		// Test if all TimeReports for the user were deleted.
+		stmt = conn.createStatement();
+		rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Username='" + name + "'");
+		assertTrue(!rs.next());
+		rs.close();
+		stmt.close();
 	}
 
 	@Test
@@ -273,7 +298,7 @@ public class DatabaseTest {
 		rs.close();
 		stmt.close();
 		
-		// Retrieve deleted TimeReport
+		// Retrieve deleted Activity
 		stmt = conn.createStatement();
 		rs = stmt.executeQuery("SELECT * FROM Activity WHERE Id=" + id);
 		assertTrue(!rs.next());
