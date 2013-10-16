@@ -1,5 +1,6 @@
 package database;
 
+import items.Activity;
 import items.TimeReport;
 import items.User;
 import items.Role;
@@ -55,6 +56,24 @@ public class Database {
 	 * 
 	 */
 	public TimeReport getTimeReport(int id) {
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Timereports WHERE "
+					+ "Id='"+id+"'");
+		    while (rs.next()) {
+			    User u = getUser(rs.getString("Username"));
+			    boolean signed = rs.getBoolean("Signed");
+			    List<Activity> activities = new ArrayList<Activity>();
+			    
+			    TimeReport tr = new TimeReport(u, activities, signed, rs.getInt("id"), id, null);
+		    }
+		    stmt.close();
+		} catch (SQLException ex) {
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+		}
 		return null;
 	}
 

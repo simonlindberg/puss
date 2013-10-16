@@ -5,6 +5,7 @@ package test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import items.TimeReport;
 import items.User;
 
 import java.sql.Connection;
@@ -150,4 +151,14 @@ public class DatabaseTest {
 			assertTrue(actual.contains(s));
 		
 	}
+	
+	@Test
+	public void testGetTimeReport() throws SQLException {
+		db.addUser("_Christian", "pass");
+		User user = db.getUser("_Christian");
+		TimeReport tr = db.getTimeReport(-1);
+		assertTrue(false);
+	}
+	
+	
 }
