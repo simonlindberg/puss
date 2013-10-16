@@ -48,6 +48,12 @@ public abstract class ServletBase extends HttpServlet {
 
 		return user != null && loggedIn != null && (boolean) loggedIn;
 	}
+	
+	protected boolean isAdmin(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		return database.getUser(Database.ADMIN).equals(session.getAttribute(USER));
+	}
+	
 
 	/**
 	 * Kallas när servern får ett <code>GET</code> anrop.

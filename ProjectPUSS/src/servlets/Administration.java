@@ -31,10 +31,6 @@ public class Administration extends ServletBase {
 	private static final String CREATE_USER = "createUser";
 	private static final String DELETE_USER = "deleteUser";
 	
-	private boolean isAdmin(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		return database.getUser(Database.ADMIN).equals(session.getAttribute(USER));
-	}
 	
     /**
      * Checks if a username corresponds to the requirements for user names. 
