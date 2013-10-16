@@ -22,12 +22,21 @@ public class MainPage extends ServletBase {
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
 		HttpSession session = request.getSession();
 
+		String chosen = (String) request.getParameter(HTMLWriter.PROJECT_CHOOSER);
+		
+		System.out.println("chosen "  + chosen);
+		if(chosen != null){
+			session.setAttribute(PROJECT, chosen);
+		}
+
 		User user = (User) session.getAttribute(USER);
 		List<String> projects = database.getProjects(user);
 
 		String currentProjectGroup = (String) session.getAttribute(PROJECT);
+		System.out.println(currentProjectGroup);
 		currentProjectGroup = currentProjectGroup == null ? projects.get(0) : currentProjectGroup;
-		html.printProjectChooser(currentProjectGroup, projects);
+		
+		html.printProjectChooser(projects.indexOf(currentProjectGroup), projects);
 	}
 
 }
