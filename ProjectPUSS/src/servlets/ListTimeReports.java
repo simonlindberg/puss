@@ -38,7 +38,6 @@ public class ListTimeReports extends ServletBase {
 			timereports = database.getTimeReports(user.getUsername(), projectGroup);
 			// /####GLÖM INTE ATT ROLE SKA HÄMTAS FRÅN SESSION!#####
 			html.printTimeReports(timereports, Command.delete, Role.Developer);
-
 		}
 
 	}
