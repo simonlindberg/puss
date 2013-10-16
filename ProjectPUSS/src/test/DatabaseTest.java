@@ -309,6 +309,34 @@ public class DatabaseTest {
 	}
 	
 	@Test
+	public void testGetUsersInProject() throws Exception {
+		List<String> expectedUsername = Arrays.asList("a", "b", "c", "d", "e", "f");
+		List<String> unexpectedUsername = Arrays.asList("wrong", "error");
+		String project = "prjct";
+		String wrongProject = "NOTprjct";
+
+		db.createProjectGroup(project);
+		for(String a:expectedUsername){
+			db.addUser(a, "");
+			db.addUserToProject(project, a);
+		}
+		
+		db.createProjectGroup(wrongProject);
+		for (String a : unexpectedUsername) {
+			db.addUser(a, "");
+			db.addUserToProject(wrongProject, a);
+		}
+		
+		List<User> users = db.getUsersInProject(project);
+		
+		for (User u : users) {
+			Assert.assertTrue(expectedUsername.contains(u.getUsername()));
+		}
+		
+		Assert.assertEquals(users.size(), expectedUsername.size());
+	}
+		
+	@Test
 	public void testDeleteUserFromProjectGroup() throws SQLException {
 		String username = "Oskar";
 		String groupname = "testgroup";
