@@ -89,9 +89,16 @@ public class Administration extends ServletBase {
 					} else {
 						html.printErrorMessage(username + " gick inte att spara i systemet.");
 					}
+				} else {
+					html.printErrorMessage(username + " uppfyllde inte kraven på användarnamn.");
 				}
 			} else if (DELETE_USER.equals(action)) {
-				
+				String username = request.getParameter("username");
+				if (database.deleteUser(username)) {
+					html.printSuccessMessage(username + " blev borttagen från systemet.");
+				} else {
+					html.printErrorMessage(username + " gick inte att ta bort från systemet.");
+				}
 			}
 			
 			
