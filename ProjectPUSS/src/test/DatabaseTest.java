@@ -309,6 +309,34 @@ public class DatabaseTest {
 	}
 	
 	@Test
+	public void testGetUsersInProject() throws Exception {
+		List<String> expectedUsername = Arrays.asList("a", "b", "c", "d", "e", "f");
+		List<String> unexpectedUsername = Arrays.asList("wrong", "error");
+		String project = "prjct";
+		String wrongProject = "NOTprjct";
+
+		db.createProjectGroup(project);
+		for(String a:expectedUsername){
+			db.addUser(a, "");
+			db.addUserToProject(project, a);
+		}
+		
+		db.createProjectGroup(wrongProject);
+		for (String a : unexpectedUsername) {
+			db.addUser(a, "");
+			db.addUserToProject(wrongProject, a);
+		}
+		
+		List<User> users = db.getUsersInProject(project);
+		
+		for (User u : users) {
+			Assert.assertTrue(expectedUsername.contains(u.getUsername()));
+		}
+		
+		Assert.assertEquals(users.size(), expectedUsername.size());
+	}
+		
+	@Test
 	public void testDeleteUserFromProjectGroup() throws SQLException {
 		String username = "Oskar";
 		String groupname = "testgroup";
@@ -323,6 +351,7 @@ public class DatabaseTest {
 	}
 	
 	@Test
+
 	public void testGetTimeReport() throws SQLException {
 		List<Activity> activity = new ArrayList<Activity>();
 		activity.add(new Activity(ActivityType.SRS, 60));
@@ -355,5 +384,16 @@ public class DatabaseTest {
 		assertEquals(tr.getSigned(), report.getSigned());
 		assertEquals(tr.getUser().getUsername(), report.getUser().getUsername());
 		assertEquals(tr.getWeek(), report.getWeek());
+	}
+	@Test
+	public void testDeleteProjectGroup() throws SQLException {
+		String groupname = "testgroup";
+		db.createProjectGroup(groupname);
+		db.deleteProjectGroup(groupname);
+		
+		ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM Memberships WHERE Groupname='" + groupname + "'");
+		assertTrue(!rs.next());
+		rs.close();
+
 	}
 }

@@ -233,17 +233,6 @@ public class Database {
 		return false;
 	}
 
-	/**
-	 * 
-	 * Försöker hämta en lista av medlemmar i en projektgrupp från databasen.
-	 * 
-	 * @param projectGroup
-	 *            projektgruppen vars medlemmar ska hämtas.
-	 * 
-	 */
-	public List<User> getUsers(String projectGroup) {
-		return null;
-	}
 
 	/**
 	 * Sätter en användares roll för ett visst projekt.
@@ -340,7 +329,18 @@ public class Database {
 	 * 
 	 */
 	public List<User> getUsersInProject(String projectName) {
-		return null;
+		List<User> list = new ArrayList<>();
+		try {
+			ResultSet rs = conn.createStatement().executeQuery(
+					"select Username from Memberships where Groupname = '" + projectName + "';");
+			while (rs.next()) {
+				list.add(getUser(rs.getString("Username")));
+			}
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**
@@ -470,6 +470,14 @@ public class Database {
 	 * 
 	 */
 	public boolean deleteProjectGroup(String projectName) {
+		try {
+			return conn.createStatement().execute(
+					"delete from Memberships where Groupname='" + projectName + "'");
+		} catch (SQLException e) {
+			System.out.println("");
+			e.printStackTrace();
+		}
+
 		return false;
 	}
 
