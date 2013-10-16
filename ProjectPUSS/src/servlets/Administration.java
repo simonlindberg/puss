@@ -9,6 +9,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import database.Database;
+
 /**
  * Denna klassen bygger Denna klassen bygger ut ServletBase och renderar en
  * sida, via HTMLWriter, där alla användare listas. Det finns funktionalitet för
@@ -23,7 +25,7 @@ public class Administration extends ServletBase {
 
 	private boolean isAdmin(HttpServletRequest request) {
 		HttpSession session = request.getSession();
-		return "admin".equals(session.getAttribute(USER));
+		return database.getUser(Database.ADMIN).equals(session.getAttribute(USER));
 	}
 
 	@Override
