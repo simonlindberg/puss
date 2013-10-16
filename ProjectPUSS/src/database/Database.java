@@ -270,7 +270,18 @@ public class Database {
 	 * 
 	 */
 	public List<String> getProjects() {
-		return null;
+		List<String> list = new ArrayList<>();
+		ResultSet rs;
+		try {
+			rs = conn.createStatement().executeQuery("select * from ProjectGroups;");
+			while (rs.next()) {
+				list.add(rs.getString("Groupname"));
+			}
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**
@@ -310,13 +321,22 @@ public class Database {
 	 * 
 	 * @param projectName
 	 *            projektet att lägga till användaren till.
-	 * @param userName
+	 * @param username
 	 *            användaren som ska läggas till. Lägger till en användare till
 	 *            ett projekt.
 	 * @return true om den lyckas annars false.
 	 * 
 	 */
-	public boolean addUserToProject(String projectName, String userName) {
+	public boolean addUserToProject(String projectName, String username) {
+		try {
+			return conn.createStatement().execute(
+					"insert into Memberships (Username, Groupname) values ('" + username + "', '"
+							+ projectName + "')");
+		} catch (SQLException e) {
+			System.out.println("");
+			e.printStackTrace();
+		}
+		
 		return false;
 	}
 
@@ -484,7 +504,6 @@ public class Database {
 			}
 			stmt.close();
 		} catch (SQLException ex) {
-
 			System.out.println("SQLException: " + ex.getMessage());
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
@@ -592,4 +611,27 @@ public class Database {
 
 	}
 
+	/**
+	 * Hämtar alla projekt som den specifiserade användaren är medlem i.
+	 * 
+	 * @param user
+	 *            en snäll söt liten användare
+	 * @return en lista med projektnamn
+	 */
+	public List<String> getProjects(User user) throws NullPointerException {
+		List<String> list = new ArrayList<>();
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select Groupname from Memberships where Username = '"
+					+ user.getUsername() + "';");
+			while(rs.next()){
+				list.add(rs.getString("Groupname"));
+			}
+			return list;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
