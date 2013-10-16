@@ -150,4 +150,20 @@ public class DatabaseTest {
 			assertTrue(actual.contains(s));
 		
 	}
+	
+	@Test
+	public void testCreateProjectGroup() {
+		String projectName = "_projectName";
+		Assert.assertTrue(db.createProjectGroup(projectName));
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM ProjectGroups WHERE GroupName='" + projectName + "'");
+			rs.next();
+			assertEquals(projectName, rs.getString(0));
+		} catch (SQLException e) {
+			e.printStackTrace();
+			assertTrue(false);
+		}
+	}
 }

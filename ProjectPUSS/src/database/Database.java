@@ -292,7 +292,18 @@ public class Database {
 	 @return true om den lyckas annars false.
 	 */
 	public boolean createProjectGroup(String projectName) {
-		return false;
+		try {
+	    	Statement stmt = conn.createStatement();
+	    	String statement = "INSERT INTO ProjectGroups (GroupName) VALUES(' " + projectName + "')";
+	    	stmt.executeUpdate(statement);
+			stmt.close();
+		} catch (SQLException ex) {
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+			return false;
+		}
+		return true;
 	}
 
 	/**
