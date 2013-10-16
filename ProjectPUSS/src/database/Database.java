@@ -63,32 +63,33 @@ public class Database {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Id='" + id + "'");
-//			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports");
-//			System.out.println("rs: " +rs.next());
-//			System.out.println(rs.getInt("Id"));
-		    while (rs.next()) {
-			    User u = getUser(rs.getString("Username"));
-			    boolean signed = rs.getBoolean("Signed");
-			    String projectGroup = rs.getString("GroupName");
-			    List<Activity> activities = new ArrayList<Activity>();
-			    Statement stmt2 = conn.createStatement();
-			    ResultSet rs2 = stmt2.executeQuery("SELECT * FROM Activity WHERE Id='" + id + "'");
-			    while (rs2.next()) {
-			    	ActivityType tp = ActivityType.valueOf(rs2.getString("ActivityName"));
-			    	int worked = rs2.getInt("MinutesWorked");
-			    	activities.add(new Activity(tp, worked));
-			    }
-			    
-			    tr = new TimeReport(u, activities, signed, rs.getInt("Id"), rs.getInt("WeekNumber") , projectGroup);
-			    rs2.close();
-			    stmt2.close();
-		    }
-		    rs.close();
-		    stmt.close();
+			// ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports");
+			// System.out.println("rs: " +rs.next());
+			// System.out.println(rs.getInt("Id"));
+			while (rs.next()) {
+				User u = getUser(rs.getString("Username"));
+				boolean signed = rs.getBoolean("Signed");
+				String projectGroup = rs.getString("GroupName");
+				List<Activity> activities = new ArrayList<Activity>();
+				Statement stmt2 = conn.createStatement();
+				ResultSet rs2 = stmt2.executeQuery("SELECT * FROM Activity WHERE Id='" + id + "'");
+				while (rs2.next()) {
+					ActivityType tp = ActivityType.valueOf(rs2.getString("ActivityName"));
+					int worked = rs2.getInt("MinutesWorked");
+					activities.add(new Activity(tp, worked));
+				}
+
+				tr = new TimeReport(u, activities, signed, rs.getInt("Id"),
+						rs.getInt("WeekNumber"), projectGroup);
+				rs2.close();
+				stmt2.close();
+			}
+			rs.close();
+			stmt.close();
 		} catch (SQLException ex) {
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
 		}
 		return tr;
 	}
@@ -236,7 +237,6 @@ public class Database {
 		return false;
 	}
 
-
 	/**
 	 * Sätter en användares roll för ett visst projekt.
 	 * 
@@ -249,6 +249,15 @@ public class Database {
 	 * 
 	 */
 	public void setUserRole(String userID, String project, Role role) {
+		try {
+			conn.createStatement().execute(
+					"update Memberships set Role='" + (role != null ? role.toString(): null) + "' where Groupname='"
+							+ project + "' and username='" + userID + "'");
+		} catch (SQLException e) {
+			System.out.println("");
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
@@ -400,42 +409,13 @@ public class Database {
 	public boolean deleteUserFromProject(String projectName, String userName) {
 		try {
 			return conn.createStatement().execute(
-					"delete from Memberships where Groupname='" + projectName + "' AND Username='" + userName + "'");
+					"delete from Memberships where Groupname='" + projectName + "' AND Username='"
+							+ userName + "'");
 		} catch (SQLException e) {
 			System.out.println("");
 			e.printStackTrace();
 		}
 
-		return false;
-	}
-
-	/**
-	 * Försöker göra en användare till projektledare.
-	 * 
-	 * @param projectName
-	 *            projektet att manipulera.
-	 * @param userName
-	 *            användaren som ska bli projektledare. Gör en användare i ett
-	 *            projekt till projektledare.
-	 * @return true om den lyckas annars false.
-	 * 
-	 */
-	public boolean makeUserProjectManager(String projectName, String userName) {
-		return false;
-	}
-
-	/**
-	 * Försöker ta bort projektledar status från en användare i ett projekt.
-	 * 
-	 * @param projectName
-	 *            projektet som ska manipuleras.
-	 * @param userName
-	 *            användaren som ska bli en vanlig användare från projektledare.
-	 *            Gör en projektledare i ett projekt till vanlig användare.
-	 * @return true om den lyckas annars false.
-	 * 
-	 */
-	public boolean demoteProjectManager(String projectName, String userName) {
 		return false;
 	}
 
@@ -527,8 +507,8 @@ public class Database {
 		try {
 
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt
-					.executeQuery("SELECT Id FROM TimeReports WHERE Username='" + username + "'");
+			ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports WHERE Username='"
+					+ username + "'");
 			int id;
 			while (rs.next()) {
 				id = rs.getInt("Id");
@@ -536,7 +516,7 @@ public class Database {
 			}
 			rs.close();
 			stmt.close();
-			
+
 			stmt = conn.createStatement();
 			String statement = "DELETE FROM Users WHERE username='" + username + "'";
 			result = stmt.executeUpdate(statement);
@@ -641,19 +621,6 @@ public class Database {
 	public void rollback() throws SQLException {
 		conn.rollback();
 		conn.setAutoCommit(true);
-	}
-
-	public Role getRole(User user) {
-		Role r = null;
-		Statement stmt = null;
-		try {
-			stmt = conn.createStatement();
-			// kod
-		} catch (SQLException e) {
-			System.out.println("fel i getRole() i Database.java");
-			e.printStackTrace();
-		}
-		return r;
 	}
 
 	/**

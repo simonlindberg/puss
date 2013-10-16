@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import items.Activity;
 import items.ActivityType;
+import items.Role;
 import items.TimeReport;
 import items.User;
 
@@ -358,6 +359,37 @@ public class DatabaseTest {
 		
 		ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM Memberships WHERE Groupname='" + groupname + "'");
 		assertTrue(!rs.next());
+		rs.close();
+	}
+	
+	@Test
+	public void testMakeUserPRojectManager() throws SQLException {
+		String username = "user1";
+		String projectname = "group1";
+		db.addUser(username, "");
+		db.createProjectGroup(projectname);
+		db.addUserToProject(projectname, username);
+		db.setUserRole(username, projectname, Role.Manager);
+		
+		ResultSet rs = conn.createStatement().executeQuery("SELECT Role FROM Memberships WHERE Username='" + username + "'");
+		assertTrue(rs.next());
+		assertEquals(rs.getString("Role"), Role.Manager.toString());
+		rs.close();
+	}
+	
+	@Test
+	public void testDemoteUserProjectManager() throws SQLException {
+		String username = "user1";
+		String projectname = "group1";
+		db.addUser(username, "");
+		db.createProjectGroup(projectname);
+		db.addUserToProject(projectname, username);
+		db.setUserRole(username, projectname, Role.Manager);
+		db.setUserRole(username, projectname, null);
+		
+		ResultSet rs = conn.createStatement().executeQuery("SELECT Role FROM Memberships WHERE Username='" + username + "'");
+		assertTrue(rs.next());
+		assertEquals(rs.getString("Role"), "null");
 		rs.close();
 	}
 }
