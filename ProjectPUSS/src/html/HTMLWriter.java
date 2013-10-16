@@ -1,5 +1,8 @@
+
 package html;
 
+import items.Activity;
+import items.ActivityType;
 import items.Command;
 import items.GraphSettings;
 import items.Role;
@@ -7,7 +10,9 @@ import items.TimeReport;
 import items.User;
 
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Denna klassen innehåller funktionalitet för att skriva ut all den HTML kod
@@ -100,6 +105,147 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printGraph(List<TimeReport> timeReports, GraphSettings gs) {
+		String xAxisName = gs.getXName();
+		String yAxisName = gs.getYName();
+		
+		String html = "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.jqplot.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.barRenderer.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.categoryAxisRenderer.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.pointLabels.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.canvasTextRenderer.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.canvasAxisLabelRenderer.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.canvasAxisTickRenderer.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.dateAxisRenderer.min.js\"></script>";
+		html += "<link rel=\"stylesheet\" type=\"text/css\" href=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.jqplot.min.css\" />";
+
+		html += "<div id=\"chart\" ></div>";
+
+		html += "<script>";
+		html += "$.jqplot.config.enablePlugins = true;";
+		//html += "var s1 = [['a',2],['b',6],['c',7],['d',10]];";
+		
+		html += "var s1 = [";
+
+		switch (gs.getGraphType()) {
+		case "userWeekTime":
+			for (int i = 0; i < timeReports.size(); i++) {
+
+				List<Activity> activities = timeReports.get(i).getActivities();
+
+				int totalTime = 0;
+
+				for (Activity a : activities) {
+					totalTime += a.getLength();
+				}
+
+				html += "[" + timeReports.get(i).getWeek() + "," + totalTime
+						+ "],";
+			}
+			html = html.substring(0, html.length() - 1);
+
+			break;
+
+		case "ActivityTime":
+			HashMap<ActivityType, Integer> actTimes = new HashMap<ActivityType, Integer>();
+
+			for (int i = 0; i < timeReports.size(); i++) {
+
+				List<Activity> activities = timeReports.get(i).getActivities();
+
+				for (Activity a : activities) {
+					if (actTimes.containsKey(a.getType())) {
+						actTimes.put(a.getType(),
+								actTimes.get(a.getType()) + a.getLength());
+					} else {
+						actTimes.put(a.getType(), a.getLength());
+					}
+				}
+			}
+
+			Set<ActivityType> types = actTimes.keySet();
+
+			for (ActivityType t : types) {
+				html += "['" + t.toString() + "'," + actTimes.get(t).toString() + "],";
+			}
+			html = html.substring(0, html.length() - 1);
+
+			break;
+		case "PlUserTime":
+			HashMap<User, Integer> userTimes = new HashMap<User, Integer>();
+
+			for (int i = 0; i < timeReports.size(); i++) {
+
+				List<Activity> activities = timeReports.get(i).getActivities();
+
+				int totalTime = 0;
+
+				for (Activity a : activities) {
+					totalTime += a.getLength();
+				}
+
+				if (userTimes.containsKey(timeReports.get(i).getUser())) {
+					userTimes.put(timeReports.get(i).getUser(), userTimes.get(timeReports.get(i).getUser()) + totalTime);
+				} else {
+					userTimes.put(timeReports.get(i).getUser(), totalTime);
+				}
+			}
+			
+			Set<User> users = userTimes.keySet();
+
+			for (User u : users) {
+				html += "['" + u.toString() + "'," + userTimes.get(u).toString() + "],";
+			}
+			html = html.substring(0, html.length() - 1);
+			
+			break;
+		}
+		
+		html += "];";
+		  
+		html += "plot1 = $.jqplot('chart', [s1], {";
+		html += "	animate: !$.jqplot.use_excanvas,";
+		html += "	seriesDefaults:{";
+		html += "		renderer:$.jqplot.BarRenderer,";
+		html += "		pointLabels: { show: true }";
+		html += "	},";
+		html += "	legend: {show:false},";
+		html += "	axes: {";
+		html += "		xaxis: {";
+		html += "			tickOptions:{";
+		html += "				labelPosition: 'middle'";
+		html += "			},";
+		html += "			tickRenderer:$.jqplot.CanvasAxisTickRenderer,";
+		html += "			labelRenderer: $.jqplot.CanvasAxisLabelRenderer,";
+		
+		html += "			label:'" + xAxisName + "',";
+		
+		html += "			labelOptions:{";
+		html += "				fontFamily:'Helvetica',";
+		html += "				fontSize: '14pt'";
+		html += "			},";
+		html += "			renderer: $.jqplot.CategoryAxisRenderer,";
+		html += "		},";
+		html += "		yaxis: {";
+		html += "			tickOptions:{";
+		html += "				labelPosition: 'middle'";
+		html += "			},";
+		html += "			tickRenderer:$.jqplot.CanvasAxisTickRenderer,";
+		html += "			labelRenderer: $.jqplot.CanvasAxisLabelRenderer,";
+		
+		html += "			label:'" + yAxisName + "',";
+		
+		html += "			labelOptions:{";
+		html += "				fontFamily:'Helvetica',";
+		html += "				fontSize: '14pt'";
+		html += "			},";
+		html += "		}";
+		html += "	},";
+		html += "	highlighter: { show: false }";
+		html += "});";
+		html += "</script>";
+		
+		writer.print(html);
 	}
 
 	/**
@@ -116,6 +262,101 @@ public class HTMLWriter {
 	 */
 	public void printBurndownChart(List<TimeReport> timeReports,
 			GraphSettings gs) {
+		
+		String xAxisName = gs.getXName();
+		String yAxisName = gs.getYName();
+		
+		String html = "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.jqplot.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.highlighter.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.cursor.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.dateAxisRenderer.min.js\"></script>";
+
+		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.canvasTextRenderer.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.canvasAxisLabelRenderer.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.canvasAxisTickRenderer.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.dateAxisRenderer.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.categoryAxisRenderer.min.js\"></script>";
+
+
+		html += "<link rel=\"stylesheet\" type=\"text/css\" href=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.jqplot.min.css\" />";
+
+		html += "<div id=\"chart\" ></div>";
+
+		html += "<script>";
+
+		html += "var line=[['23-May-08', 578.55], ['20-Jun-08', 566.5], ['25-Jul-08', 480.88], ['22-Aug-08', 509.84],";
+		html += "	['26-Sep-08', 454.13], ['24-Oct-08', 379.75], ['21-Nov-08', 303], ['26-Dec-08', 308.56],";
+		html += "	['23-Jan-09', 299.14], ['20-Feb-09', 346.51], ['20-Mar-09', 325.99], ['24-Apr-09', 386.15]];";
+		
+		switch(gs.getGraphType()){
+		case "weekBurnDown":
+			for(int i = 0; i < timeReports.size(); i++){
+				
+			}
+			break;
+		case "activityBurnDown":
+			for(int i = 0; i < timeReports.size(); i++){
+				
+			}
+			break;
+		case "userBurnDown":
+			for(int i = 0; i < timeReports.size(); i++){
+				
+			}
+			break;
+		}
+		
+		
+		
+		html += "var plot1 = $.jqplot('chart', [line], {";
+		html += "	animate: !$.jqplot.use_excanvas,";
+		html += "	title:'Data Point Highlighting',";
+		html += "	axes:{";
+		html += "		xaxis:{";
+		html += "			renderer:$.jqplot.DateAxisRenderer,";
+		html += "			tickOptions:{";
+		html += "				formatString:'%b&nbsp;%#d',";
+		html += "				labelPosition: 'middle'";
+		html += "			},";
+		html += "			tickRenderer:$.jqplot.CanvasAxisTickRenderer,";
+		html += "			labelRenderer: $.jqplot.CanvasAxisLabelRenderer,";
+		
+		html += "				label:'" + xAxisName + "',";
+		
+		html += "			labelOptions:{";
+		html += "				fontFamily:'Helvetica',";
+		html += "				fontSize: '14pt'";
+		html += "			},";
+		html += "			renderer: $.jqplot.CategoryAxisRenderer,";
+		html += "		},";
+		html += "		yaxis:{";
+		html += "			tickOptions:{";
+		html += "				formatString:'$%.2f',";
+		html += "				labelPosition: 'middle'";
+		html += "			},";
+		html += "			tickRenderer:$.jqplot.CanvasAxisTickRenderer,";
+		html += "			labelRenderer: $.jqplot.CanvasAxisLabelRenderer,";
+		
+		html += "            	label:'" + yAxisName +"',";
+		
+		html += "			labelOptions:{";
+		html += "				fontFamily:'Helvetica',";
+		html += "				fontSize: '14pt'";
+		html += "			},";
+		html += "		}";
+		html += "	},";
+		html += "	highlighter: {";
+		html += "		show: true,";
+		html += "		sizeAdjust: 7.5";
+		html += "	},";
+		html += "	cursor: {";
+		html += "		show: false";
+		html += "	}";
+		html += "});";
+		html += "</script>";
+		
+		writer.print(html);
 	}
 
 	/**

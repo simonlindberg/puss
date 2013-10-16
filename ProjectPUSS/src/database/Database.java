@@ -117,38 +117,53 @@ public class Database {
 	 * 
 	 */
 	public boolean createTimeReport(TimeReport timereport) {
-		int id = timereport.getID();
-		String username = timereport.getUser().getUsername();
-		String groupname = timereport.getProjectGroup();
-		int weeknumber = timereport.getWeek();
-		int signed = 0;
-		if (timereport.getSigned())
-			;
-		signed = 1;
-		// NOW()
 		// Extract and save into table:TimeReports
 		try {
 			Statement stmt = conn.createStatement();
 			String statement = "INSERT INTO TimeReports (Id, Username, Groupname, WeekNumber, Date, Signed) VALUES("
-					+ id
+					+ timereport.getID()
 					+ ",'"
-					+ username
+					+ timereport.getUser().getUsername()
 					+ "','"
-					+ groupname
+					+ timereport.getProjectGroup()
 					+ "',"
-					+ weeknumber
+					+ timereport.getWeek()
 					+ ", NOW(),"
-					+ signed + ")";
+					+ (timereport.getSigned() ? 1:0) + ")";
 			stmt.executeUpdate(statement);
 			stmt.close();
 		} catch (SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
 			System.out.println("SQLState: " + ex.getSQLState());
 			System.out.println("VendorError: " + ex.getErrorCode());
+			return false;
 		}
 
 		// Extract and save into table:Activity
-		return false;
+		try {
+			for (Activity a: timereport.getActivities()) {
+				Statement stmt = conn.createStatement();
+				String statement = "INSERT INTO Activity (Id, ActivityName, ActivityNumber, MinutesWorked, Type) VALUES("
+						+ timereport.getID()
+						+ ",'"
+						+ a.getType().toString()
+						+ "',"
+						+ 0
+						+ ","
+						+ a.getLength()
+						+ ",'"
+						+ "type" + "')";
+				stmt.executeUpdate(statement);
+				stmt.close();
+			}
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+			return false;
+		}
+		
+		return true;
 	}
 
 	/**
@@ -362,7 +377,7 @@ public class Database {
 	public boolean createProjectGroup(String projectName) {
 		try {
 	    	Statement stmt = conn.createStatement();
-	    	String statement = "INSERT INTO ProjectGroups (GroupName) VALUES(' " + projectName + "')";
+	    	String statement = "INSERT INTO ProjectGroups (Groupname) VALUES('" + projectName + "')";
 	    	stmt.executeUpdate(statement);
 			stmt.close();
 		} catch (SQLException ex) {
