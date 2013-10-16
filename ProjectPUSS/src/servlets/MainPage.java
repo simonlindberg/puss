@@ -32,6 +32,12 @@ public class MainPage extends ServletBase {
 		currentProjectGroup = currentProjectGroup == null ? projects.get(0) : currentProjectGroup;
 		
 		html.printProjectChooser(projects.indexOf(currentProjectGroup), projects);
+		
+		html.printLink("create", "Skapa en ny tidrapport");
+		html.printLink("create", "Uppdatera en tidrapport");
+		html.printLink("list", "Lista tidrapporter");
+		html.printLink("showmembers", "Visa medlemmar");
+		html.printLink("statistics", "Statistik");
 	}
 	
 	@Override
