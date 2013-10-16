@@ -176,6 +176,7 @@ public class DatabaseTest {
 		TimeReport report = new TimeReport(new User(username, ""), activity, false, id, weeknumber,
 				groupname);
 
+		db.createProjectGroup(groupname);
 		db.addUser(username, "");
 		db.createTimeReport(report);
 
@@ -215,9 +216,9 @@ public class DatabaseTest {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM ProjectGroups WHERE GroupName='" + projectName + "'");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM ProjectGroups WHERE Groupname='" + projectName + "'");
 			rs.next();
-			assertEquals(projectName, rs.getString(0));
+			assertEquals(projectName, rs.getString("Groupname"));
 		} catch (SQLException e) {
 			e.printStackTrace();
 			assertTrue(false);
