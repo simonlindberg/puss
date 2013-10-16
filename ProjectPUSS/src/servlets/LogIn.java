@@ -33,7 +33,7 @@ public class LogIn extends ServletBase {
 		String password = request.getParameter(HTMLWriter.LOGIN_PASSWORD);
 		if (database.login(username, password)) {
 			try {
-				response.sendRedirect("mainPage"); // Dunno if will works.
+				response.sendRedirect("mainpage");
 				return;
 			} catch (IOException e) {
 				e.printStackTrace();
