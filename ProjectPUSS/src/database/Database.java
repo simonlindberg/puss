@@ -2,6 +2,7 @@ package database;
 
 import items.TimeReport;
 import items.User;
+import items.Role;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,7 +12,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.management.relation.Role;
+
 
 /**
  * Denna klassen innehåller länken till databasen. Klassen innehåller den
@@ -66,7 +67,8 @@ public class Database {
 	 * @return en lista med tidrepporter eller null om något går fel.
 	 */
 	public List<TimeReport> getTimeReports(String userID, String projectGroup) {
-		return null;
+		List<TimeReport> list = new ArrayList<TimeReport>();
+		return list;
 	}
 
 	/**
@@ -459,6 +461,33 @@ public class Database {
 			e.printStackTrace();
 		}
 		return r;
+	}
+	
+	/**
+	 * Returns the role of the given username in the given project.
+	 * @param username
+	 * @param projectgroup
+	 * @return
+	 */
+	public Role getRole(String username, String projectgroup) {
+		String role = "";
+		Statement stmt = null;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Memberships WHERE username='" + username + "' AND groupname='"+projectgroup+"'");
+			while(rs.next()){
+				role = rs.getString("role");
+			}
+		} catch (SQLException e) {
+			System.out.println("fel i getRole() i Database.java");
+			e.printStackTrace();
+		}
+		try {
+			return Role.valueOf(role);
+		} catch(IllegalArgumentException e){
+			return null;
+		}
+		
 	}
 
 }
