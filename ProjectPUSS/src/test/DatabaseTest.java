@@ -226,10 +226,32 @@ public class DatabaseTest {
 	
 	@Test
 	public void testGetTimeReport() throws SQLException {
-		db.addUser("_Christian", "pass");
-		User user = db.getUser("_Christian");
-		TimeReport tr = db.getTimeReport(-1);
-		assertTrue(false);
+		int id = 1;
+		String groupname = "Testgroup";
+		String username = "Tester";
+		int weeknumber = 1;
+		int time = 60;
+		
+		List<Activity> activity = new ArrayList<Activity>();
+		activity.add(new Activity(ActivityType.SRS, time));
+
+		TimeReport report = new TimeReport(new User(username, ""), activity, false, id, weeknumber,
+				groupname);
+
+		db.addUser(username, "");
+		db.createTimeReport(report);
+
+	
+		TimeReport tr = db.getTimeReport(1);
+		System.out.println("Timereport: " + tr);
+		
+		assertEquals(tr.getID(), report.getID());
+		assertEquals(tr.getProjectGroup(), report.getProjectGroup());
+		assertEquals(tr.getActivities().get(0).getType(), report.getActivities().get(0).getType());
+		assertEquals(tr.getActivities().get(0).getLength(), report.getActivities().get(0).getLength());
+		assertEquals(tr.getSigned(), report.getSigned());
+		assertEquals(tr.getUser().getUsername(), report.getUser().getUsername());
+		assertEquals(tr.getWeek(), report.getWeek());
 	}
 	
 	

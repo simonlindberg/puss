@@ -59,16 +59,17 @@ public class Database {
 	 */
 	public TimeReport getTimeReport(int id) {
 		Statement stmt;
+		TimeReport tr = null;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Timereports WHERE "
-					+ "Id='"+id+"'");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Id='" + id + "'");
+			System.out.println("row: " + rs.next());
 		    while (rs.next()) {
 			    User u = getUser(rs.getString("Username"));
 			    boolean signed = rs.getBoolean("Signed");
 			    List<Activity> activities = new ArrayList<Activity>();
 			    
-			    TimeReport tr = new TimeReport(u, activities, signed, rs.getInt("id"), id, null);
+			    tr = new TimeReport(u, activities, signed, rs.getInt("Id"), rs.getInt("WeekNumber") , null);
 		    }
 		    stmt.close();
 		} catch (SQLException ex) {
@@ -76,7 +77,7 @@ public class Database {
 		    System.out.println("SQLState: " + ex.getSQLState());
 		    System.out.println("VendorError: " + ex.getErrorCode());
 		}
-		return null;
+		return tr;
 	}
 
 	/**
