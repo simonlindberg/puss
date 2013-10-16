@@ -29,20 +29,22 @@ public class ListTimeReports extends ServletBase {
 
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
-		String user = (String) request.getSession().getAttribute(ServletBase.USER);
+		User user = (User) request.getSession().getAttribute(ServletBase.USER);
 		String projectGroup = (String) request.getSession().getAttribute(ServletBase.PROJECT);
-		String page = (String) request.getParameter("page");
+		String page = (String) request.getParameter("page") == null ? "" : (String) request.getParameter("page");
 		html.printSuccessMessage(page+"<br/>");
 		// Role userRole = Database.getInstance().getRole(user);
 		if (page.equals("delete")) {
 			List<TimeReport> timereports;
-			if (database != null) {
-				timereports = database.getTimeReports(user, projectGroup);
+				timereports = database.getTimeReports(user.getUsername(), projectGroup);
 				// /####GLÖM INTE ATT ROLE SKA HÄMTAS FRÅN SESSION!#####
 				html.printTimeReports(timereports, Command.delete, Role.Developer);
-			} else {
-				html.printErrorMessage("Databse is null");
-			}
+
+
+		} else if (page.equals("update")) {
+			
+		} else {
+			html.printErrorMessage("Nothing here to see");
 		}
 
 	}
