@@ -25,6 +25,7 @@ public class HTMLWriter {
 
 	final static public String LOGIN_USERNAME = "username";
 	final static public String LOGIN_PASSWORD = "password";
+	final static public String PROJECT_CHOOSER = "select";
 
 
 	private PrintWriter writer;
@@ -369,6 +370,11 @@ public class HTMLWriter {
 	 */
 	public void printHead(User user) {
 		writer.print("<html><head><title>E-PUSS 1301</title></head><body><h1>E-PUSS 1301</h1>");
+		if(user != null){
+			writer.print("Hejsan " + user.getUsername()+ "! Tryck ");
+			printLink("login", "här");
+			writer.print(" om du vill logga ut.");
+		}
 	}
 
 	/**
@@ -384,18 +390,26 @@ public class HTMLWriter {
 	 * 
 	 Skriver ut en dropdown där användaren får välja projektgrupp.
 	 * 
-	 * @param currentProjectGroup
+	 * @param i
 	 *            är nuvarande projektgrupp.
 	 * @param projects
 	 *            är samtliga tillgängliga projekt.
 	 * 
 	 */
-	public void printProjectChooser(String currentProjectGroup, List<String> projects) {
-		writer.print("<select>");
-		for (String s : projects) {
-			writer.print("<option value = " + s + " > " + s + "</option>");
+	public void printProjectChooser(int n, List<String> projects) {
+		n = n < 0 ? 0 : n;
+		writer.print("<form method=\"POST\" action=\"mainpage\" name=\"chooser\" id = \"chooser\">");
+		writer.print("<select name=\"" + PROJECT_CHOOSER + "\" id=\"" + PROJECT_CHOOSER + "\"  onchange=\"this.form.submit()\" >");
+		for (int i = 0; i < projects.size(); i++) {
+			writer.print("<option value = " + projects.get(i));
+			if (i == n) {
+				writer.print(" selected");
+			}
+			writer.print(" > " + projects.get(i));
+			writer.print("</option>");
 		}
 		writer.print("</select>");
+		writer.print("</form>");
 	}
 
 	/**

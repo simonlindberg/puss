@@ -3,10 +3,12 @@ package servlets;
 import html.HTMLWriter;
 import items.User;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -26,8 +28,29 @@ public class MainPage extends ServletBase {
 		List<String> projects = database.getProjects(user);
 
 		String currentProjectGroup = (String) session.getAttribute(PROJECT);
+		System.out.println(currentProjectGroup);
 		currentProjectGroup = currentProjectGroup == null ? projects.get(0) : currentProjectGroup;
-		html.printProjectChooser(currentProjectGroup, projects);
+		
+		html.printProjectChooser(projects.indexOf(currentProjectGroup), projects);
+		
+		html.printLink("create", "Skapa en ny tidrapport");
+		html.printLink("create", "Uppdatera en tidrapport");
+		html.printLink("list", "Lista tidrapporter");
+		html.printLink("showmembers", "Visa medlemmar");
+		html.printLink("statistics", "Statistik");
 	}
+	
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException{
+		HttpSession session = request.getSession();
 
+		String chosen = (String) request.getParameter(HTMLWriter.PROJECT_CHOOSER);
+
+		System.out.println("chosen " + chosen);
+		if (chosen != null) {
+			session.setAttribute(PROJECT, chosen);
+		}
+		
+		doGet(request, response);
+	}
 }

@@ -122,23 +122,51 @@ public class DatabaseTest {
 		db.deleteUser(name);
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + name + "'");
+		assertTrue(!rs.next());
+	}
+	
+	@Test
+	public void testDeleteUserWithTimeReport() throws SQLException {
+		String name = "Christian";
+		String psw = "123";
+		String result = "";
+
+		List<Activity> activity = new ArrayList<Activity>();
+		activity.add(new Activity(ActivityType.SRS, 60));
+
+		TimeReport report = new TimeReport(new User(name, psw), activity, false, 0, 1,
+				"testgroup");
+
+		db.createProjectGroup("testgroup");
+		db.addUser(name, psw);
+		db.createTimeReport(report);
+		db.deleteUser(name);
+
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + name + "'");
 		while (rs.next()) {
 			result = rs.getString("username");
 		}
 		stmt.close();
 
 		assertEquals("", result);
-
+		
+		// Test if all TimeReports for the user were deleted.
+		stmt = conn.createStatement();
+		rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Username='" + name + "'");
+		assertTrue(!rs.next());
+		rs.close();
+		stmt.close();
 	}
 
 	@Test
 	public void testDeleteUserDoesntExist() throws SQLException {
-		String name = "_Christian";	// Underscore to ensure user is outside SRS scope		
+		String name = "_Christian"; // Underscore to ensure user is outside SRS
+									// scope
 		boolean success = db.deleteUser(name);
 		Assert.assertFalse(success);
 	}
-	
-	
+
 	@Test
 	public void testGetUsers() throws SQLException {
 		List<String> expected = Arrays.asList("Christian", "Oskar");
@@ -184,7 +212,7 @@ public class DatabaseTest {
 
 	@Test
 	public void testCreateTimereport() throws SQLException {
-		
+
 		List<Activity> activity = new ArrayList<Activity>();
 		activity.add(new Activity(ActivityType.SRS, 60));
 
@@ -198,22 +226,24 @@ public class DatabaseTest {
 		// Test values in Table:TimeReports
 		Statement stmt = conn.createStatement();
 
-		ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Username='Oskar' AND WeekNumber=1");
+		ResultSet rs = stmt
+				.executeQuery("SELECT * FROM TimeReports WHERE Username='Oskar' AND WeekNumber=1");
 		assertTrue(rs.next());
 		assertEquals(rs.getString("GroupName"), "testgroup");
 		assertEquals(rs.getInt("Signed"), 0);
 
 		rs.close();
 		stmt.close();
-		
-		//Test values in Table:Activity
+
+		// Test values in Table:Activity
 		stmt = conn.createStatement();
-		rs = stmt.executeQuery("SELECT Id FROM TimeReports WHERE Username='Oskar' AND WeekNumber=1");
+		rs = stmt
+				.executeQuery("SELECT Id FROM TimeReports WHERE Username='Oskar' AND WeekNumber=1");
 		rs.next();
 		int id = rs.getInt("Id");
 		rs.close();
 		stmt.close();
-		
+
 		stmt = conn.createStatement();
 		rs = stmt.executeQuery("SELECT * FROM Activity WHERE Id=" + id);
 		assertTrue(rs.next());
@@ -222,7 +252,7 @@ public class DatabaseTest {
 		rs.close();
 		stmt.close();
 	}
-	
+
 	@Test
 	public void testCreateProjectGroup() {
 		String projectName = "_projectName";
@@ -230,7 +260,9 @@ public class DatabaseTest {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT Groupname FROM ProjectGroups WHERE Groupname='" + projectName + "'");
+			ResultSet rs = stmt
+					.executeQuery("SELECT Groupname FROM ProjectGroups WHERE Groupname='"
+							+ projectName + "'");
 			rs.next();
 			assertEquals(projectName, rs.getString("Groupname"));
 		} catch (SQLException e) {
@@ -238,42 +270,41 @@ public class DatabaseTest {
 			assertTrue(false);
 		}
 	}
-	
-	@Test
-	public void testGetTimeReport() throws SQLException {
-		List<Activity> activity = new ArrayList<Activity>();
-		
-		activity.add(new Activity(ActivityType.SRS, 60));
 
+	@Test
+	public void testDeleteTimeReport() throws SQLException {
+		List<Activity> activity = new ArrayList<Activity>();
+		activity.add(new Activity(ActivityType.SRS, 60));
 		TimeReport report = new TimeReport(new User("Oskar", ""), activity, false, 0, 1,
 				"testgroup");
 
 		db.createProjectGroup("testgroup");
 		db.addUser("Oskar", "");
 		db.createTimeReport(report);
+
+		// Collect id of TimeReport
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt
+				.executeQuery("SELECT Id FROM TimeReports WHERE Username='Oskar' AND WeekNumber=1");
+		assertTrue(rs.next());
+		int id = rs.getInt("Id");
+		rs.close();
+		stmt.close();
+
+		db.deleteTimeReport(id);
+
+		// Retrieve deleted TimeReport
+		stmt = conn.createStatement();
+		rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Id=" + id);
+		assertTrue(!rs.next());
+		rs.close();
+		stmt.close();
 		
-		Statement stmt;
-		int id = 0;
-		try {
-			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports limit 1");
-			rs.next();
-			id = rs.getInt("Id");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		
-		
-		TimeReport tr = db.getTimeReport(id);
-		assertEquals(tr.getID(), id);
-		assertEquals(tr.getProjectGroup(), report.getProjectGroup());
-		assertEquals(tr.getActivities().get(0).getType(), report.getActivities().get(0).getType());
-		assertEquals(tr.getActivities().get(0).getLength(), report.getActivities().get(0).getLength());
-		assertEquals(tr.getSigned(), report.getSigned());
-		assertEquals(tr.getUser().getUsername(), report.getUser().getUsername());
-		assertEquals(tr.getWeek(), report.getWeek());
+		// Retrieve deleted Activity
+		stmt = conn.createStatement();
+		rs = stmt.executeQuery("SELECT * FROM Activity WHERE Id=" + id);
+		assertTrue(!rs.next());
+		rs.close();
+		stmt.close();
 	}
-	
-	
 }

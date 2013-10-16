@@ -1,5 +1,6 @@
 package database;
 
+import static org.junit.Assert.assertTrue;
 import items.Activity;
 import items.ActivityType;
 import items.TimeReport;
@@ -138,7 +139,7 @@ public class Database {
 			if (rs.next()) {
 				return false;
 			}
-				
+
 			stmt.close();
 		} catch (SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
@@ -180,12 +181,7 @@ public class Database {
 			for (Activity a : timereport.getActivities()) {
 				stmt = conn.createStatement();
 				String statement = "INSERT INTO Activity (Id, ActivityName, ActivityNumber, MinutesWorked, Type) VALUES("
-						+ id
-						+ ",'"
-						+ a.getType().toString()
-						+ "', 0,"
-						+ a.getLength()
-						+ ",'...')";
+						+ id + ",'" + a.getType().toString() + "', 0," + a.getLength() + ",'...')";
 				stmt.executeUpdate(statement);
 				stmt.close();
 			}
@@ -209,7 +205,23 @@ public class Database {
 	 * 
 	 */
 	public boolean deleteTimeReport(int id) {
-		return false;
+		try {
+			Statement stmt = conn.createStatement();
+			String statement = "DELETE FROM Activity WHERE Id=" + id;
+			stmt.executeUpdate(statement);
+			stmt.close();
+			stmt = conn.createStatement();
+			statement = "DELETE FROM TimeReports WHERE Id=" + id;
+			stmt.executeUpdate(statement);
+			stmt.close();
+
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -370,7 +382,7 @@ public class Database {
 			System.out.println("");
 			e.printStackTrace();
 		}
-		
+
 		return false;
 	}
 
@@ -497,7 +509,19 @@ public class Database {
 	public boolean deleteUser(String username) {
 		int result = 0;
 		try {
+
 			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt
+					.executeQuery("SELECT Id FROM TimeReports WHERE Username='" + username + "'");
+			int id;
+			while (rs.next()) {
+				id = rs.getInt("Id");
+				deleteTimeReport(id);
+			}
+			rs.close();
+			stmt.close();
+			
+			stmt = conn.createStatement();
 			String statement = "DELETE FROM Users WHERE username='" + username + "'";
 			result = stmt.executeUpdate(statement);
 			stmt.close();
@@ -658,7 +682,7 @@ public class Database {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("select Groupname from Memberships where Username = '"
 					+ user.getUsername() + "';");
-			while(rs.next()){
+			while (rs.next()) {
 				list.add(rs.getString("Groupname"));
 			}
 			return list;
