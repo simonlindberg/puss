@@ -184,10 +184,10 @@ public class DatabaseTest {
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Id='" + id + "'");
 		while (rs.next()) {
-			actualGroupname = rs.getString("groupname");
-			actualUsername = rs.getString("username");
-			actualWeeknumber = rs.getInt("weeknumber");
-			actualSigned = rs.getInt("signed");
+			actualGroupname = rs.getString("GroupName");
+			actualUsername = rs.getString("Username");
+			actualWeeknumber = rs.getInt("WeekNumber");
+			actualSigned = rs.getInt("Signed");
 		}
 		assertEquals(actualGroupname, groupname);
 		assertEquals(actualUsername, username);
@@ -238,13 +238,14 @@ public class DatabaseTest {
 
 		TimeReport report = new TimeReport(new User(username, ""), activity, false, id, weeknumber,
 				groupname);
-
+		
+		db.createProjectGroup(groupname);
 		db.addUser(username, "");
 		db.createTimeReport(report);
-
+		
+		
 	
 		TimeReport tr = db.getTimeReport(1);
-		System.out.println("Timereport: " + tr);
 		
 		assertEquals(tr.getID(), report.getID());
 		assertEquals(tr.getProjectGroup(), report.getProjectGroup());
