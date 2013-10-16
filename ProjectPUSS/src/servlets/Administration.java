@@ -3,11 +3,14 @@ package servlets;
 import html.HTMLWriter;
 import items.User;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import database.Database;
@@ -25,11 +28,9 @@ import database.Database;
 public class Administration extends ServletBase {
 
 	private static final int PASSWORD_LENGTH = 6;
+	private static final String CREATE_USER = "createUser";
+	private static final String DELETE_USER = "deleteUser";
 	
-	private boolean isAdmin(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		return database.getUser(Database.ADMIN).equals(session.getAttribute(USER));
-	}
 	
     /**
      * Checks if a username corresponds to the requirements for user names. 
@@ -63,11 +64,41 @@ public class Administration extends ServletBase {
     		result += (char)(r.nextInt(26)+97); // 122-97+1=26
     	return result;
     }
+    
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    		throws ServletException, IOException {
+    	doGet(req, resp);
+    }
 
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
 		if (isAdmin(request)) {
-
+			String action = request.getParameter("action");
+			
+			if (CREATE_USER.equals(action)) {
+				String username = request.getParameter("username");
+				String password = createPassword();
+				if (checkNewName(username)) {
+					if (database.addUser(username, password)) {
+						html.printSuccessMessage(username + " blev tillagd i systemet.");
+					} else {
+						html.printErrorMessage(username + " gick inte att spara i systemet.");
+					}
+				} else {
+					html.printErrorMessage(username + " uppfyllde inte kraven på användarnamn.");
+				}
+			} else if (DELETE_USER.equals(action)) {
+				String username = request.getParameter("username");
+				if (database.deleteUser(username)) {
+					html.printSuccessMessage(username + " blev borttagen från systemet.");
+				} else {
+					html.printErrorMessage(username + " gick inte att ta bort från systemet.");
+				}
+			}
+			
+			
+			html.printLink("/ProjectPUSS/projectadmin", "Administrera projektgrupper");
 			html.printAddUserForm();
 			
 			

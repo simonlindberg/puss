@@ -361,10 +361,11 @@ public class Database {
 	 * 
 	 */
 	public boolean deleteUser(String username) {
+		int result = 0;
 		try {
 	    	Statement stmt = conn.createStatement();
 	    	String statement = "DELETE FROM Users WHERE username='" + username + "'";
-	    	stmt.executeUpdate(statement);
+	    	result = stmt.executeUpdate(statement);
 			stmt.close();
 		} catch (SQLException ex) {
 		    System.out.println("SQLException: " + ex.getMessage());
@@ -373,7 +374,7 @@ public class Database {
 			return false;
 		}
 	   
-		return true;
+		return result == 1;
 	}
 
 	/**
