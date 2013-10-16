@@ -63,29 +63,25 @@ public class Database {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Id='" + id + "'");
-			// ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports");
-			// System.out.println("rs: " +rs.next());
-			// System.out.println(rs.getInt("Id"));
-			while (rs.next()) {
-				User u = getUser(rs.getString("Username"));
-				boolean signed = rs.getBoolean("Signed");
-				String projectGroup = rs.getString("GroupName");
-				List<Activity> activities = new ArrayList<Activity>();
-				Statement stmt2 = conn.createStatement();
-				ResultSet rs2 = stmt2.executeQuery("SELECT * FROM Activity WHERE Id='" + id + "'");
-				while (rs2.next()) {
-					ActivityType tp = ActivityType.valueOf(rs2.getString("ActivityName"));
-					int worked = rs2.getInt("MinutesWorked");
-					activities.add(new Activity(tp, worked));
-				}
-
-				tr = new TimeReport(u, activities, signed, rs.getInt("Id"),
-						rs.getInt("WeekNumber"), projectGroup);
-				rs2.close();
-				stmt2.close();
-			}
-			rs.close();
-			stmt.close();
+		    while (rs.next()) {
+			    User u = getUser(rs.getString("Username"));
+			    boolean signed = rs.getBoolean("Signed");
+			    String projectGroup = rs.getString("GroupName");
+			    List<Activity> activities = new ArrayList<Activity>();
+			    Statement stmt2 = conn.createStatement();
+			    ResultSet rs2 = stmt2.executeQuery("SELECT * FROM Activity WHERE Id='" + id + "'");
+			    while (rs2.next()) {
+			    	ActivityType tp = ActivityType.valueOf(rs2.getString("ActivityName"));
+			    	int worked = rs2.getInt("MinutesWorked");
+			    	activities.add(new Activity(tp, worked));
+			    }
+			    
+			    tr = new TimeReport(u, activities, signed, rs.getInt("Id"), rs.getInt("WeekNumber") , projectGroup);
+			    rs2.close();
+			    stmt2.close();
+		    }
+		    rs.close();
+		    stmt.close();
 		} catch (SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
 			System.out.println("SQLState: " + ex.getSQLState());
