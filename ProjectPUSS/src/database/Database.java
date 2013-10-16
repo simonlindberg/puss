@@ -56,6 +56,7 @@ public class Database {
 	 * 
 	 */
 	public TimeReport getTimeReport(int id) {
+		// TODO - Hard to know what the id of a TimeReport is
 		return null;
 	}
 
@@ -175,7 +176,23 @@ public class Database {
 	 * 
 	 */
 	public boolean deleteTimeReport(int id) {
-		return false;
+		try {
+			Statement stmt = conn.createStatement();
+			String statement = "DELETE FROM Activity WHERE Id=" + id;
+			stmt.executeUpdate(statement);
+			stmt.close();
+			stmt = conn.createStatement();
+			statement = "DELETE FROM TimeReports WHERE Id=" + id;
+			stmt.executeUpdate(statement);
+			stmt.close();
+
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+			return false;
+		}
+		return true;
 	}
 
 	/**
