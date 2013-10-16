@@ -1,16 +1,20 @@
 package database;
 
+import items.Activity;
 import items.TimeReport;
 import items.User;
+import items.Role;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.management.relation.Role;
+
 
 /**
  * Denna klassen innehåller länken till databasen. Klassen innehåller den
@@ -19,6 +23,9 @@ import javax.management.relation.Role;
  * servlets som behöver den.
  */
 public class Database {
+
+	public static final String ADMIN = "admin";
+	public static final String ADMIN_PW = "adminpw";
 
 	private static Database instance;
 
@@ -33,7 +40,8 @@ public class Database {
 
 	/**
 	 * Hämtar singletoninstansen av Database
-	 * @throws ClassNotFoundException 
+	 * 
+	 * @throws ClassNotFoundException
 	 */
 	public static Database getInstance() throws SQLException, ClassNotFoundException {
 		if (instance == null) {
@@ -62,7 +70,23 @@ public class Database {
 	 * @return en lista med tidrepporter eller null om något går fel.
 	 */
 	public List<TimeReport> getTimeReports(String userID, String projectGroup) {
-		return null;
+		List<TimeReport> reports = new ArrayList<TimeReport>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Timereports WHERE "
+					+ "Username='"+userID+"' AND GroupName='"+projectGroup+"'");
+		    while (rs.next()) {
+			    int id = rs.getInt("id");
+			    reports.add(getTimeReport(id));
+		    }
+		    stmt.close();
+		} catch (SQLException ex) {
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+		}
+		return reports;
 	}
 
 	/**
@@ -74,7 +98,53 @@ public class Database {
 	 * 
 	 */
 	public boolean createTimeReport(TimeReport timereport) {
-		return false;
+		// Extract and save into table:TimeReports
+		try {
+			Statement stmt = conn.createStatement();
+			String statement = "INSERT INTO TimeReports (Id, Username, Groupname, WeekNumber, Date, Signed) VALUES("
+					+ timereport.getID()
+					+ ",'"
+					+ timereport.getUser().getUsername()
+					+ "','"
+					+ timereport.getProjectGroup()
+					+ "',"
+					+ timereport.getWeek()
+					+ ", NOW(),"
+					+ (timereport.getSigned() ? 1:0) + ")";
+			stmt.executeUpdate(statement);
+			stmt.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+			return false;
+		}
+
+		// Extract and save into table:Activity
+		try {
+			for (Activity a: timereport.getActivities()) {
+				Statement stmt = conn.createStatement();
+				String statement = "INSERT INTO Activity (Id, ActivityName, ActivityNumber, MinutesWorked, Type) VALUES("
+						+ timereport.getID()
+						+ ",'"
+						+ a.getType().toString()
+						+ "',"
+						+ 0
+						+ ","
+						+ a.getLength()
+						+ ",'"
+						+ "type" + "')";
+				stmt.executeUpdate(statement);
+				stmt.close();
+			}
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+			return false;
+		}
+		
+		return true;
 	}
 
 	/**
@@ -155,7 +225,25 @@ public class Database {
 	 * 
 	 */
 	public List<User> getUsers() {
-		return null;
+		List<User> users = new ArrayList<User>();
+
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Users");
+			while (rs.next()) {
+				String name = rs.getString("username");
+				String password = rs.getString("password");
+				users.add(new User(name, password));
+			}
+			stmt.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+
+		return users;
 	}
 
 	/**
@@ -182,7 +270,7 @@ public class Database {
 	public List<User> getUsersInProject(String projectName) {
 		return null;
 	}
-	
+
 	/**
 	 * 
 	 * Försöker hämta alla projektledare från ett projekt.
@@ -268,7 +356,18 @@ public class Database {
 	 @return true om den lyckas annars false.
 	 */
 	public boolean createProjectGroup(String projectName) {
-		return false;
+		try {
+	    	Statement stmt = conn.createStatement();
+	    	String statement = "INSERT INTO ProjectGroups (Groupname) VALUES('" + projectName + "')";
+	    	stmt.executeUpdate(statement);
+			stmt.close();
+		} catch (SQLException ex) {
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -289,26 +388,27 @@ public class Database {
 	 * 
 	 * @param username
 	 *            användarnamnet som ska läggas till i systemet. Lägger till en
-	 *        	  användare i systemet.
+	 *            användare i systemet.
 	 * @param password
-	 * 				användarlösenordet som ska läggas till i systemet.
+	 *            användarlösenordet som ska läggas till i systemet.
 	 * @return true om den lyckas annars false.
 	 * 
 	 */
 	public boolean addUser(String username, String password) {
-		
-	    try {
-	    	Statement stmt = conn.createStatement();
-	    	String statement = "INSERT INTO Users (username, password) VALUES('" + username + "', '" + password + "')";
-	    	stmt.executeUpdate(statement);
+
+		try {
+			Statement stmt = conn.createStatement();
+			String statement = "INSERT INTO Users (username, password) VALUES('" + username
+					+ "', '" + password + "')";
+			stmt.executeUpdate(statement);
 			stmt.close();
 		} catch (SQLException ex) {
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
 			return false;
 		}
-	   
+
 		return true;
 	}
 
@@ -322,7 +422,19 @@ public class Database {
 	 * 
 	 */
 	public boolean deleteUser(String username) {
-		return false;
+		int result = 0;
+		try {
+	    	Statement stmt = conn.createStatement();
+	    	String statement = "DELETE FROM Users WHERE username='" + username + "'";
+	    	result = stmt.executeUpdate(statement);
+			stmt.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+			return false;
+		}
+		return result == 1;
 	}
 
 	/**
@@ -336,23 +448,29 @@ public class Database {
 	 */
 	public User getUser(String username) {
 		User user = null;
-		
+
 		Statement stmt;
 		try {
+			if (username.equals(ADMIN)) {
+				return new User(ADMIN, ADMIN_PW);
+			}
+			
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + username + "'");
-		    while (rs.next()) {
-			    String name = rs.getString("username");
-			    String password = rs.getString("password");
-			    user = new User(name, password);
-		    }
-		    stmt.close();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + username
+					+ "'");
+			while (rs.next()) {
+				String name = rs.getString("username");
+				String password = rs.getString("password");
+				user = new User(name, password);
+			}
+			stmt.close();
 		} catch (SQLException ex) {
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
-		}		    
-	    
+
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+
 		return user;
 	}
 
@@ -369,32 +487,45 @@ public class Database {
 	 * 
 	 */
 	public boolean login(String username, String password) {
+		if (ADMIN.equals(username) && password != null) {
+			try {
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery("SELECT Password FROM Administrator");
+				rs.next();
+				String adminPass = rs.getString("Password");
+				return password.equals(adminPass);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		User user = getUser(username);
 		return user != null && user.getPassword().equals(password);
 	}
-	
-	
+
 	/**
-	* Start a transaction to the database
-	 * @throws SQLException 
-	*/
+	 * Start a transaction to the database
+	 * 
+	 * @throws SQLException
+	 */
 	public void startTransaction() throws SQLException {
 		conn.setAutoCommit(false);
 	}
 
 	/**
-	* Commit the current transactions to the database
-	 * @throws SQLException 
-	*/
+	 * Commit the current transactions to the database
+	 * 
+	 * @throws SQLException
+	 */
 	public void commit() throws SQLException {
 		conn.commit();
 		conn.setAutoCommit(true);
 	}
 
 	/**
-	* Rollback current transactions from the database
-	 * @throws SQLException 
-	*/
+	 * Rollback current transactions from the database
+	 * 
+	 * @throws SQLException
+	 */
 	public void rollback() throws SQLException {
 		conn.rollback();
 		conn.setAutoCommit(true);
@@ -405,12 +536,39 @@ public class Database {
 		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
-			//kod
+			// kod
 		} catch (SQLException e) {
 			System.out.println("fel i getRole() i Database.java");
 			e.printStackTrace();
 		}
 		return r;
+	}
+	
+	/**
+	 * Returns the role of the given username in the given project.
+	 * @param username
+	 * @param projectgroup
+	 * @return
+	 */
+	public Role getRole(String username, String projectgroup) {
+		String role = "";
+		Statement stmt = null;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Memberships WHERE username='" + username + "' AND groupname='"+projectgroup+"'");
+			while(rs.next()){
+				role = rs.getString("role");
+			}
+		} catch (SQLException e) {
+			System.out.println("fel i getRole() i Database.java");
+			e.printStackTrace();
+		}
+		try {
+			return Role.valueOf(role);
+		} catch(IllegalArgumentException e){
+			return null;
+		}
+		
 	}
 
 }

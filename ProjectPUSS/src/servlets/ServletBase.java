@@ -23,16 +23,16 @@ public abstract class ServletBase extends HttpServlet {
 	final static protected String LOGGEDIN = "loggedin";
 	final static protected String PROJECT = "project";
 
-	
 	protected Database database;
-	
-	public ServletBase(){
+
+	public ServletBase() {
 		try {
 			database = Database.getInstance();
 		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
 		}
 	}
+
 	/**
 	 * Kollar om man är inloggad.
 	 * 
@@ -44,10 +44,16 @@ public abstract class ServletBase extends HttpServlet {
 		HttpSession session = request.getSession();
 
 		User user = (User) session.getAttribute(USER);
-		boolean loggedIn = (boolean) session.getAttribute(LOGGEDIN);
+		Object loggedIn = session.getAttribute(LOGGEDIN);
 
-		return user != null && loggedIn;
+		return user != null && loggedIn != null && (boolean) loggedIn;
 	}
+	
+	protected boolean isAdmin(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		return database.getUser(Database.ADMIN).equals(session.getAttribute(USER));
+	}
+	
 
 	/**
 	 * Kallas när servern får ett <code>GET</code> anrop.
@@ -56,17 +62,19 @@ public abstract class ServletBase extends HttpServlet {
 	 *            information om anropet
 	 * @param response
 	 *            samling av datan som ska skickas tillbaka.
+	 * @throws IOException 
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) {
-		HTMLWriter writer;
-		try {
-			writer = new HTMLWriter(response.getWriter());
-			writer.printHead((User) request.getSession().getAttribute(USER));
-			doWork(request, writer);
-			writer.printFoot();
-		} catch (IOException e) {
-			e.printStackTrace();
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		response.setCharacterEncoding("UTF-8");
+		if (!loggedIn(request)) {
+			response.sendRedirect("login");
+			return;
 		}
+		
+		HTMLWriter writer = new HTMLWriter(response.getWriter());
+		writer.printHead((User) request.getSession().getAttribute(USER));
+		doWork(request, writer);
+		writer.printFoot();
 	}
 
 	/**

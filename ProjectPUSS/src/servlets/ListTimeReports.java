@@ -26,27 +26,25 @@ import database.Database;
  */
 @WebServlet("/TimeReports")
 public class ListTimeReports extends ServletBase {
-	
+
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
 		User user = (User) request.getSession().getAttribute(ServletBase.USER);
 		String projectGroup = (String) request.getSession().getAttribute(ServletBase.PROJECT);
-		
-		//Role userRole = Database.getInstance().getRole(user);
-		if(request.getAttribute("page") == "delete"){
-			try {
-				List<TimeReport> timereports;
-				timereports = Database.getInstance().getTimeReports(user.getUsername(), projectGroup);
-				///####GLÖM INTE ATT ROLE SKA HÄMTAS FRÅN SESSION!#####
+		String page = (String) request.getParameter("page") == null ? "" : (String) request.getParameter("page");
+		html.printSuccessMessage(page+"<br/>");
+		// Role userRole = Database.getInstance().getRole(user);
+		if (page.equals("delete")) {
+			List<TimeReport> timereports;
+				timereports = database.getTimeReports(user.getUsername(), projectGroup);
+				// /####GLÖM INTE ATT ROLE SKA HÄMTAS FRÅN SESSION!#####
 				html.printTimeReports(timereports, Command.delete, Role.Developer);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
+
+
+		} else if (page.equals("update")) {
 			
+		} else {
+			html.printErrorMessage("Nothing here to see");
 		}
 
 	}
