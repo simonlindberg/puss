@@ -3,7 +3,8 @@
  */
 package test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import items.User;
 
 import java.sql.Connection;
@@ -40,6 +41,7 @@ public class DatabaseTest {
 				+ "user=puss1301&password=8jh398fs");
 		conn.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
 		conn.setAutoCommit(false);
+
 		db = Database.getInstance();
 		db.startTransaction();
 	}
@@ -56,32 +58,47 @@ public class DatabaseTest {
 	@Test
 	public void testGetUser() throws SQLException {
 		String name = "Christian";
-		String psw = "123";
+		String psw = "psw";
 		String result = "";
-		
+
 		Statement stmt = conn.createStatement();
-    	String statement = "INSERT INTO Users (username, password) VALUES('" + name + "', '" + psw + "')";
-    	stmt.executeUpdate(statement);
+		String statement = "INSERT INTO Users (username, password) VALUES('" + name + "', '" + psw
+				+ "')";
+		stmt.executeUpdate(statement);
 		stmt.close();
+
 		User user = db.getUser(name);
 		result = user.getUsername();
 		assertEquals(name, result);
 	}
-	
+
 	@Test
 	public void testAddUser() throws SQLException {
 		String name = "Christian";
-		String psw = "123";
+		String psw = "psw";
 		String result = "";
-		
+
 		db.addUser(name, psw);
-		Statement stmt = conn.createStatement();		    
-	    ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + name + "'");
-	    while (rs.next()) {
-		    result = rs.getString("username");
-	    }
-	    stmt.close();
-	    assertEquals(name, result);
+
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + name + "'");
+		while (rs.next()) {
+			result = rs.getString("username");
+		}
+		stmt.close();
+
+		assertEquals(name, result);
+	}
+
+	@Test
+	public void testLogin() throws Exception {
+		String username = "testing";
+		String password = "test123";
+
+		db.addUser(username, password);
+		
+		Assert.assertTrue(db.login(username, password));
+		Assert.assertFalse(db.login("", ""));
 	}
 	
 	@Test

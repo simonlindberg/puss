@@ -25,7 +25,8 @@ public class Database {
 
 	private Connection conn = null;
 
-	private Database() throws SQLException {
+	private Database() throws SQLException, ClassNotFoundException {
+		Class.forName("com.mysql.jdbc.Driver");
 		conn = DriverManager.getConnection("jdbc:mysql://vm26.cs.lth.se/puss1301?"
 				+ "user=puss1301&password=8jh398fs");
 		conn.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
@@ -33,8 +34,9 @@ public class Database {
 
 	/**
 	 * Hämtar singletoninstansen av Database
+	 * @throws ClassNotFoundException 
 	 */
-	public static Database getInstance() throws SQLException {
+	public static Database getInstance() throws SQLException, ClassNotFoundException {
 		if (instance == null) {
 			instance = new Database();
 		}
@@ -197,6 +199,22 @@ public class Database {
 	 * 
 	 */
 	public List<User> getUsersInProject(String projectName) {
+		return null;
+	}
+	
+	/**
+	 * 
+	 * Försöker hämta alla projektledare från ett projekt.
+	 * 
+	 * @param projectName
+	 *            projektet att hämta ifrån. Hämtar en lista av alla användare i
+	 *            ett projekt som är projektledare.
+	 * 
+	 * @return Returnerar null om projektet inte finns.
+	 * 
+	 * 
+	 */
+	public List<User> getProjectManagersInProject(String projectName) {
 		return null;
 	}
 
@@ -382,7 +400,8 @@ public class Database {
 	 * 
 	 */
 	public boolean login(String username, String password) {
-		return false;
+		User user = getUser(username);
+		return user != null && user.getPassword().equals(password);
 	}
 	
 	/**
@@ -409,6 +428,19 @@ public class Database {
 	public void rollback() throws SQLException {
 		conn.rollback();
 		conn.setAutoCommit(true);
+	}
+
+	public Role getRole(User user) {
+		Role r = null;
+		Statement stmt = null;
+		try {
+			stmt = conn.createStatement();
+			//kod
+		} catch (SQLException e) {
+			System.out.println("fel i getRole() i Database.java");
+			e.printStackTrace();
+		}
+		return r;
 	}
 
 }

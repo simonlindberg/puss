@@ -8,3 +8,5 @@
 # Project files
 build
 .classpath
+
+*.prefs

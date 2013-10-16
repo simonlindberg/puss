@@ -7,7 +7,9 @@ package items;
  * 
  */
 public class Activity {
-
+	
+	private ActivityType type;
+	private int length;
 	/**
 	 * Konstruktor.
 	 * 
@@ -17,20 +19,22 @@ public class Activity {
 	 *            längden av aktiviten
 	 */
 	public Activity(ActivityType type, int length) {
+		this.type = type;
+		this.length = length;
 	}
 
 	/**
 	 * Returnerar aktivitetens typ.
 	 */
 	public ActivityType getType() {
-		return null;
+		return type;
 	}
 
 	/**
 	 * Returnerar aktvitetns längd i minuter.
 	 */
 	public int getLength() {
-		return 0;
+		return length;
 	}
 
 }
