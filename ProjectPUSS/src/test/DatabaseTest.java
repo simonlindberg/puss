@@ -5,6 +5,9 @@ package test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import items.Activity;
+import items.ActivityType;
+import items.TimeReport;
 import items.User;
 
 import java.sql.Connection;
@@ -135,5 +138,16 @@ public class DatabaseTest {
 		for (String s: expected)
 			assertTrue(actual.contains(s));
 		
+	}
+	
+	@Test
+	public void testCreateTimereport() {
+		String username = "testing";
+		String password = "test123";
+		db.addUser(username, password);
+		User user = new User(username, password);
+		List<Activity> activities = new ArrayList<Activity>();
+		activities.add(new Activity(ActivityType.SRS, 60));
+		TimeReport report = new TimeReport(user, activities, false, 1, 1, "testgroup");
 	}
 }
