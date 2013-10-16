@@ -365,6 +365,14 @@ public class Database {
 	 * 
 	 */
 	public boolean deleteUserFromProject(String projectName, String userName) {
+		try {
+			return conn.createStatement().execute(
+					"delete from Memberships where Groupname='" + projectName + "' AND Username='" + userName + "'");
+		} catch (SQLException e) {
+			System.out.println("");
+			e.printStackTrace();
+		}
+
 		return false;
 	}
 
