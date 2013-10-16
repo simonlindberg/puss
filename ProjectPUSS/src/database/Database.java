@@ -4,6 +4,7 @@ import items.TimeReport;
 import items.User;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,7 +21,7 @@ import javax.management.relation.Role;
  * servlets som behöver den.
  */
 public class Database {
-	
+
 	public static final String ADMIN = "admin";
 
 	private static Database instance;
@@ -36,7 +37,8 @@ public class Database {
 
 	/**
 	 * Hämtar singletoninstansen av Database
-	 * @throws ClassNotFoundException 
+	 * 
+	 * @throws ClassNotFoundException
 	 */
 	public static Database getInstance() throws SQLException, ClassNotFoundException {
 		if (instance == null) {
@@ -77,6 +79,37 @@ public class Database {
 	 * 
 	 */
 	public boolean createTimeReport(TimeReport timereport) {
+		int id = timereport.getID();
+		String username = timereport.getUser().getUsername();
+		String groupname = timereport.getProjectGroup();
+		int weeknumber = timereport.getWeek();
+		int signed = 0;
+		if (timereport.getSigned())
+			;
+		signed = 1;
+		// NOW()
+		// Extract and save into table:TimeReports
+		try {
+			Statement stmt = conn.createStatement();
+			String statement = "INSERT INTO TimeReports (Id, Username, Groupname, WeekNumber, Date, Signed) VALUES("
+					+ id
+					+ ",'"
+					+ username
+					+ "','"
+					+ groupname
+					+ "',"
+					+ weeknumber
+					+ ", NOW(),"
+					+ signed + ")";
+			stmt.executeUpdate(statement);
+			stmt.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+
+		// Extract and save into table:Activity
 		return false;
 	}
 
@@ -159,23 +192,23 @@ public class Database {
 	 */
 	public List<User> getUsers() {
 		List<User> users = new ArrayList<User>();
-		
+
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Users");
-		    while (rs.next()) {
-			    String name = rs.getString("username");
-			    String password = rs.getString("password");
-			    users.add(new User(name, password));
-		    }
-		    stmt.close();
+			while (rs.next()) {
+				String name = rs.getString("username");
+				String password = rs.getString("password");
+				users.add(new User(name, password));
+			}
+			stmt.close();
 		} catch (SQLException ex) {
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
-		}		    
-	    
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+
 		return users;
 	}
 
@@ -203,7 +236,7 @@ public class Database {
 	public List<User> getUsersInProject(String projectName) {
 		return null;
 	}
-	
+
 	/**
 	 * 
 	 * Försöker hämta alla projektledare från ett projekt.
@@ -310,26 +343,27 @@ public class Database {
 	 * 
 	 * @param username
 	 *            användarnamnet som ska läggas till i systemet. Lägger till en
-	 *        	  användare i systemet.
+	 *            användare i systemet.
 	 * @param password
-	 * 				användarlösenordet som ska läggas till i systemet.
+	 *            användarlösenordet som ska läggas till i systemet.
 	 * @return true om den lyckas annars false.
 	 * 
 	 */
 	public boolean addUser(String username, String password) {
-		
-	    try {
-	    	Statement stmt = conn.createStatement();
-	    	String statement = "INSERT INTO Users (username, password) VALUES('" + username + "', '" + password + "')";
-	    	stmt.executeUpdate(statement);
+
+		try {
+			Statement stmt = conn.createStatement();
+			String statement = "INSERT INTO Users (username, password) VALUES('" + username
+					+ "', '" + password + "')";
+			stmt.executeUpdate(statement);
 			stmt.close();
 		} catch (SQLException ex) {
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
 			return false;
 		}
-	   
+
 		return true;
 	}
 
@@ -344,17 +378,17 @@ public class Database {
 	 */
 	public boolean deleteUser(String username) {
 		try {
-	    	Statement stmt = conn.createStatement();
-	    	String statement = "DELETE FROM Users WHERE username='" + username + "'";
-	    	stmt.executeUpdate(statement);
+			Statement stmt = conn.createStatement();
+			String statement = "DELETE FROM Users WHERE username='" + username + "'";
+			stmt.executeUpdate(statement);
 			stmt.close();
 		} catch (SQLException ex) {
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
 			return false;
 		}
-	   
+
 		return true;
 	}
 
@@ -369,23 +403,24 @@ public class Database {
 	 */
 	public User getUser(String username) {
 		User user = null;
-		
+
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + username + "'");
-		    while (rs.next()) {
-			    String name = rs.getString("username");
-			    String password = rs.getString("password");
-			    user = new User(name, password);
-		    }
-		    stmt.close();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + username
+					+ "'");
+			while (rs.next()) {
+				String name = rs.getString("username");
+				String password = rs.getString("password");
+				user = new User(name, password);
+			}
+			stmt.close();
 		} catch (SQLException ex) {
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
-		}		    
-	    
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+
 		return user;
 	}
 
@@ -416,28 +451,31 @@ public class Database {
 		User user = getUser(username);
 		return user != null && user.getPassword().equals(password);
 	}
-	
+
 	/**
-	* Start a transaction to the database
-	 * @throws SQLException 
-	*/
+	 * Start a transaction to the database
+	 * 
+	 * @throws SQLException
+	 */
 	public void startTransaction() throws SQLException {
 		conn.setAutoCommit(false);
 	}
 
 	/**
-	* Commit the current transactions to the database
-	 * @throws SQLException 
-	*/
+	 * Commit the current transactions to the database
+	 * 
+	 * @throws SQLException
+	 */
 	public void commit() throws SQLException {
 		conn.commit();
 		conn.setAutoCommit(true);
 	}
 
 	/**
-	* Rollback current transactions from the database
-	 * @throws SQLException 
-	*/
+	 * Rollback current transactions from the database
+	 * 
+	 * @throws SQLException
+	 */
 	public void rollback() throws SQLException {
 		conn.rollback();
 		conn.setAutoCommit(true);
@@ -448,7 +486,7 @@ public class Database {
 		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
-			//kod
+			// kod
 		} catch (SQLException e) {
 			System.out.println("fel i getRole() i Database.java");
 			e.printStackTrace();
