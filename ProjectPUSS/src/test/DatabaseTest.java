@@ -157,54 +157,39 @@ public class DatabaseTest {
 
 	@Test
 	public void testCreateTimereport() throws SQLException {
-		int id = 0;
-		String groupname = "Testgroup";
-		String username = "Tester";
-		int weeknumber = 1;
-		int time = 60;
-		int signed = 0;
-		String actualGroupname = "";
-		String actualUsername = ""; 
-		int actualWeeknumber = 0; 
-		int actualTime = 0;
-		int actualSigned = 0;
-		String actualActivityname = "";
 		
 		List<Activity> activity = new ArrayList<Activity>();
-		activity.add(new Activity(ActivityType.SRS, time));
+		activity.add(new Activity(ActivityType.SRS, 60));
 
-		TimeReport report = new TimeReport(new User(username, ""), activity, false, id, weeknumber,
-				groupname);
+		TimeReport report = new TimeReport(new User("Oskar", ""), activity, false, 0, 1,
+				"testgroup");
 
-		db.createProjectGroup(groupname);
-		db.addUser(username, "");
+		db.createProjectGroup("testgroup");
+		db.addUser("Oskar", "");
 		db.createTimeReport(report);
 
 		// Test values in Table:TimeReports
 		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Id='" + id + "'");
-		while (rs.next()) {
-			actualGroupname = rs.getString("groupname");
-			actualUsername = rs.getString("username");
-			actualWeeknumber = rs.getInt("weeknumber");
-			actualSigned = rs.getInt("signed");
-		}
-		assertEquals(actualGroupname, groupname);
-		assertEquals(actualUsername, username);
-		assertEquals(actualWeeknumber, weeknumber);
-		assertTrue(actualSigned == signed);
+		ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Username='Oskar' AND WeekNumber=1");
+		assertTrue(rs.next());
+		assertEquals(rs.getString("GroupName"), "testgroup");
+		assertEquals(rs.getInt("Signed"), 0);
 		rs.close();
 		stmt.close();
-
-		// Test values in Table:Activities
+		
+		//Test values in Table:Activity
 		stmt = conn.createStatement();
-		rs = stmt.executeQuery("SELECT * FROM Activity WHERE Id='" + id + "'");
-		while (rs.next()) {
-			actualActivityname = rs.getString("activityname");
-			actualTime = rs.getInt("minutesworked");
-		}
-		assertEquals(actualActivityname, ActivityType.SRS.toString());
-		assertEquals(actualTime, time);
+		rs = stmt.executeQuery("SELECT Id FROM TimeReports WHERE Username='Oskar' AND WeekNumber=1");
+		rs.next();
+		int id = rs.getInt("Id");
+		rs.close();
+		stmt.close();
+		
+		stmt = conn.createStatement();
+		rs = stmt.executeQuery("SELECT * FROM Activity WHERE Id=" + id);
+		assertTrue(rs.next());
+		assertEquals(rs.getString("ActivityName"), ActivityType.SRS.toString());
+		assertEquals(rs.getInt("MinutesWorked"), 60);
 		rs.close();
 		stmt.close();
 	}

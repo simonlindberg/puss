@@ -14,8 +14,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 /**
  * Denna klassen innehåller länken till databasen. Klassen innehåller den
  * funktionalitet som systemet behöver för att hämta ut och lägga in information
@@ -74,17 +72,17 @@ public class Database {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Timereports WHERE "
-					+ "Username='"+userID+"' AND GroupName='"+projectGroup+"'");
-		    while (rs.next()) {
-			    int id = rs.getInt("id");
-			    reports.add(getTimeReport(id));
-		    }
-		    stmt.close();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Timereports WHERE " + "Username='"
+					+ userID + "' AND GroupName='" + projectGroup + "'");
+			while (rs.next()) {
+				int id = rs.getInt("id");
+				reports.add(getTimeReport(id));
+			}
+			stmt.close();
 		} catch (SQLException ex) {
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
 		}
 		return reports;
 	}
@@ -98,19 +96,35 @@ public class Database {
 	 * 
 	 */
 	public boolean createTimeReport(TimeReport timereport) {
+		// Check if the time report already exists
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE WeekNumber="
+					+ timereport.getWeek() + " AND Username='" + timereport.getUser().getUsername()
+					+ "' AND Groupname='" + timereport.getProjectGroup() + "'");
+			if (rs.next()) {
+				return false;
+			}
+				
+			stmt.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+
 		// Extract and save into table:TimeReports
 		try {
 			Statement stmt = conn.createStatement();
-			String statement = "INSERT INTO TimeReports (Id, Username, Groupname, WeekNumber, Date, Signed) VALUES("
-					+ timereport.getID()
-					+ ",'"
+			String statement = "INSERT INTO TimeReports (Username, Groupname, WeekNumber, Date, Signed) VALUES('"
 					+ timereport.getUser().getUsername()
 					+ "','"
 					+ timereport.getProjectGroup()
 					+ "',"
 					+ timereport.getWeek()
 					+ ", NOW(),"
-					+ (timereport.getSigned() ? 1:0) + ")";
+					+ (timereport.getSigned() ? 1 : 0)
+					+ ")";
 			stmt.executeUpdate(statement);
 			stmt.close();
 		} catch (SQLException ex) {
@@ -122,18 +136,22 @@ public class Database {
 
 		// Extract and save into table:Activity
 		try {
-			for (Activity a: timereport.getActivities()) {
-				Statement stmt = conn.createStatement();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports WHERE WeekNumber="
+					+ timereport.getWeek() + " AND Username='" + timereport.getUser().getUsername()
+					+ "'");
+			rs.next();
+			int id = rs.getInt("Id");
+			stmt.close();
+			for (Activity a : timereport.getActivities()) {
+				stmt = conn.createStatement();
 				String statement = "INSERT INTO Activity (Id, ActivityName, ActivityNumber, MinutesWorked, Type) VALUES("
-						+ timereport.getID()
+						+ id
 						+ ",'"
 						+ a.getType().toString()
-						+ "',"
-						+ 0
-						+ ","
+						+ "', 0,"
 						+ a.getLength()
-						+ ",'"
-						+ "type" + "')";
+						+ ",'...')";
 				stmt.executeUpdate(statement);
 				stmt.close();
 			}
@@ -143,7 +161,7 @@ public class Database {
 			System.out.println("VendorError: " + ex.getErrorCode());
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -357,14 +375,15 @@ public class Database {
 	 */
 	public boolean createProjectGroup(String projectName) {
 		try {
-	    	Statement stmt = conn.createStatement();
-	    	String statement = "INSERT INTO ProjectGroups (Groupname) VALUES('" + projectName + "')";
-	    	stmt.executeUpdate(statement);
+			Statement stmt = conn.createStatement();
+			String statement = "INSERT INTO ProjectGroups (Groupname) VALUES('" + projectName
+					+ "')";
+			stmt.executeUpdate(statement);
 			stmt.close();
 		} catch (SQLException ex) {
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
 			return false;
 		}
 		return true;
@@ -424,9 +443,9 @@ public class Database {
 	public boolean deleteUser(String username) {
 		int result = 0;
 		try {
-	    	Statement stmt = conn.createStatement();
-	    	String statement = "DELETE FROM Users WHERE username='" + username + "'";
-	    	result = stmt.executeUpdate(statement);
+			Statement stmt = conn.createStatement();
+			String statement = "DELETE FROM Users WHERE username='" + username + "'";
+			result = stmt.executeUpdate(statement);
 			stmt.close();
 		} catch (SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());
@@ -454,7 +473,7 @@ public class Database {
 			if (username.equals(ADMIN)) {
 				return new User(ADMIN, ADMIN_PW);
 			}
-			
+
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + username
 					+ "'");
@@ -543,9 +562,10 @@ public class Database {
 		}
 		return r;
 	}
-	
+
 	/**
 	 * Returns the role of the given username in the given project.
+	 * 
 	 * @param username
 	 * @param projectgroup
 	 * @return
@@ -555,8 +575,9 @@ public class Database {
 		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Memberships WHERE username='" + username + "' AND groupname='"+projectgroup+"'");
-			while(rs.next()){
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Memberships WHERE username='"
+					+ username + "' AND groupname='" + projectgroup + "'");
+			while (rs.next()) {
 				role = rs.getString("role");
 			}
 		} catch (SQLException e) {
@@ -565,10 +586,10 @@ public class Database {
 		}
 		try {
 			return Role.valueOf(role);
-		} catch(IllegalArgumentException e){
+		} catch (IllegalArgumentException e) {
 			return null;
 		}
-		
+
 	}
 
 }
