@@ -390,8 +390,12 @@ public class HTMLWriter {
 	 *            är samtliga tillgängliga projekt.
 	 * 
 	 */
-	public void printProjectChooser(String currentProjectGroup,
-			List<String> projects) {
+	public void printProjectChooser(String currentProjectGroup, List<String> projects) {
+		writer.print("<select>");
+		for (String s : projects) {
+			writer.print("<option value = " + s + " > " + s + "</option>");
+		}
+		writer.print("</select>");
 	}
 
 	/**

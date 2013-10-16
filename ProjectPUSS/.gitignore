@@ -1,1 +1,13 @@
+*.class
+
+# Package Files
+*.jar
+*.war
+*.ear
+
+# Project files
+build
+.classpath
+
+*.prefs
 /bin

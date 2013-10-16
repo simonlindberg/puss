@@ -1,9 +1,13 @@
 package servlets;
 
 import html.HTMLWriter;
+import items.User;
+
+import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * Denna klassen bygger ut ServletBase och renderar huvudsidan, via HTMLWriter,
@@ -16,9 +20,14 @@ public class MainPage extends ServletBase {
 
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
-		// TODO Auto-generated method stub
-		
+		HttpSession session = request.getSession();
 
+		User user = (User) session.getAttribute(USER);
+		List<String> projects = database.getProjects(user);
+
+		String currentProjectGroup = (String) session.getAttribute(PROJECT);
+		currentProjectGroup = currentProjectGroup == null ? projects.get(0) : currentProjectGroup;
+		html.printProjectChooser(currentProjectGroup, projects);
 	}
 
 }

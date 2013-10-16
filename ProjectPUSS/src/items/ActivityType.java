@@ -5,5 +5,5 @@ package items;
  * 
  */
 public enum ActivityType {
-	SDP, SRS, SVVS, STLDD, SVVI, SDDD, SVVR, SSD, PFR, FunctionTest, SystemTest, RegressionTest, Meeting
+	SDP, SRS, SVVS, STLDD, SVVI, SDDD, SVVR, SSD, PFR, FunctionTest, SystemTest, RegressionTest, Meeting;
 }

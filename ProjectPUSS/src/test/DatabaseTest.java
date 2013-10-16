@@ -128,6 +128,7 @@ public class DatabaseTest {
 		stmt.close();
 
 		assertEquals("", result);
+
 	}
 
 	@Test
@@ -136,6 +137,7 @@ public class DatabaseTest {
 		boolean success = db.deleteUser(name);
 		Assert.assertFalse(success);
 	}
+	
 	
 	@Test
 	public void testGetUsers() throws SQLException {
@@ -156,55 +158,67 @@ public class DatabaseTest {
 	}
 
 	@Test
+	public void testGetProjects() throws Exception {
+		List<String> expectedProjects = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9");
+		List<String> users = Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i");
+
+		for (int i = 0; i < users.size(); i++) {
+			db.addUser(users.get(i), "");
+			db.createProjectGroup(expectedProjects.get(i));
+			db.addUserToProject(expectedProjects.get(i), users.get(i));
+		}
+
+		List<String> pr = db.getProjects();
+		System.out.println(pr);
+		for (int i = 0; i < expectedProjects.size(); i++) {
+			Assert.assertTrue(pr.contains(expectedProjects.get(i)));
+		}
+	}
+
+	@Test
+	public void testGetProjectsForUser() throws Exception {
+		List<String> expectedProjects = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9");
+		String username = "test1234";
+
+	}
+
+	@Test
 	public void testCreateTimereport() throws SQLException {
-		int id = 0;
-		String groupname = "Testgroup";
-		String username = "Tester";
-		int weeknumber = 1;
-		int time = 60;
-		int signed = 0;
-		String actualGroupname = "";
-		String actualUsername = ""; 
-		int actualWeeknumber = 0; 
-		int actualTime = 0;
-		int actualSigned = 0;
-		String actualActivityname = "";
 		
 		List<Activity> activity = new ArrayList<Activity>();
-		activity.add(new Activity(ActivityType.SRS, time));
+		activity.add(new Activity(ActivityType.SRS, 60));
 
-		TimeReport report = new TimeReport(new User(username, ""), activity, false, id, weeknumber,
-				groupname);
+		TimeReport report = new TimeReport(new User("Oskar", ""), activity, false, 0, 1,
+				"testgroup");
 
-		db.createProjectGroup(groupname);
-		db.addUser(username, "");
+		db.createProjectGroup("testgroup");
+		db.addUser("Oskar", "");
 		db.createTimeReport(report);
 
 		// Test values in Table:TimeReports
 		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Id='" + id + "'");
-		while (rs.next()) {
-			actualGroupname = rs.getString("GroupName");
-			actualUsername = rs.getString("Username");
-			actualWeeknumber = rs.getInt("WeekNumber");
-			actualSigned = rs.getInt("Signed");
-		}
-		assertEquals(actualGroupname, groupname);
-		assertEquals(actualUsername, username);
-		assertEquals(actualWeeknumber, weeknumber);
-		assertTrue(actualSigned == signed);
+
+		ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Username='Oskar' AND WeekNumber=1");
+		assertTrue(rs.next());
+		assertEquals(rs.getString("GroupName"), "testgroup");
+		assertEquals(rs.getInt("Signed"), 0);
+
 		rs.close();
 		stmt.close();
-
-		// Test values in Table:Activities
+		
+		//Test values in Table:Activity
 		stmt = conn.createStatement();
-		rs = stmt.executeQuery("SELECT * FROM Activity WHERE Id='" + id + "'");
-		while (rs.next()) {
-			actualActivityname = rs.getString("activityname");
-			actualTime = rs.getInt("minutesworked");
-		}
-		assertEquals(actualActivityname, ActivityType.SRS.toString());
-		assertEquals(actualTime, time);
+		rs = stmt.executeQuery("SELECT Id FROM TimeReports WHERE Username='Oskar' AND WeekNumber=1");
+		rs.next();
+		int id = rs.getInt("Id");
+		rs.close();
+		stmt.close();
+		
+		stmt = conn.createStatement();
+		rs = stmt.executeQuery("SELECT * FROM Activity WHERE Id=" + id);
+		assertTrue(rs.next());
+		assertEquals(rs.getString("ActivityName"), ActivityType.SRS.toString());
+		assertEquals(rs.getInt("MinutesWorked"), 60);
 		rs.close();
 		stmt.close();
 	}
@@ -216,7 +230,7 @@ public class DatabaseTest {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM ProjectGroups WHERE Groupname='" + projectName + "'");
+			ResultSet rs = stmt.executeQuery("SELECT Groupname FROM ProjectGroups WHERE Groupname='" + projectName + "'");
 			rs.next();
 			assertEquals(projectName, rs.getString("Groupname"));
 		} catch (SQLException e) {
@@ -227,27 +241,32 @@ public class DatabaseTest {
 	
 	@Test
 	public void testGetTimeReport() throws SQLException {
-		int id = 1;
-		String groupname = "Testgroup";
-		String username = "Tester";
-		int weeknumber = 1;
-		int time = 60;
-		
 		List<Activity> activity = new ArrayList<Activity>();
-		activity.add(new Activity(ActivityType.SRS, time));
-
-		TimeReport report = new TimeReport(new User(username, ""), activity, false, id, weeknumber,
-				groupname);
 		
-		db.createProjectGroup(groupname);
-		db.addUser(username, "");
+		activity.add(new Activity(ActivityType.SRS, 60));
+
+		TimeReport report = new TimeReport(new User("Oskar", ""), activity, false, 0, 1,
+				"testgroup");
+
+		db.createProjectGroup("testgroup");
+		db.addUser("Oskar", "");
 		db.createTimeReport(report);
 		
+		Statement stmt;
+		int id = 0;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports limit 1");
+			rs.next();
+			id = rs.getInt("Id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		
-	
-		TimeReport tr = db.getTimeReport(1);
 		
-		assertEquals(tr.getID(), report.getID());
+		
+		TimeReport tr = db.getTimeReport(id);
+		assertEquals(tr.getID(), id);
 		assertEquals(tr.getProjectGroup(), report.getProjectGroup());
 		assertEquals(tr.getActivities().get(0).getType(), report.getActivities().get(0).getType());
 		assertEquals(tr.getActivities().get(0).getLength(), report.getActivities().get(0).getLength());
