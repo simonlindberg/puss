@@ -36,7 +36,7 @@ public class LogIn extends ServletBase {
 			session.setAttribute(USER, username);
 			session.setAttribute(LOGGEDIN, true);
 			try {
-				response.sendRedirect("mainPage"); // Dunno if will works.
+				response.sendRedirect("mainpage");
 				return;
 			} catch (IOException e) {
 				e.printStackTrace();

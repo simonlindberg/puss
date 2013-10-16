@@ -8,6 +8,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.management.relation.Role;
@@ -157,7 +158,25 @@ public class Database {
 	 * 
 	 */
 	public List<User> getUsers() {
-		return null;
+		List<User> users = new ArrayList<User>();
+		
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Users");
+		    while (rs.next()) {
+			    String name = rs.getString("username");
+			    String password = rs.getString("password");
+			    users.add(new User(name, password));
+		    }
+		    stmt.close();
+		} catch (SQLException ex) {
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+		}		    
+	    
+		return users;
 	}
 
 	/**
@@ -324,7 +343,19 @@ public class Database {
 	 * 
 	 */
 	public boolean deleteUser(String username) {
-		return false;
+		try {
+	    	Statement stmt = conn.createStatement();
+	    	String statement = "DELETE FROM Users WHERE username='" + username + "'";
+	    	stmt.executeUpdate(statement);
+			stmt.close();
+		} catch (SQLException ex) {
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+			return false;
+		}
+	   
+		return true;
 	}
 
 	/**
@@ -385,7 +416,6 @@ public class Database {
 		User user = getUser(username);
 		return user != null && user.getPassword().equals(password);
 	}
-	
 	
 	/**
 	* Start a transaction to the database

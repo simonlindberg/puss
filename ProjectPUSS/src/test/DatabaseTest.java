@@ -4,6 +4,7 @@
 package test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import items.User;
 
 import java.sql.Connection;
@@ -11,6 +12,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -94,7 +98,6 @@ public class DatabaseTest {
 		db.addUser(username, password);
 		
 		Assert.assertTrue(db.login(username, password));
-		
 		Assert.assertFalse(db.login("", ""));
 	}
 	
@@ -103,5 +106,41 @@ public class DatabaseTest {
 		Assert.assertTrue(db.login("admin", "adminpw"));
 		Assert.assertFalse(db.login("admin", "adminpwpwpw"));
 		Assert.assertFalse(db.login("admin", ""));
+	}
+	
+	@Test
+	public void testDeleteUser() throws SQLException {
+		String name = "Christian";
+		String psw = "123";
+		String result = "";
+		
+		db.addUser(name, psw);
+		db.deleteUser(name);
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + name + "'");
+	    while (rs.next()) {
+		    result = rs.getString("username");
+	    }
+	    stmt.close();
+	    
+	    assertEquals("", result);
+	}
+	
+	@Test
+	public void testGetUsers() throws SQLException {
+		List<String> expected = Arrays.asList("Christian", "Oskar");
+		List<String> actual = new ArrayList<String>();
+
+		for (String s: expected)
+			db.addUser(s, "123");
+		
+		List<User> result = db.getUsers();
+		
+		for (User u: result)
+			actual.add(u.getUsername());
+			
+		for (String s: expected)
+			assertTrue(actual.contains(s));
+		
 	}
 }
