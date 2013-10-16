@@ -60,10 +60,9 @@ public abstract class ServletBase extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		response.setCharacterEncoding("UTF-8");
-		
-		if (loggedIn(request)) {
-			response.sendRedirect("/login");
-			System.out.println("hello!");
+		if (!loggedIn(request)) {
+			response.sendRedirect("login");
+			return;
 		}
 		
 		HTMLWriter writer = new HTMLWriter(response.getWriter());
