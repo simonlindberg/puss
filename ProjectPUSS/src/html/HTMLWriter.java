@@ -61,7 +61,7 @@ public class HTMLWriter {
 	 */
 	public void printTimeReports(List<TimeReport> timereports, Command command,
 			Role role) {
-		
+		writer.print("TEST");
 	}
 
 	/**
@@ -149,8 +149,12 @@ public class HTMLWriter {
 	 *            är samtliga tillgängliga projekt.
 	 * 
 	 */
-	public void printProjectChooser(String currentProjectGroup,
-			List<String> projects) {
+	public void printProjectChooser(String currentProjectGroup, List<String> projects) {
+		writer.print("<select>");
+		for (String s : projects) {
+			writer.print("<option value = " + s + " > " + s + "</option>");
+		}
+		writer.print("</select>");
 	}
 
 	/**
@@ -162,7 +166,7 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printSuccessMessage(String message) {
-		writer.print("<font color=\"green\">" + message + "</font>");
+		writer.print("<p style=\"color:green;\">" + message + "</p>");
 	}
 
 	/**
@@ -181,7 +185,7 @@ public class HTMLWriter {
 						+ "</td><td>"
 						+ u.getPassword()
 						+ "</td><td>"
-						+ "<a href=\"/Administration?action=deleteUser&username="
+						+ "<a href=\"/ProjectPUSS/administration?action=deleteUser&username="
 						+ u.getUsername() + "\">Ta bort</a></td></tr>");
 			}
 			writer.print("</table>");
@@ -194,7 +198,7 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printAddUserForm() {
-		writer.print("<form method=\"POST\" action=\"/Administration?action=createUser\">"
+		writer.print("<form method=\"POST\" action=\"/ProjectPUSS/administration?action=createUser\">"
 				+ "<label>Användarnamn</label><input name=\"username\" type=\"text\" />"
 				+ "<input type=\"submit\" value=\"Skapa\" />" + "</form>");
 	}
@@ -211,7 +215,7 @@ public class HTMLWriter {
 			for (String s : groups) {
 				writer.print("<tr><td>"
 						+ s
-						+ "</td><td><a href=\"/ProjectAdmin?action=removeProjectGroup&projectName="
+						+ "</td><td><a href=\"/ProjectPUSS/projectadmin?action=removeProjectGroup&projectName="
 						+ s + "\">Ta bort</a></td></tr>");
 			}
 
@@ -225,7 +229,7 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printAddProjectGroupForm() {
-		writer.print("<form method=\"POST\" action=\"/ProjectAdmin?action=createProjectGroup\">"
+		writer.print("<form method=\"POST\" action=\"/ProjectPUSS/projectadmin?action=createProjectGroup\">"
 				+ "<label>Projekgruppnamn</label><input name=\"projectname\" type=\"text\" />"
 				+ "<input type=\"submit\" value=\"Skapa\" />" + "</form>");
 	}
@@ -247,12 +251,12 @@ public class HTMLWriter {
 			for (User u : projectManagers) {
 				writer.print("<tr><td>"
 						+ u.getUsername()
-						+ "</td><td><a href=\"/ProjectOverview?action=makeUser&project="
+						+ "</td><td><a href=\"/ProjectPUSS/projectoverview?action=makeUser&project="
 						+ projectName
 						+ "&username="
 						+ u.getUsername()
 						+ "\">Gör till användare</a></td><td>"
-						+ "<a href=\"/ProjectOverview?action=deleteUser&project="
+						+ "<a href=\"/ProjectPUSS/projectoverview?action=deleteUser&project="
 						+ projectName + "&username=" + u.getUsername()
 						+ "\">Ta bort</a>" + "</td></tr>");
 			}
@@ -260,12 +264,12 @@ public class HTMLWriter {
 				if (!projectManagers.contains(u)) {
 					writer.print("<tr><td>"
 							+ u.getUsername()
-							+ "</td><td><a href=\"/ProjectOverview?action=makeManager&project="
+							+ "</td><td><a href=\"/ProjectPUSS/projectoverview?action=makeManager&project="
 							+ projectName
 							+ "&username="
 							+ u.getUsername()
 							+ "\">Gör till projektledare</a></td><td>"
-							+ "<a href=\"/ProjectOverview?action=deleteUser&project="
+							+ "<a href=\"/ProjectPUSS/projectoverview?action=deleteUser&project="
 							+ projectName + "&username=" + u.getUsername()
 							+ "\">Ta bort</a>" + "</td></tr>");
 				}
@@ -282,7 +286,7 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printAddUserToProjectGroupForm(String projectName) {
-		writer.print("<form method=\"POST\" action=\"/ProjectOverview?action=addUser&project="
+		writer.print("<form method=\"POST\" action=\"/ProjectPUSS/projectoverview?action=addUser&project="
 				+ projectName
 				+ "\">"
 				+ "<label>Användarnamn</label><input name=\"username\" type=\"text\" />"
@@ -296,7 +300,7 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printErrorMessage(String message) {
-		writer.print("<font color=\"red\">" + message + "</font>");
+		writer.print("<p style=\"color:red;\">" + message + "</p>");
 	}
 
 	/**
@@ -312,6 +316,20 @@ public class HTMLWriter {
 		writer.println("<input type=\"submit\" value=\"Skicka\">");
 		writer.println("</form>");
 
+	}
+	
+	/**
+	 * Generates a link.
+	 * 
+	 * @param url
+	 * 		the url to use for the link
+	 * @param text
+	 * 		the text to display
+	 * 
+	 * @return HTML code for the link
+	 */
+	public void printLink(String url, String text) {
+		writer.println("<a href=\"" + url + "\">" + text + "</a>");
 	}
 
 }
