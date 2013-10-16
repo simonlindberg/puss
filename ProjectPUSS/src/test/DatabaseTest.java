@@ -307,4 +307,18 @@ public class DatabaseTest {
 		rs.close();
 		stmt.close();
 	}
+	
+	@Test
+	public void testDeleteUserFromProjectGroup() throws SQLException {
+		String username = "Oskar";
+		String groupname = "testgroup";
+		db.createProjectGroup(groupname);
+		db.addUser(username, "");
+		db.addUserToProject(groupname, username);
+		db.deleteUserFromProject(groupname, username);
+		
+		ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM Memberships WHERE Username='" + username + "'");
+		assertTrue(!rs.next());
+		rs.close();
+	}
 }
