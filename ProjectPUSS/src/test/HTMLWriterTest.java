@@ -154,5 +154,11 @@ public class HTMLWriterTest {
 		hw.printErrorMessage("Error");
 		assertEquals("<font color=\"red\">Error</font>", sw.toString());
 	}
+	
+	@Test
+	public void testPrintLink() {
+		hw.printLink("http://url.com/", "A cool place to be");
+		assertEquals("<a href=\"http://url.com/\">A cool place to be</a>" + System.getProperty("line.separator"), sw.toString());
+	}
 
 }

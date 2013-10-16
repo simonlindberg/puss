@@ -313,5 +313,9 @@ public class HTMLWriter {
 		writer.println("</form>");
 
 	}
+	
+	public void printLink(String url, String text) {
+		writer.println("<a href=\"" + url + "\">" + text + "</a>");
+	}
 
 }
