@@ -181,7 +181,7 @@ public class HTMLWriter {
 						+ "</td><td>"
 						+ u.getPassword()
 						+ "</td><td>"
-						+ "<a href=\"/Administration?action=deleteUser&username="
+						+ "<a href=\"/ProjectPUSS/administration?action=deleteUser&username="
 						+ u.getUsername() + "\">Ta bort</a></td></tr>");
 			}
 			writer.print("</table>");
@@ -194,7 +194,7 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printAddUserForm() {
-		writer.print("<form method=\"POST\" action=\"/Administration?action=createUser\">"
+		writer.print("<form method=\"POST\" action=\"/ProjectPUSS/administration?action=createUser\">"
 				+ "<label>Användarnamn</label><input name=\"username\" type=\"text\" />"
 				+ "<input type=\"submit\" value=\"Skapa\" />" + "</form>");
 	}
@@ -211,7 +211,7 @@ public class HTMLWriter {
 			for (String s : groups) {
 				writer.print("<tr><td>"
 						+ s
-						+ "</td><td><a href=\"/ProjectAdmin?action=removeProjectGroup&projectName="
+						+ "</td><td><a href=\"/ProjectPUSS/projectadmin?action=removeProjectGroup&projectName="
 						+ s + "\">Ta bort</a></td></tr>");
 			}
 
@@ -225,7 +225,7 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printAddProjectGroupForm() {
-		writer.print("<form method=\"POST\" action=\"/ProjectAdmin?action=createProjectGroup\">"
+		writer.print("<form method=\"POST\" action=\"/ProjectPUSS/projectadmin?action=createProjectGroup\">"
 				+ "<label>Projekgruppnamn</label><input name=\"projectname\" type=\"text\" />"
 				+ "<input type=\"submit\" value=\"Skapa\" />" + "</form>");
 	}
@@ -247,12 +247,12 @@ public class HTMLWriter {
 			for (User u : projectManagers) {
 				writer.print("<tr><td>"
 						+ u.getUsername()
-						+ "</td><td><a href=\"/ProjectOverview?action=makeUser&project="
+						+ "</td><td><a href=\"/ProjectPUSS/projectoverview?action=makeUser&project="
 						+ projectName
 						+ "&username="
 						+ u.getUsername()
 						+ "\">Gör till användare</a></td><td>"
-						+ "<a href=\"/ProjectOverview?action=deleteUser&project="
+						+ "<a href=\"/ProjectPUSS/projectoverview?action=deleteUser&project="
 						+ projectName + "&username=" + u.getUsername()
 						+ "\">Ta bort</a>" + "</td></tr>");
 			}
@@ -260,12 +260,12 @@ public class HTMLWriter {
 				if (!projectManagers.contains(u)) {
 					writer.print("<tr><td>"
 							+ u.getUsername()
-							+ "</td><td><a href=\"/ProjectOverview?action=makeManager&project="
+							+ "</td><td><a href=\"/ProjectPUSS/projectoverview?action=makeManager&project="
 							+ projectName
 							+ "&username="
 							+ u.getUsername()
 							+ "\">Gör till projektledare</a></td><td>"
-							+ "<a href=\"/ProjectOverview?action=deleteUser&project="
+							+ "<a href=\"/ProjectPUSS/projectoverview?action=deleteUser&project="
 							+ projectName + "&username=" + u.getUsername()
 							+ "\">Ta bort</a>" + "</td></tr>");
 				}
@@ -282,7 +282,7 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printAddUserToProjectGroupForm(String projectName) {
-		writer.print("<form method=\"POST\" action=\"/ProjectOverview?action=addUser&project="
+		writer.print("<form method=\"POST\" action=\"/ProjectPUSS/projectoverview?action=addUser&project="
 				+ projectName
 				+ "\">"
 				+ "<label>Användarnamn</label><input name=\"username\" type=\"text\" />"

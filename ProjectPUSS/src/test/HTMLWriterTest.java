@@ -48,7 +48,7 @@ public class HTMLWriterTest {
 	public void testPrintAddUserForm() {
 		hw.printAddUserForm();
 		assertEquals(
-				"<form method=\"POST\" action=\"/Administration?action=createUser\">"
+				"<form method=\"POST\" action=\"/ProjectPUSS/administration?action=createUser\">"
 						+ "<label>Användarnamn</label><input name=\"username\" type=\"text\" />"
 						+ "<input type=\"submit\" value=\"Skapa\" />"
 						+ "</form>", sw.toString());
@@ -58,40 +58,40 @@ public class HTMLWriterTest {
 	public void testPrintAddProjectGroupForm() {
 		hw.printAddProjectGroupForm();
 		assertEquals(
-				"<form method=\"POST\" action=\"/ProjectAdmin?action=createProjectGroup\">"
+				"<form method=\"POST\" action=\"/ProjectPUSS/projectadmin?action=createProjectGroup\">"
 				+ "<label>Projekgruppnamn</label><input name=\"projectname\" type=\"text\" />"
 				+ "<input type=\"submit\" value=\"Skapa\" />"
 						+ "</form>", sw.toString());
 	}
 
 	@Test
-	public void testPrintAdminUserListEmptyList() {
+	public void testPrintadminUserListEmptyList() {
 		ArrayList<User> users = new ArrayList<User>();
 		hw.printAdminUserList(users);
 		assertEquals("", sw.toString());
 	}
 
 	@Test
-	public void testPrintAdminUserListOneUser() {
+	public void testPrintadminUserListOneUser() {
 		ArrayList<User> users = new ArrayList<User>();
 		users.add(new User("abcde0", "password"));
 		hw.printAdminUserList(users);
 		assertEquals(
-				"<table><tr><th>Användare</th><th>Passwords</th><th></th></tr><tr><td>abcde0</td><td>password</td><td><a href=\"/Administration?action=deleteUser&username=abcde0\">Ta bort</a></td></tr></table>",
+				"<table><tr><th>Användare</th><th>Passwords</th><th></th></tr><tr><td>abcde0</td><td>password</td><td><a href=\"/ProjectPUSS/administration?action=deleteUser&username=abcde0\">Ta bort</a></td></tr></table>",
 				sw.toString());
 	}
 
 	@Test
-	public void testPrintAdminUserListMultipleUsers() {
+	public void testPrintadminUserListMultipleUsers() {
 		ArrayList<User> users = new ArrayList<User>();
 		users.add(new User("abcde0", "password0"));
 		users.add(new User("abcde1", "password1"));
 		users.add(new User("abcde2", "password2"));
 		hw.printAdminUserList(users);
 		assertEquals("<table><tr><th>Användare</th><th>Passwords</th><th></th></tr>"
-				+ "<tr><td>abcde0</td><td>password0</td><td><a href=\"/Administration?action=deleteUser&username=abcde0\">Ta bort</a></td></tr>"
-				+ "<tr><td>abcde1</td><td>password1</td><td><a href=\"/Administration?action=deleteUser&username=abcde1\">Ta bort</a></td></tr>"
-				+ "<tr><td>abcde2</td><td>password2</td><td><a href=\"/Administration?action=deleteUser&username=abcde2\">Ta bort</a></td></tr>" 
+				+ "<tr><td>abcde0</td><td>password0</td><td><a href=\"/ProjectPUSS/administration?action=deleteUser&username=abcde0\">Ta bort</a></td></tr>"
+				+ "<tr><td>abcde1</td><td>password1</td><td><a href=\"/ProjectPUSS/administration?action=deleteUser&username=abcde1\">Ta bort</a></td></tr>"
+				+ "<tr><td>abcde2</td><td>password2</td><td><a href=\"/ProjectPUSS/administration?action=deleteUser&username=abcde2\">Ta bort</a></td></tr>" 
 				+ "</table>",
 				sw.toString());
 	}
@@ -100,7 +100,7 @@ public class HTMLWriterTest {
 	public void testPrintAddUserToProjectGroupForm() {
 		hw.printAddUserToProjectGroupForm("whatever");
 		assertEquals(
-				"<form method=\"POST\" action=\"/ProjectOverview?action=addUser&project=whatever\">"
+				"<form method=\"POST\" action=\"/ProjectPUSS/projectoverview?action=addUser&project=whatever\">"
 				+ "<label>Användarnamn</label><input name=\"username\" type=\"text\" />"
 				+ "<input type=\"submit\" value=\"Lägg till\" />"
 						+ "</form>", sw.toString());
@@ -123,8 +123,8 @@ public class HTMLWriterTest {
 		
 		assertEquals("<table><tr><th>Användarnamn</th><th></th><th></th></tr><tr>"
 				+ "<td>Alpha</td><td>"
-				+ "<a href=\"/ProjectOverview?action=makeUser&project=whatever&username=Alpha\">Gör till användare</a></td>"
-				+ "<td><a href=\"/ProjectOverview?action=deleteUser&project=whatever&username=Alpha\">Ta bort</a></td>"
+				+ "<a href=\"/ProjectPUSS/projectoverview?action=makeUser&project=whatever&username=Alpha\">Gör till användare</a></td>"
+				+ "<td><a href=\"/ProjectPUSS/projectoverview?action=deleteUser&project=whatever&username=Alpha\">Ta bort</a></td>"
 				+ "</tr></table>", sw.toString());
 	}
 	
@@ -137,8 +137,8 @@ public class HTMLWriterTest {
 		hw.printProjectGroups(groups);
 		
 		assertEquals("<table><tr><th>Projektgrupper</th><th></th></tr>"
-				+ "<tr><td>Project1</td><td><a href=\"/ProjectAdmin?action=removeProjectGroup&projectName=Project1\">Ta bort</a></td></tr>"
-				+ "<tr><td>Project2</td><td><a href=\"/ProjectAdmin?action=removeProjectGroup&projectName=Project2\">Ta bort</a></td></tr></table>",sw.toString());
+				+ "<tr><td>Project1</td><td><a href=\"/ProjectPUSS/projectadmin?action=removeProjectGroup&projectName=Project1\">Ta bort</a></td></tr>"
+				+ "<tr><td>Project2</td><td><a href=\"/ProjectPUSS/projectadmin?action=removeProjectGroup&projectName=Project2\">Ta bort</a></td></tr></table>",sw.toString());
 		
 		
 	}
