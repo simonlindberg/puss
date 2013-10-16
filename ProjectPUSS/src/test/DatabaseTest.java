@@ -321,4 +321,39 @@ public class DatabaseTest {
 		assertTrue(!rs.next());
 		rs.close();
 	}
+	
+	@Test
+	public void testGetTimeReport() throws SQLException {
+		List<Activity> activity = new ArrayList<Activity>();
+		activity.add(new Activity(ActivityType.SRS, 60));
+
+		TimeReport report = new TimeReport(new User("Oskar", ""), activity, false, 0, 1,
+				"testgroup");
+
+		db.createProjectGroup("testgroup");
+		db.addUser("Oskar", "");
+		db.createTimeReport(report);
+		Statement stmt;
+		int id = 0;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports limit 1");
+			rs.next();
+			id = rs.getInt("Id");
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		TimeReport tr = db.getTimeReport(id);
+		assertEquals(tr.getID(), id);
+		assertEquals(tr.getProjectGroup(), report.getProjectGroup());
+		assertEquals(tr.getActivities().get(0).getType(), report.getActivities().get(0).getType());
+		assertEquals(tr.getActivities().get(0).getLength(), report.getActivities().get(0)
+				.getLength());
+		assertEquals(tr.getSigned(), report.getSigned());
+		assertEquals(tr.getUser().getUsername(), report.getUser().getUsername());
+		assertEquals(tr.getWeek(), report.getWeek());
+	}
 }
