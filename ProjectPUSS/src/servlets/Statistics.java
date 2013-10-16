@@ -15,7 +15,7 @@ public class Statistics extends ServletBase {
 
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
-		// TODO Auto-generated method stub
+		
 
 	}
 

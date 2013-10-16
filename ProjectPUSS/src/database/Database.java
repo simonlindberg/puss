@@ -14,9 +14,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
-
 /**
  * Denna klassen innehåller länken till databasen. Klassen innehåller den
  * funktionalitet som systemet behöver för att hämta ut och lägga in information
@@ -24,7 +21,7 @@ import java.util.List;
  * servlets som behöver den.
  */
 public class Database {
-	
+
 	public static final String ADMIN = "admin";
 	public static final String ADMIN_PW = "adminpw";
 
@@ -227,23 +224,23 @@ public class Database {
 	 */
 	public List<User> getUsers() {
 		List<User> users = new ArrayList<User>();
-		
+
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Users");
-		    while (rs.next()) {
-			    String name = rs.getString("username");
-			    String password = rs.getString("password");
-			    users.add(new User(name, password));
-		    }
-		    stmt.close();
+			while (rs.next()) {
+				String name = rs.getString("username");
+				String password = rs.getString("password");
+				users.add(new User(name, password));
+			}
+			stmt.close();
 		} catch (SQLException ex) {
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
-		}		    
-	    
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+
 		return users;
 	}
 
@@ -282,7 +279,7 @@ public class Database {
 	public List<User> getUsersInProject(String projectName) {
 		return null;
 	}
-	
+
 	/**
 	 * 
 	 * Försöker hämta alla projektledare från ett projekt.
@@ -379,8 +376,8 @@ public class Database {
 	public boolean createProjectGroup(String projectName) {
 		try {
 	    	Statement stmt = conn.createStatement();
-	    	String statement = "INSERT INTO ProjectGroups (Groupname) VALUES('" + projectName + "');";
-	    	stmt.execute(statement);
+	    	String statement = "INSERT INTO ProjectGroups (Groupname) VALUES('" + projectName + "')";
+	    	stmt.executeUpdate(statement);
 			stmt.close();
 		} catch (SQLException ex) {
 		    System.out.println("SQLException: " + ex.getMessage());
@@ -409,26 +406,27 @@ public class Database {
 	 * 
 	 * @param username
 	 *            användarnamnet som ska läggas till i systemet. Lägger till en
-	 *        	  användare i systemet.
+	 *            användare i systemet.
 	 * @param password
-	 * 				användarlösenordet som ska läggas till i systemet.
+	 *            användarlösenordet som ska läggas till i systemet.
 	 * @return true om den lyckas annars false.
 	 * 
 	 */
 	public boolean addUser(String username, String password) {
-		
-	    try {
-	    	Statement stmt = conn.createStatement();
-	    	String statement = "INSERT INTO Users (username, password) VALUES('" + username + "', '" + password + "')";
-	    	stmt.executeUpdate(statement);
+
+		try {
+			Statement stmt = conn.createStatement();
+			String statement = "INSERT INTO Users (username, password) VALUES('" + username
+					+ "', '" + password + "')";
+			stmt.executeUpdate(statement);
 			stmt.close();
 		} catch (SQLException ex) {
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
 			return false;
 		}
-	   
+
 		return true;
 	}
 
@@ -449,12 +447,11 @@ public class Database {
 	    	result = stmt.executeUpdate(statement);
 			stmt.close();
 		} catch (SQLException ex) {
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
 			return false;
 		}
-	   
 		return result == 1;
 	}
 
@@ -469,7 +466,7 @@ public class Database {
 	 */
 	public User getUser(String username) {
 		User user = null;
-		
+
 		Statement stmt;
 		try {
 			if (username.equals(ADMIN)) {
@@ -477,19 +474,20 @@ public class Database {
 			}
 			
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + username + "'");
-		    while (rs.next()) {
-			    String name = rs.getString("username");
-			    String password = rs.getString("password");
-			    user = new User(name, password);
-		    }
-		    stmt.close();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + username
+					+ "'");
+			while (rs.next()) {
+				String name = rs.getString("username");
+				String password = rs.getString("password");
+				user = new User(name, password);
+			}
+			stmt.close();
 		} catch (SQLException ex) {
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
 		}
-	    
+
 		return user;
 	}
 
@@ -520,11 +518,12 @@ public class Database {
 		User user = getUser(username);
 		return user != null && user.getPassword().equals(password);
 	}
-	
+
 	/**
-	* Start a transaction to the database
-	 * @throws SQLException 
-	*/
+	 * Start a transaction to the database
+	 * 
+	 * @throws SQLException
+	 */
 	public void startTransaction() throws SQLException {
 		conn.setAutoCommit(false);
 	}
@@ -554,7 +553,7 @@ public class Database {
 		Statement stmt = null;
 		try {
 			stmt = conn.createStatement();
-			//kod
+			// kod
 		} catch (SQLException e) {
 			System.out.println("fel i getRole() i Database.java");
 			e.printStackTrace();
@@ -612,5 +611,4 @@ public class Database {
 		}
 		return null;
 	}
-
 }

@@ -128,6 +128,7 @@ public class DatabaseTest {
 		stmt.close();
 
 		assertEquals("", result);
+
 	}
 
 	@Test
@@ -210,7 +211,6 @@ public class DatabaseTest {
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Id='" + id + "'");
 		while (rs.next()) {
-			System.out.println("1");
 			actualGroupname = rs.getString("groupname");
 			actualUsername = rs.getString("username");
 			actualWeeknumber = rs.getInt("weeknumber");
@@ -236,7 +236,6 @@ public class DatabaseTest {
 		stmt.close();
 	}
 	
-	
 	@Test
 	public void testCreateProjectGroup() {
 		String projectName = "_projectName";
@@ -245,7 +244,7 @@ public class DatabaseTest {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT Groupname FROM ProjectGroups WHERE Groupname='" + projectName + "'");
-			System.out.println(rs.next());
+			rs.next();
 			assertEquals(projectName, rs.getString("Groupname"));
 		} catch (SQLException e) {
 			e.printStackTrace();
