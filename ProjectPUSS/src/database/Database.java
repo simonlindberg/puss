@@ -63,9 +63,6 @@ public class Database {
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Id='" + id + "'");
-//			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports");
-//			System.out.println("rs: " +rs.next());
-//			System.out.println(rs.getInt("Id"));
 		    while (rs.next()) {
 			    User u = getUser(rs.getString("Username"));
 			    boolean signed = rs.getBoolean("Signed");
