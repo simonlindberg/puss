@@ -67,8 +67,23 @@ public class Database {
 	 * @return en lista med tidrepporter eller null om något går fel.
 	 */
 	public List<TimeReport> getTimeReports(String userID, String projectGroup) {
-		List<TimeReport> list = new ArrayList<TimeReport>();
-		return list;
+		List<TimeReport> reports = new ArrayList<TimeReport>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM Timereports WHERE "
+					+ "Username='"+userID+"' AND GroupName='"+projectGroup+"'");
+		    while (rs.next()) {
+			    int id = rs.getInt("id");
+			    reports.add(getTimeReport(id));
+		    }
+		    stmt.close();
+		} catch (SQLException ex) {
+		    System.out.println("SQLException: " + ex.getMessage());
+		    System.out.println("SQLState: " + ex.getSQLState());
+		    System.out.println("VendorError: " + ex.getErrorCode());
+		}
+		return reports;
 	}
 
 	/**
