@@ -105,6 +105,13 @@ public class DatabaseTest {
 	}
 	
 	@Test
+	public void testLoginAdmin() throws Exception {
+		Assert.assertTrue(db.login("admin", "adminpw"));
+		Assert.assertFalse(db.login("admin", "adminpwpwpw"));
+		Assert.assertFalse(db.login("admin", ""));
+	}
+	
+	@Test
 	public void testDeleteUser() throws SQLException {
 		String name = "Christian";
 		String psw = "123";

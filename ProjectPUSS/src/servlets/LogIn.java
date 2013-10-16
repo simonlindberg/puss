@@ -32,6 +32,9 @@ public class LogIn extends ServletBase {
 		String username = request.getParameter(HTMLWriter.LOGIN_USERNAME);
 		String password = request.getParameter(HTMLWriter.LOGIN_PASSWORD);
 		if (database.login(username, password)) {
+			HttpSession session = request.getSession();
+			session.setAttribute(USER, username);
+			session.setAttribute(LOGGEDIN, true);
 			try {
 				response.sendRedirect("mainpage");
 				return;
