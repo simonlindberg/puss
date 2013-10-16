@@ -1,8 +1,13 @@
 package servlets;
 
 import html.HTMLWriter;
+import items.User;
 
+import java.util.List;
+
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * Denna klassen bygger Denna klassen bygger ut ServletBase och renderar en
@@ -13,11 +18,23 @@ import javax.servlet.http.HttpServletRequest;
  * funktionalitet menas http-förfrågningar som på något sätt utför operationer
  * på systemet via denna klass, till exempel lägga till och ta bort användare.
  */
+@WebServlet("/administration")
 public class Administration extends ServletBase {
+
+	private boolean isAdmin(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		return "admin".equals(session.getAttribute(USER));
+	}
 
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
-		// TODO Auto-generated method stub
+		if (isAdmin(request)) {
+
+			html.printAddUserForm();
+
+			List<User> users = database.getUsers();
+			html.printAdminUserList(users);
+		}
 
 	}
 
