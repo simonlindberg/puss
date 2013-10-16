@@ -162,7 +162,7 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printSuccessMessage(String message) {
-		writer.print("<font color=\"green\">" + message + "</font>");
+		writer.print("<p style=\"color:green;\">" + message + "</p>");
 	}
 
 	/**
@@ -296,7 +296,7 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printErrorMessage(String message) {
-		writer.print("<font color=\"red\">" + message + "</font>");
+		writer.print("<p style=\"color:red;\">" + message + "</p>");
 	}
 
 	/**
@@ -312,6 +312,20 @@ public class HTMLWriter {
 		writer.println("<input type=\"submit\" value=\"Skicka\">");
 		writer.println("</form>");
 
+	}
+	
+	/**
+	 * Generates a link.
+	 * 
+	 * @param url
+	 * 		the url to use for the link
+	 * @param text
+	 * 		the text to display
+	 * 
+	 * @return HTML code for the link
+	 */
+	public void printLink(String url, String text) {
+		writer.println("<a href=\"" + url + "\">" + text + "</a>");
 	}
 
 }

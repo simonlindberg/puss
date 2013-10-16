@@ -23,6 +23,7 @@ import java.util.List;
 public class Database {
 	
 	public static final String ADMIN = "admin";
+	public static final String ADMIN_PW = "adminpw";
 
 	private static Database instance;
 
@@ -374,6 +375,10 @@ public class Database {
 		
 		Statement stmt;
 		try {
+			if (username.equals(ADMIN)) {
+				return new User(ADMIN, ADMIN_PW);
+			}
+			
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM Users WHERE username='" + username + "'");
 		    while (rs.next()) {
@@ -386,7 +391,7 @@ public class Database {
 		    System.out.println("SQLException: " + ex.getMessage());
 		    System.out.println("SQLState: " + ex.getSQLState());
 		    System.out.println("VendorError: " + ex.getErrorCode());
-		}		    
+		}
 	    
 		return user;
 	}

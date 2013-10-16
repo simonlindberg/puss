@@ -146,13 +146,19 @@ public class HTMLWriterTest {
 	@Test
 	public void testPrintSuccessMessage() {
 		hw.printSuccessMessage("Success in some successful action");
-		assertEquals("<font color=\"green\">Success in some successful action</font>", sw.toString());
+		assertEquals("<p style=\"color:green;\">Success in some successful action</p>", sw.toString());
 	}
 	
 	@Test
 	public void testPrintErrorMessage() {
 		hw.printErrorMessage("Error");
-		assertEquals("<font color=\"red\">Error</font>", sw.toString());
+		assertEquals("<p style=\"color:red;\">Error</p>", sw.toString());
+	}
+	
+	@Test
+	public void testPrintLink() {
+		hw.printLink("http://url.com/", "A cool place to be");
+		assertEquals("<a href=\"http://url.com/\">A cool place to be</a>" + System.getProperty("line.separator"), sw.toString());
 	}
 
 }

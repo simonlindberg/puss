@@ -4,14 +4,11 @@ import html.HTMLWriter;
 import items.User;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import database.Database;
 
 /**
  * Denna klassen bygger ut ServletBase och renderar inloggningssidan, via
@@ -33,7 +30,7 @@ public class LogIn extends ServletBase {
 		String password = request.getParameter(HTMLWriter.LOGIN_PASSWORD);
 		if (database.login(username, password)) {
 			HttpSession session = request.getSession();
-			session.setAttribute(USER, username);
+			session.setAttribute(USER, database.getUser(username));
 			session.setAttribute(LOGGEDIN, true);
 			try {
 				response.sendRedirect("mainpage");
