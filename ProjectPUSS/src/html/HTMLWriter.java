@@ -146,7 +146,7 @@ public class HTMLWriter {
 
 			break;
 
-		case "ActivityTime":
+		case "activityTime":
 			HashMap<ActivityType, Integer> actTimes = new HashMap<ActivityType, Integer>();
 
 			for (int i = 0; i < timeReports.size(); i++) {
@@ -171,7 +171,7 @@ public class HTMLWriter {
 			html = html.substring(0, html.length() - 1);
 
 			break;
-		case "PlUserTime":
+		case "plUserTime":
 			HashMap<User, Integer> userTimes = new HashMap<User, Integer>();
 
 			for (int i = 0; i < timeReports.size(); i++) {
