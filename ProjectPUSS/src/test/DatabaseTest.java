@@ -321,4 +321,15 @@ public class DatabaseTest {
 		assertTrue(!rs.next());
 		rs.close();
 	}
+	
+	@Test
+	public void testDeleteProjectGroup() throws SQLException {
+		String groupname = "testgroup";
+		db.createProjectGroup(groupname);
+		db.deleteProjectGroup(groupname);
+		
+		ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM Memberships WHERE Groupname='" + groupname + "'");
+		assertTrue(!rs.next());
+		rs.close();
+	}
 }

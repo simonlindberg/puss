@@ -473,6 +473,14 @@ public class Database {
 	 * 
 	 */
 	public boolean deleteProjectGroup(String projectName) {
+		try {
+			return conn.createStatement().execute(
+					"delete from Memberships where Groupname='" + projectName + "'");
+		} catch (SQLException e) {
+			System.out.println("");
+			e.printStackTrace();
+		}
+
 		return false;
 	}
 
