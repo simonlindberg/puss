@@ -197,7 +197,6 @@ public class DatabaseTest {
 		}
 
 		List<String> pr = db.getProjects();
-		System.out.println(pr);
 		for (int i = 0; i < expectedProjects.size(); i++) {
 			Assert.assertTrue(pr.contains(expectedProjects.get(i)));
 		}
@@ -348,6 +347,33 @@ public class DatabaseTest {
 		ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM Memberships WHERE Username='" + username + "'");
 		assertTrue(!rs.next());
 		rs.close();
+	}
+	
+	@Test
+	public void testSignUsign() throws Exception{
+		String username = "asdqwdqwd";
+		List<Activity> activity = new ArrayList<Activity>();
+		activity.add(new Activity(ActivityType.SRS, 60));
+		String projectgroup = "testgroup";
+		TimeReport report = new TimeReport(new User(username, ""), activity, false, 0, 1,
+				projectgroup);
+
+		db.createProjectGroup(projectgroup);
+		db.addUser(username, "");
+		db.createTimeReport(report);
+		
+		TimeReport timereport = db.getTimeReports(username, projectgroup).get(0);
+		Assert.assertTrue(db.signTimeReport(timereport));
+		
+		timereport = db.getTimeReports(username, projectgroup).get(0);
+		Assert.assertTrue(timereport.getSigned());
+		
+		
+		Assert.assertTrue(db.unsignTimeReport(timereport));
+
+		timereport = db.getTimeReports(username, projectgroup).get(0);
+		
+		Assert.assertFalse(timereport.getSigned());
 	}
 	
 	@Test

@@ -1,14 +1,12 @@
 package database;
 
-import static org.junit.Assert.assertTrue;
 import items.Activity;
 import items.ActivityType;
+import items.Role;
 import items.TimeReport;
 import items.User;
-import items.Role;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -103,8 +101,8 @@ public class Database {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Username='"+userID+"'"
-					+ " AND GroupName='"+projectGroup+"' ORDER BY Id");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE " + "Username='"
+					+ userID + "' AND GroupName='" + projectGroup + "'");
 			while (rs.next()) {
 				int id = rs.getInt("id");
 				reports.add(getTimeReport(id));
@@ -254,7 +252,6 @@ public class Database {
 			System.out.println("");
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
@@ -265,7 +262,17 @@ public class Database {
 	 *            tidrapporten att signera. Signerar en tidrapport.
 	 * 
 	 */
-	public void signTimeReport(TimeReport timereport) {
+	public boolean signTimeReport(TimeReport timereport) {
+		return signReport(timereport, true);
+	}
+
+	private boolean signReport(TimeReport timereport, boolean sign) {
+		try {
+			return 1 == conn.createStatement().executeUpdate("update TimeReports set Signed = " + (sign ? 1 : 0) +" where id = " +timereport.getID());
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	/**
@@ -275,7 +282,8 @@ public class Database {
 	 *            tidrapporten att avsignera. Avsignerar en tidrapport.
 	 * 
 	 */
-	public void unsignTimeReport(TimeReport timereport) {
+	public boolean unsignTimeReport(TimeReport timereport) {
+		return signReport(timereport, false);
 	}
 
 	/**
