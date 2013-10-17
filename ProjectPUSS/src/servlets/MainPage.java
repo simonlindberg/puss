@@ -32,10 +32,10 @@ public class MainPage extends ServletBase {
 		String currentProjectGroup = (String) session.getAttribute(PROJECT);
 		currentProjectGroup = currentProjectGroup == null ? projects.get(0) : currentProjectGroup;
 
+
 		if (projects.size() > 0) {
 			
 			html.printProjectChooser(projects.indexOf(currentProjectGroup), projects);
-			
 			Role role = database.getRole(user.getUsername(), currentProjectGroup);
 			
 			html.printLink("create", "Skapa en ny tidrapport");
