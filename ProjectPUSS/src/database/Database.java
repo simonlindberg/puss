@@ -1,6 +1,5 @@
 package database;
 
-import static org.junit.Assert.assertTrue;
 import items.Activity;
 import items.ActivityType;
 import items.TimeReport;
@@ -364,6 +363,24 @@ public class Database {
 	 * 
 	 */
 	public List<User> getProjectManagersInProject(String projectName) {
+		List<User> result = null;
+		try {
+			ResultSet rs1 = conn.createStatement().executeQuery(
+					"select * from Memberships where Role='" + Role.Manager.toString() + "' and Groupname='" + projectName + "'");
+			result = new ArrayList<User>();
+			while (rs1.next()) {
+				String name = rs1.getString("Username");
+				ResultSet rs2 = conn.createStatement().executeQuery(
+						"select * from Users where Username='" + name + "'");
+				while (rs2.next()) {
+					result.add(new User(rs2.getString("Username"), rs2.getString("Password")));
+				}
+			}
+		} catch (SQLException e) {
+			System.out.println("");
+			e.printStackTrace();
+		}
+
 		return null;
 	}
 

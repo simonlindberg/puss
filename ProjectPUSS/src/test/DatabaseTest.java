@@ -401,7 +401,7 @@ public class DatabaseTest {
 	@Test
 	public void testMakeUserPRojectManager() throws SQLException {
 		String username = "user1";
-		String projectname = "group1";
+		String projectname = "project1";
 		db.addUser(username, "");
 		db.createProjectGroup(projectname);
 		db.addUserToProject(projectname, username);
@@ -416,7 +416,7 @@ public class DatabaseTest {
 	@Test
 	public void testDemoteUserProjectManager() throws SQLException {
 		String username = "user1";
-		String projectname = "group1";
+		String projectname = "project1";
 		db.addUser(username, "");
 		db.createProjectGroup(projectname);
 		db.addUserToProject(projectname, username);
@@ -426,6 +426,33 @@ public class DatabaseTest {
 		ResultSet rs = conn.createStatement().executeQuery("SELECT Role FROM Memberships WHERE Username='" + username + "'");
 		assertTrue(rs.next());
 		assertEquals(rs.getString("Role"), "null");
+		rs.close();
+	}
+	
+	@Test
+	public void testGetProjectManagersInProjectGroup() throws SQLException {
+		List<String> expectedUsers = Arrays.asList("user1", "user2");
+		List<String> actualUsers = new ArrayList<String>();
+		String projectname = "project1";
+		db.createProjectGroup(projectname);
+		for (String s: expectedUsers) {
+			db.addUser(s, "");
+			db.addUserToProject(projectname, s);
+			db.setUserRole(s, projectname, Role.Manager);
+		}
+		db.addUser("user3", "");
+		db.addUserToProject(projectname, "user3");
+		db.setUserRole("user3", projectname, null);
+		
+		ResultSet rs = conn.createStatement().executeQuery("SELECT Username FROM Memberships WHERE Role='" + Role.Manager.toString() + "'");
+		while (rs.next()) {
+			actualUsers.add(rs.getString("Username"));
+		}
+		
+		assertTrue(!actualUsers.contains("user3"));
+		for (int i = 0; i < expectedUsers.size(); i++) {
+			Assert.assertTrue(actualUsers.contains(expectedUsers.get(i)));
+		}
 		rs.close();
 	}
 }
