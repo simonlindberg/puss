@@ -456,9 +456,9 @@ public class Database {
 	 */
 	public boolean addUserToProject(String projectName, String username) {
 		try {
-			return conn.createStatement().execute(
+			return conn.createStatement().executeUpdate(
 					"insert into Memberships (Username, Groupname) values ('" + username + "', '"
-							+ projectName + "')");
+							+ projectName + "')") == 1;
 		} catch (SQLException e) {
 			System.out.println("");
 			e.printStackTrace();
@@ -480,9 +480,9 @@ public class Database {
 	 */
 	public boolean deleteUserFromProject(String projectName, String userName) {
 		try {
-			return conn.createStatement().execute(
+			return conn.createStatement().executeUpdate(
 					"delete from Memberships where Groupname='" + projectName + "' AND Username='"
-							+ userName + "'");
+							+ userName + "'") == 1;
 		} catch (SQLException e) {
 			System.out.println("");
 			e.printStackTrace();

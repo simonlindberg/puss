@@ -123,8 +123,8 @@ public class HTMLWriterTest {
 		
 		assertEquals("<table><tr><th>Användarnamn</th><th></th><th></th></tr><tr>"
 				+ "<td>Alpha</td><td>"
-				+ "<a href=\"/ProjectPUSS/projectoverview?action=makeUser&project=whatever&username=Alpha\">Gör till användare</a></td>"
-				+ "<td><a href=\"/ProjectPUSS/projectoverview?action=deleteUser&project=whatever&username=Alpha\">Ta bort</a></td>"
+				+ "<a href=\"projectoverview?action=demoteUser&project=whatever&username=Alpha\">Gör till användare</a></td>"
+				+ "<td><a href=\"projectoverview?action=deleteUser&project=whatever&username=Alpha\">Ta bort</a></td>"
 				+ "</tr></table>", sw.toString());
 	}
 	
@@ -137,8 +137,8 @@ public class HTMLWriterTest {
 		hw.printProjectGroups(groups);
 		
 		assertEquals("<table><tr><th>Projektgrupper</th><th></th></tr>"
-				+ "<tr><td><a href=\"projectoverview?groupName=Project1\">Project1</a></td><td><a href=\"projectadmin?action=removeProjectGroup&projectName=Project1\">Ta bort</a></td></tr>"
-				+ "<tr><td><a href=\"projectoverview?groupName=Project2\">Project2</a></td><td><a href=\"projectadmin?action=removeProjectGroup&projectName=Project2\">Ta bort</a></td></tr></table>",sw.toString());
+				+ "<tr><td><a href=\"projectoverview?project=Project1\">Project1</a></td><td><a href=\"projectadmin?action=removeProjectGroup&projectName=Project1\">Ta bort</a></td></tr>"
+				+ "<tr><td><a href=\"projectoverview?project=Project2\">Project2</a></td><td><a href=\"projectadmin?action=removeProjectGroup&projectName=Project2\">Ta bort</a></td></tr></table>",sw.toString());
 		
 		
 	}

@@ -469,7 +469,7 @@ public class HTMLWriter {
 			writer.print("<table><tr><th>Projektgrupper</th><th></th></tr>");
 			for (String s : groups) {
 				writer.print("<tr><td>"
-						+ "<a href=\"projectoverview?groupName="
+						+ "<a href=\"projectoverview?project="
 						+ s
 						+ "\">" + s + "</a>"
 						+ "</td><td><a href=\"projectadmin?action=removeProjectGroup&projectName="
@@ -508,12 +508,12 @@ public class HTMLWriter {
 			for (User u : projectManagers) {
 				writer.print("<tr><td>"
 						+ u.getUsername()
-						+ "</td><td><a href=\"/ProjectPUSS/projectoverview?action=makeUser&project="
+						+ "</td><td><a href=\"projectoverview?action=demoteUser&project="
 						+ projectName
 						+ "&username="
 						+ u.getUsername()
 						+ "\">Gör till användare</a></td><td>"
-						+ "<a href=\"/ProjectPUSS/projectoverview?action=deleteUser&project="
+						+ "<a href=\"projectoverview?action=deleteUser&project="
 						+ projectName + "&username=" + u.getUsername()
 						+ "\">Ta bort</a>" + "</td></tr>");
 			}
@@ -521,12 +521,12 @@ public class HTMLWriter {
 				if (!projectManagers.contains(u)) {
 					writer.print("<tr><td>"
 							+ u.getUsername()
-							+ "</td><td><a href=\"/ProjectPUSS/projectoverview?action=makeManager&project="
+							+ "</td><td><a href=\"projectoverview?action=promoteUser&project="
 							+ projectName
 							+ "&username="
 							+ u.getUsername()
 							+ "\">Gör till projektledare</a></td><td>"
-							+ "<a href=\"/ProjectPUSS/projectoverview?action=deleteUser&project="
+							+ "<a href=\"projectoverview?action=deleteUser&project="
 							+ projectName + "&username=" + u.getUsername()
 							+ "\">Ta bort</a>" + "</td></tr>");
 				}
