@@ -451,8 +451,10 @@ public class Database {
 	 */
 	public boolean deleteProjectGroup(String projectName) {
 		try {
-			return conn.createStatement().execute(
-					"delete from Memberships where Groupname='" + projectName + "'");
+			conn.createStatement().executeUpdate(
+					"DELETE FROM Memberships WHERE Groupname='" + projectName + "'");
+			return conn.createStatement().executeUpdate(
+					"DELETE FROM ProjectGroups WHERE Groupname='" + projectName + "'") == 1;
 		} catch (SQLException e) {
 			System.out.println("");
 			e.printStackTrace();

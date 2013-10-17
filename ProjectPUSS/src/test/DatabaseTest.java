@@ -3,8 +3,7 @@
  */
 package test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import items.Activity;
 import items.ActivityType;
 import items.Role;
@@ -410,14 +409,17 @@ public class DatabaseTest {
 	
 	@Test
 	public void testDeleteProjectGroup() throws SQLException {
-		String groupname = "testgroup";
+		String groupname = "_testgroup";
 		db.createProjectGroup(groupname);
 		db.deleteProjectGroup(groupname);
 		
 		ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM Memberships WHERE Groupname='" + groupname + "'");
-		assertTrue(!rs.next());
+		assertFalse(rs.next());
 		rs.close();
-
+		
+		rs = conn.createStatement().executeQuery("SELECT * FROM ProjectGroups WHERE Groupname='" + groupname + "'");
+		assertFalse(rs.next());
+		rs.close();
 	}
 	
 	@Test
