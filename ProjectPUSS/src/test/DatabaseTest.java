@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import items.Activity;
 import items.ActivityType;
+import items.Role;
 import items.TimeReport;
 import items.User;
 
@@ -197,7 +198,6 @@ public class DatabaseTest {
 		}
 
 		List<String> pr = db.getProjects();
-		System.out.println(pr);
 		for (int i = 0; i < expectedProjects.size(); i++) {
 			Assert.assertTrue(pr.contains(expectedProjects.get(i)));
 		}
@@ -375,6 +375,105 @@ public class DatabaseTest {
 		timereport = db.getTimeReports(username, projectgroup).get(0);
 		
 		Assert.assertFalse(timereport.getSigned());
+	}
+	
+	@Test
+	public void testGetTimeReport() throws SQLException {
+		List<Activity> activity = new ArrayList<Activity>();
+		activity.add(new Activity(ActivityType.SRS, 60));
+
+		TimeReport report = new TimeReport(new User("Oskar", ""), activity, false, 0, 1,
+				"testgroup");
+
+		db.createProjectGroup("testgroup");
+		db.addUser("Oskar", "");
+		db.createTimeReport(report);
+		int id = 0;
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports limit 1");
+		rs.next();
+		id = rs.getInt("Id");
+		rs.close();
+		stmt.close();
+
+		TimeReport tr = db.getTimeReport(id);
+		assertEquals(tr.getID(), id);
+		assertEquals(tr.getProjectGroup(), report.getProjectGroup());
+		assertEquals(tr.getActivities().get(0).getType(), report.getActivities().get(0).getType());
+		assertEquals(tr.getActivities().get(0).getLength(), report.getActivities().get(0)
+				.getLength());
+		assertEquals(tr.getSigned(), report.getSigned());
+		assertEquals(tr.getUser().getUsername(), report.getUser().getUsername());
+		assertEquals(tr.getWeek(), report.getWeek());
+	}
+
+	@Test
+	public void testGetTimeReports() throws SQLException {
+		List<Activity> activity = new ArrayList<Activity>();
+		activity.add(new Activity(ActivityType.SRS, 60));
+		db.createProjectGroup("testgroup");
+		User u = new User("Oskar", "");
+		TimeReport report1 = new TimeReport(u, activity, false, 0, 1, "testgroup");
+
+		TimeReport report2 = new TimeReport(u, activity, false, 0, 2, "testgroup");
+
+		db.addUser("Oskar", "");
+		db.createTimeReport(report1);
+		db.createTimeReport(report2);
+		ArrayList<Integer> id = new ArrayList<Integer>();
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports ORDER BY Id DESC LIMIT 2");
+		while (rs.next()) {
+			id.add(rs.getInt("Id"));
+		}
+		rs.close();
+		stmt.close();
+
+		List<TimeReport> timereports = db.getTimeReports(u.getUsername(), "testgroup");
+		assertEquals(timereports.get(0).getID(), (int) id.get(1));
+		assertEquals(timereports.get(1).getID(), (int) id.get(0));
+	}
+	
+	@Test
+	public void testDeleteProjectGroup() throws SQLException {
+		String groupname = "testgroup";
+		db.createProjectGroup(groupname);
+		db.deleteProjectGroup(groupname);
 		
+		ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM Memberships WHERE Groupname='" + groupname + "'");
+		assertTrue(!rs.next());
+		rs.close();
+
+	}
+	
+	@Test
+	public void testMakeUserPRojectManager() throws SQLException {
+		String username = "user1";
+		String projectname = "group1";
+		db.addUser(username, "");
+		db.createProjectGroup(projectname);
+		db.addUserToProject(projectname, username);
+		db.setUserRole(username, projectname, Role.Manager);
+		
+		ResultSet rs = conn.createStatement().executeQuery("SELECT Role FROM Memberships WHERE Username='" + username + "'");
+		assertTrue(rs.next());
+		assertEquals(rs.getString("Role"), Role.Manager.toString());
+		rs.close();
+	}
+	
+	@Test
+	public void testDemoteUserProjectManager() throws SQLException {
+		String username = "user1";
+		String projectname = "group1";
+		db.addUser(username, "");
+		db.createProjectGroup(projectname);
+		db.addUserToProject(projectname, username);
+		db.setUserRole(username, projectname, Role.Manager);
+		db.setUserRole(username, projectname, null);
+		
+		ResultSet rs = conn.createStatement().executeQuery("SELECT Role FROM Memberships WHERE Username='" + username + "'");
+		assertTrue(rs.next());
+		assertEquals(rs.getString("Role"), "null");
+		rs.close();
 	}
 }

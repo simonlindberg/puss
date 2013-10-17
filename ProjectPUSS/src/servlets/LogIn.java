@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import database.Database;
+
 /**
  * Denna klassen bygger ut ServletBase och renderar inloggningssidan, via
  * HTMLWriter, där man fyller i användarnamn och lösenord. Den innehåller
@@ -30,10 +32,15 @@ public class LogIn extends ServletBase {
 		String password = request.getParameter(HTMLWriter.LOGIN_PASSWORD);
 		if (database.login(username, password)) {
 			HttpSession session = request.getSession();
-			session.setAttribute(USER, database.getUser(username));
+			User loggedIn = database.getUser(username);
+			session.setAttribute(USER, loggedIn);
 			session.setAttribute(LOGGEDIN, true);
 			try {
-				response.sendRedirect("mainpage");
+				if (Database.ADMIN.equals(loggedIn.getUsername())) {
+					response.sendRedirect("administration");
+				} else {
+					response.sendRedirect("mainpage");
+				}
 				return;
 			} catch (IOException e) {
 				e.printStackTrace();
