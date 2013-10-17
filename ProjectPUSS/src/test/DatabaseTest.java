@@ -513,4 +513,17 @@ public class DatabaseTest {
 		assertEquals(rs.getString("Role"), "null");
 		rs.close();
 	}
+	
+	@Test
+	public void testGetRole() throws SQLException {
+		String username = "user1";
+		String projectname = "group1";
+		db.addUser(username, "");
+		db.createProjectGroup(projectname);
+		db.addUserToProject(projectname, username);
+		db.setUserRole(username, projectname, Role.Architect);
+		
+		Role r = db.getRole(username, projectname);
+		assertEquals(r, Role.Architect);
+	}
 }
