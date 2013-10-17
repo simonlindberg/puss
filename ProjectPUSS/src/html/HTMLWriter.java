@@ -369,11 +369,11 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printHead(User user) {
-		writer.print("<html><head><title>E-PUSS 1301</title></head><body><h1>E-PUSS 1301</h1>");
+		writer.print("<html><head><meta charset=\"latin1\"><title>E-PUSS 1301</title></head><body><h1>E-PUSS 1301</h1>");
 		if(user != null){
-			writer.print("Hejsan " + user.getUsername()+ "! Tryck ");
+			writer.print("<p>Hejsan " + user.getUsername()+ "! Tryck ");
 			printLink("login", "här");
-			writer.print(" om du vill logga ut.");
+			writer.print(" om du vill logga ut.</p>");
 		}
 	}
 
