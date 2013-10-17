@@ -98,7 +98,7 @@ public class Administration extends ServletBase {
 			}
 			
 			
-			html.printLink("/ProjectPUSS/projectadmin", "Administrera projektgrupper");
+			html.printLink("projectadmin", "Administrera projektgrupper");
 			html.printAddUserForm();
 			
 			
@@ -108,7 +108,7 @@ public class Administration extends ServletBase {
 		} else {
 			// redirect to mainpage
 			html.printErrorMessage("Du har inte tillgång till denna sidan");
-			html.printLink("/ProjectPUSS/mainpage", "Huvudsida");
+			html.printLink("mainpage", "Huvudsida");
 		}
 
 	}
