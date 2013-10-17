@@ -43,7 +43,7 @@ public class MainPage extends ServletBase {
 			html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.show.toString(), "Visa tidrapporter");
 			html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.delete.toString(), "Ta bort tidrapporter");
 			if (Role.Manager.equals(role)){
-				html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.sign.toString(), "Ta bort tidrapporter");
+				html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.sign.toString(), "Signera tidrapporter");
 			}
 			html.printLink("showmembers", "Visa medlemmar");
 			html.printLink("statistics", "Statistik");

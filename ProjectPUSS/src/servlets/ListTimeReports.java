@@ -29,14 +29,18 @@ public class ListTimeReports extends ServletBase {
 		User user = (User) request.getSession().getAttribute(ServletBase.USER);
 		String projectGroup = (String) request.getSession().getAttribute(ServletBase.PROJECT);
 
-		String command = request.getParameter(HTMLWriter.LIST_COMMAND);
-
+		Command command = Command.valueOf(request.getParameter(HTMLWriter.LIST_COMMAND));
+		Role role = database.getRole(user.getUsername(), projectGroup);
+		
 		if (command == null) {
 			html.printErrorMessage("Du har inte anget något kommando! Gå tillbaka till <a href=\"mainpage\"> huvudsidan</a> och börja om! ");
-		} else {
+		} else if (Role.Manager.equals(role) && command.equals(Command.sign)){
+			List<TimeReport> timereports = database.getAllTimeReports(projectGroup);
+			html.printTimeReports(timereports, command, role);
+		} else{
 			List<TimeReport> timereports = database.getTimeReports(user.getUsername(), projectGroup);
-			Role userRole = database.getRole(user.getUsername(), projectGroup);
-			html.printTimeReports(timereports, Command.valueOf(command), userRole);
+			html.printTimeReports(timereports, command, role);
+			
 		}
 	}
 	
