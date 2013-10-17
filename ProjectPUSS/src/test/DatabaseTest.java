@@ -409,6 +409,41 @@ public class DatabaseTest {
 	}
 	
 	@Test
+	public void testUpdateTimeReport() throws SQLException {
+		List<Activity> activity = new ArrayList<Activity>();
+		activity.add(new Activity(ActivityType.SRS, 60));
+		db.createProjectGroup("testgroup");
+		User u = new User("Oskar", "");
+		TimeReport report1 = new TimeReport(u, activity, false, 0, 1, "testgroup");
+		db.addUser("Oskar", "");
+		db.createTimeReport(report1);
+		ArrayList<Integer> id = new ArrayList<Integer>();
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports ORDER BY Id DESC LIMIT 1");
+		while (rs.next()) {
+			id.add(rs.getInt("Id"));
+		}
+		rs.close();
+		stmt.close();
+		activity = new ArrayList<Activity>();
+		activity.add(new Activity(ActivityType.SRS, 10));
+		activity.add(new Activity(ActivityType.SDDD, 20));
+		
+		TimeReport newTimeReport = new TimeReport(u, activity, false, id.get(0), 1, "testgroup");
+		db.updateTimeReport(newTimeReport);
+		TimeReport updatedTimereport = db.getTimeReport(id.get(0));
+		assertEquals((int)id.get(0), updatedTimereport.getID());
+		assertEquals(report1.getWeek(), updatedTimereport.getWeek());
+		assertEquals(report1.getUser().getUsername(), updatedTimereport.getUser().getUsername());
+		assertEquals(report1.getProjectGroup(), updatedTimereport.getProjectGroup());
+		assertEquals(activity.size(), updatedTimereport.getActivities().size());
+		assertEquals(ActivityType.SDDD, updatedTimereport.getActivities().get(0).getType());
+		assertEquals(20, updatedTimereport.getActivities().get(0).getLength());
+		assertEquals(ActivityType.SRS, updatedTimereport.getActivities().get(1).getType());
+		assertEquals(10, updatedTimereport.getActivities().get(1).getLength());
+	}
+	
+	@Test
 	public void testDeleteProjectGroup() throws SQLException {
 		String groupname = "testgroup";
 		db.createProjectGroup(groupname);
