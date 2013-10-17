@@ -92,19 +92,19 @@ public class Database {
 
 	/**
 	 * 
-	 * @param userID
+	 * @param username
 	 *            anv��ndarens id som tidrapporterna ��r kopplade till.
 	 * @param projectGroup
 	 *            projektgruppen som tidrapporterna är kopplade till.
 	 * @return en lista med tidrepporter eller null om något går fel.
 	 */
-	public List<TimeReport> getTimeReports(String userID, String projectGroup) {
+	public List<TimeReport> getTimeReports(String username, String projectGroup) {
 		List<TimeReport> reports = new ArrayList<TimeReport>();
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE " + "Username='"
-					+ userID + "' AND GroupName='" + projectGroup + "'");
+					+ username + "' AND GroupName='" + projectGroup + "'");
 			while (rs.next()) {
 				int id = rs.getInt("id");
 				reports.add(getTimeReport(id));
