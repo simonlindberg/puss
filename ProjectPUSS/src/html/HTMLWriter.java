@@ -28,6 +28,10 @@ public class HTMLWriter {
 	final static public String LOGIN_USERNAME = "username";
 	final static public String LOGIN_PASSWORD = "password";
 	final static public String PROJECT_CHOOSER = "select";
+	
+	final static public String SELECT_USERROLE = "role_for_";
+	final static public String SUBMIT_UPDATE_ROLE = "updateRoles";
+	
 
 	private PrintWriter writer;
 
@@ -217,8 +221,8 @@ public class HTMLWriter {
 				String extra = "";
 				Role userRole = userRoles.get(u.getUsername());
 				if(role.equals(Role.Manager) && !userRole.equals(Role.Manager) ){
-					submitButton = "<input type=\"submit\" value=\"Uppdatera rollerna\" name=\"updateRoles\" />";
-					extra =  "<select name=\"role_for_"+u.getUsername()+"\">";
+					submitButton = "<input type=\"submit\" value=\"Uppdatera rollerna\" name=\""+HTMLWriter.SUBMIT_UPDATE_ROLE+"\" />";
+					extra =  "<select name=\"" +HTMLWriter.SELECT_USERROLE +u.getUsername()+"\">";
 					for(Role r : Role.values()){
 						if(!r.equals(Role.Manager)){
 							String selected = r.equals(userRole) ? "selected=selected" : "";

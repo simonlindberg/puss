@@ -30,10 +30,10 @@ public class ShowMembers extends ServletBase {
 		role = database.getRole(user.getUsername(), projectgroup);
 		List<User> users = database.getUsersInProject(projectgroup);
 		HashMap<String, Role> userRoles = new HashMap<String, Role>();
-		String updateRoles = request.getParameter("updateRoles");
+		String updateRoles = request.getParameter(HTMLWriter.SUBMIT_UPDATE_ROLE);
 		if(updateRoles!=null){
 			for(User u : users){
-				String roleForUser = request.getParameter("role_for_"+u.getUsername());
+				String roleForUser = request.getParameter(HTMLWriter.SELECT_USERROLE+u.getUsername());
 				if(roleForUser!=null && role.equals(Role.Manager)){
 					Role newRole = Role.valueOf(roleForUser);
 					if(!newRole.equals(Role.Manager))
