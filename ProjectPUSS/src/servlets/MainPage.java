@@ -30,18 +30,23 @@ public class MainPage extends ServletBase {
 		String currentProjectGroup = (String) session.getAttribute(PROJECT);
 		System.out.println(currentProjectGroup);
 		currentProjectGroup = currentProjectGroup == null ? projects.get(0) : currentProjectGroup;
-		
-		html.printProjectChooser(projects.indexOf(currentProjectGroup), projects);
-		
-		html.printLink("timereport?page=create", "Skapa en ny tidrapport");
-		html.printLink("timereport?page=update", "Uppdatera en tidrapport");
-		html.printLink("list?page=delete", "Lista tidrapporter");
-		html.printLink("showmembers", "Visa medlemmar");
-		html.printLink("statistics", "Statistik");
+
+		if (projects.size() > 0) {
+			html.printProjectChooser(projects.indexOf(currentProjectGroup), projects);
+
+			html.printLink("create", "Skapa en ny tidrapport");
+			html.printLink("create", "Uppdatera en tidrapport");
+			html.printLink("list", "Lista tidrapporter");
+			html.printLink("showmembers", "Visa medlemmar");
+			html.printLink("statistics", "Statistik");
+		} else {
+			html.printErrorMessage("Du är inte medlem i någon grupp");
+		}
 	}
-	
+
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException{
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
 		HttpSession session = request.getSession();
 
 		String chosen = (String) request.getParameter(HTMLWriter.PROJECT_CHOOSER);
@@ -50,7 +55,7 @@ public class MainPage extends ServletBase {
 		if (chosen != null) {
 			session.setAttribute(PROJECT, chosen);
 		}
-		
+
 		doGet(request, response);
 	}
 }
