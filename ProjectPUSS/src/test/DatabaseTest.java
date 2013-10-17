@@ -515,6 +515,17 @@ public class DatabaseTest {
 	}
 	
 	@Test
+	public void testGetRole() throws SQLException {
+		String username = "user1";
+		String projectname = "group1";
+		db.addUser(username, "");
+		db.createProjectGroup(projectname);
+		db.addUserToProject(projectname, username);
+		db.setUserRole(username, projectname, Role.Architect);
+		
+		Role r = db.getRole(username, projectname);
+		assertEquals(r, Role.Architect);
+	}
 	public void testGetProjectManagers() throws SQLException {
 		String manager = "_user1";
 		String user = "_user2";
@@ -529,7 +540,5 @@ public class DatabaseTest {
 		List<User> managers = db.getProjectManagersInProject(projectname);
 		assertEquals(1, managers.size());
 		assertEquals(manager, managers.get(0).getUsername());
-		
-		
 	}
 }
