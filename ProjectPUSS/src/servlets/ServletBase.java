@@ -65,7 +65,7 @@ public abstract class ServletBase extends HttpServlet {
 	 * @throws IOException 
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		response.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("latin1");
 		if (!loggedIn(request)) {
 			response.sendRedirect("login");
 			return;

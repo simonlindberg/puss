@@ -38,6 +38,9 @@ public class Administration extends ServletBase {
      * @return True if the username corresponds to the requirements
      */
     private boolean checkNewName(String name) {
+    	if (Database.ADMIN.equals(name)) {
+    		return false;
+    	}
     	int length = name.length();
     	boolean ok = (length>=5 && length<=10);
     	if (ok)
@@ -98,7 +101,7 @@ public class Administration extends ServletBase {
 			}
 			
 			
-			html.printLink("/ProjectPUSS/projectadmin", "Administrera projektgrupper");
+			html.printLink("projectadmin", "Administrera projektgrupper");
 			html.printAddUserForm();
 			
 			
@@ -108,7 +111,7 @@ public class Administration extends ServletBase {
 		} else {
 			// redirect to mainpage
 			html.printErrorMessage("Du har inte tillgång till denna sidan");
-			html.printLink("/ProjectPUSS/mainpage", "Huvudsida");
+			html.printLink("mainpage", "Huvudsida");
 		}
 
 	}

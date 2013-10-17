@@ -1,8 +1,13 @@
 package servlets;
 
+import java.io.IOException;
+
 import html.HTMLWriter;
 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Denna klassen bygger ut ServletBase och renderar en sida, via HTMLWriter, där
@@ -11,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
  * användaren inte är administratör nekas all åtkomst till klassen och dess
  * funktionalitet.
  */
+@WebServlet("/projectadmin")
 public class ProjectAdmin extends ServletBase {
 	
 	private static final String CREATE_GROUP = "createProjectGroup";
@@ -36,6 +42,12 @@ public class ProjectAdmin extends ServletBase {
     			ok = ok && thisOk;
     		}    	
     	return ok;
+    }
+    
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    		throws ServletException, IOException {
+    	doGet(req, resp);
     }
 
 	@Override
@@ -66,19 +78,15 @@ public class ProjectAdmin extends ServletBase {
 				
 			}
 			
+			html.printLink("administration", "Administrera användare");
 			html.printAddProjectGroupForm();
 			html.printProjectGroups(database.getProjects());
-			
-			
-			
-			
-			
 			
 			
 		} else {
 			// redirect to mainpage
 			html.printErrorMessage("Du har inte tillgång till denna sidan");
-			html.printLink("/ProjectPUSS/mainpage", "Huvudsida");
+			html.printLink("mainpage", "Huvudsida");
 		}
 
 	}

@@ -81,10 +81,10 @@ public class HTMLWriter {
 		html += "		</tr>";
 		html += "		<tr>";
 		html += "			<td><b>Projectgroup</b>:</td><td>"+timereport.getProjectGroup()+"</td>";
-		html += "			<td><b>Week:</b></td><td><input type='text' name='week' value='' size='3'></td>";
+		html += "			<td><b>Week:</b></td><td><input type='text' name='week' value='"+timereport.getWeek()+"' size='3'></td>";
 		html += "		</tr>";
 		html += "		<tr><td colspan='3' bgcolor='lightgrey'><font size='+1'><b>Del A: Total tid denna vecka (minuter)</b></font></td>";
-		html += "		<td>...</td></tr>";
+		html += "		<td>"+sum+"</td></tr>";
 		html += "		<tr><td colspan='4' bgcolor='lightgrey' nowrap=''><font size='+1'><b>Del B: Antalet minuter per aktivitet</b></font>";
 		html += "		<br>(Summan av alla separata aktiviteter räknas ut automatiskt och fylls i ovan.)</td></tr>";
 		html += "		<tr><th>Nummer</th><th colspan='2'>Aktivitet</th><th>Total tid</th></tr>";
@@ -157,14 +157,16 @@ public class HTMLWriter {
 		html += "			<td><i><input type='text' name='Mote' value='"+meeting+"' size='3'></i></td>";
 		html += "		</tr>";
 		html += "		<tr><td colspan='4' bgcolor='lightgrey'><font size='+1'><b>Del C: Signatur</b></font></td></tr><tr>";
-		html += "		<tr><td colspan='3'><b>Signerad av manager</b></td><td>...</td></tr>";
+		html += "		<tr><td colspan='3'><b>Signerad av manager</b></td><td>"+timereport.getSigned()+"</td></tr>";
 		html += "	</tbody></table>";
 		html += "	<input type='hidden' name='FormFields' value='SDP, SRS, SVVS, STLDD, SVVI, SDDD, SVVR, SSD, PFR, Funktionstest, Systemtest, Regressionstest, Mote'>";
 		
-		// Hantera knappar
 		html += "	<input type='submit' value='Submit time report'>";
-		html += "	<input type='submit' value='Delete time report'>";
-		html += "	<input type='submit' value='Sign time report'>";
+		if (role.equals(Role.Manager))
+			html += "	<input type='submit' value='Sign time report'>";
+		else
+			html += "	<input type='submit' value='Delete time report'>";
+		
 		html += "</form>";
 	}
 
@@ -479,11 +481,11 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printHead(User user) {
-		writer.print("<html><head><title>E-PUSS 1301</title></head><body><h1>E-PUSS 1301</h1>");
-		if (user != null) {
-			writer.print("Hejsan " + user.getUsername() + "! Tryck ");
+		writer.print("<html><head><meta charset=\"latin1\"><title>E-PUSS 1301</title></head><body><h1>E-PUSS 1301</h1>");
+		if(user != null){
+			writer.print("<p>Hejsan " + user.getUsername()+ "! Tryck ");
 			printLink("login", "här");
-			writer.print(" om du vill logga ut.");
+			writer.print(" om du vill logga ut.</p>");
 		}
 	}
 
@@ -577,8 +579,10 @@ public class HTMLWriter {
 			writer.print("<table><tr><th>Projektgrupper</th><th></th></tr>");
 			for (String s : groups) {
 				writer.print("<tr><td>"
+						+ "<a href=\"projectoverview?project="
 						+ s
-						+ "</td><td><a href=\"/ProjectPUSS/projectadmin?action=removeProjectGroup&projectName="
+						+ "\">" + s + "</a>"
+						+ "</td><td><a href=\"projectadmin?action=removeProjectGroup&projectName="
 						+ s + "\">Ta bort</a></td></tr>");
 			}
 
@@ -610,27 +614,32 @@ public class HTMLWriter {
 	public void printProjectGroupMembers(List<User> users, List<User> projectManagers,
 			String projectName) {
 		if (!(users.size() == 0 && projectManagers.size() == 0)) {
-			writer.print("<table><tr><th>Användarnamn</th><th></th><th></th></tr>");
+			writer.print("<table><tr><th>Projektledare</th><th></th><th></th></tr>");
 			for (User u : projectManagers) {
 				writer.print("<tr><td>"
 						+ u.getUsername()
-						+ "</td><td><a href=\"/ProjectPUSS/projectoverview?action=makeUser&project="
-						+ projectName + "&username=" + u.getUsername()
+						+ "</td><td><a href=\"projectoverview?action=demoteUser&project="
+						+ projectName
+						+ "&username="
+						+ u.getUsername()
 						+ "\">Gör till användare</a></td><td>"
-						+ "<a href=\"/ProjectPUSS/projectoverview?action=deleteUser&project="
-						+ projectName + "&username=" + u.getUsername() + "\">Ta bort</a>"
-						+ "</td></tr>");
+						+ "<a href=\"projectoverview?action=deleteUser&project="
+						+ projectName + "&username=" + u.getUsername()
+						+ "\">Ta bort</a>" + "</td></tr>");
 			}
+			writer.print("<tr><th>Användare</th><th></th><th></th></tr>");
 			for (User u : users) {
 				if (!projectManagers.contains(u)) {
 					writer.print("<tr><td>"
 							+ u.getUsername()
-							+ "</td><td><a href=\"/ProjectPUSS/projectoverview?action=makeManager&project="
-							+ projectName + "&username=" + u.getUsername()
+							+ "</td><td><a href=\"projectoverview?action=promoteUser&project="
+							+ projectName
+							+ "&username="
+							+ u.getUsername()
 							+ "\">Gör till projektledare</a></td><td>"
-							+ "<a href=\"/ProjectPUSS/projectoverview?action=deleteUser&project="
-							+ projectName + "&username=" + u.getUsername() + "\">Ta bort</a>"
-							+ "</td></tr>");
+							+ "<a href=\"projectoverview?action=deleteUser&project="
+							+ projectName + "&username=" + u.getUsername()
+							+ "\">Ta bort</a>" + "</td></tr>");
 				}
 			}
 			writer.print("</table>");

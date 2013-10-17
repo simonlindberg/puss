@@ -24,18 +24,21 @@ import database.Database;
  * skapa tidrapporten. Sidan är tillgänglig för användare, men ej för
  * administratörer.
  */
-@WebServlet("/CreateTimeReport")
+@WebServlet("/create")
 public class CreateTimeReport extends ServletBase {
 
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
-		String userName = (String) request.getSession().getAttribute(ServletBase.USER);
+		User user = (User) request.getSession().getAttribute(ServletBase.USER);
 		String projectgroup = (String) request.getSession().getAttribute(ServletBase.PROJECT);
 		TimeReport t = null;
 		Role role = null;
-		role = database.getRole(userName, projectgroup);
-
-		html.printTimeReport(t, Command.create, role);
+		role = database.getRole(user.getUsername(), projectgroup);
+		if(role==null){
+			html.printErrorMessage("Du har en roll där du inte kan skapa tidrapporter");
+		} else {
+			html.printTimeReport(t, Command.create, role);
+		}
 
 	}
 
