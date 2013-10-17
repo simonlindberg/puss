@@ -61,7 +61,7 @@ public class DatabaseTest {
 
 	@Test
 	public void testGetUser() throws SQLException {
-		String name = "Christian";
+		String name = "_Christian";
 		String psw = "psw";
 		String result = "";
 
@@ -78,7 +78,7 @@ public class DatabaseTest {
 
 	@Test
 	public void testAddUser() throws SQLException {
-		String name = "Christian";
+		String name = "_Christian";
 		String psw = "psw";
 		String result = "";
 
@@ -96,7 +96,7 @@ public class DatabaseTest {
 
 	@Test
 	public void testLogin() throws Exception {
-		String username = "testing";
+		String username = "_testing";
 		String password = "test123";
 
 		db.addUser(username, password);
@@ -114,7 +114,7 @@ public class DatabaseTest {
 
 	@Test
 	public void testDeleteUser() throws SQLException {
-		String name = "Christian";
+		String name = "_Christian";
 		String psw = "123";
 		String result = "";
 
@@ -127,7 +127,7 @@ public class DatabaseTest {
 	
 	@Test
 	public void testDeleteUserWithTimeReport() throws SQLException {
-		String name = "Christian";
+		String name = "_Christian";
 		String psw = "123";
 		String result = "";
 
@@ -135,9 +135,9 @@ public class DatabaseTest {
 		activity.add(new Activity(ActivityType.SRS, 60));
 
 		TimeReport report = new TimeReport(new User(name, psw), activity, false, 0, 1,
-				"testgroup");
+				"_testgroup");
 
-		db.createProjectGroup("testgroup");
+		db.createProjectGroup("_testgroup");
 		db.addUser(name, psw);
 		db.createTimeReport(report);
 		db.deleteUser(name);
@@ -169,7 +169,7 @@ public class DatabaseTest {
 
 	@Test
 	public void testGetUsers() throws SQLException {
-		List<String> expected = Arrays.asList("Christian", "Oskar");
+		List<String> expected = Arrays.asList("_Christian", "_Oskar");
 		List<String> actual = new ArrayList<String>();
 
 		for (String s : expected)
@@ -205,7 +205,7 @@ public class DatabaseTest {
 	@Test
 	public void testGetProjectsForUser() throws Exception {
 		List<String> expectedProjects = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9");
-		String username = "test1234";
+		String username = "_test1234";
 
 	}
 
@@ -215,20 +215,20 @@ public class DatabaseTest {
 		List<Activity> activity = new ArrayList<Activity>();
 		activity.add(new Activity(ActivityType.SRS, 60));
 
-		TimeReport report = new TimeReport(new User("Oskar", ""), activity, false, 0, 1,
-				"testgroup");
+		TimeReport report = new TimeReport(new User("_Oskar", ""), activity, false, 0, 1,
+				"_testgroup");
 
-		db.createProjectGroup("testgroup");
-		db.addUser("Oskar", "");
+		db.createProjectGroup("_testgroup");
+		db.addUser("_Oskar", "");
 		db.createTimeReport(report);
 
 		// Test values in Table:TimeReports
 		Statement stmt = conn.createStatement();
 
 		ResultSet rs = stmt
-				.executeQuery("SELECT * FROM TimeReports WHERE Username='Oskar' AND WeekNumber=1");
+				.executeQuery("SELECT * FROM TimeReports WHERE Username='_Oskar' AND WeekNumber=1");
 		assertTrue(rs.next());
-		assertEquals(rs.getString("GroupName"), "testgroup");
+		assertEquals(rs.getString("GroupName"), "_testgroup");
 		assertEquals(rs.getInt("Signed"), 0);
 
 		rs.close();
@@ -237,7 +237,7 @@ public class DatabaseTest {
 		// Test values in Table:Activity
 		stmt = conn.createStatement();
 		rs = stmt
-				.executeQuery("SELECT Id FROM TimeReports WHERE Username='Oskar' AND WeekNumber=1");
+				.executeQuery("SELECT Id FROM TimeReports WHERE Username='_Oskar' AND WeekNumber=1");
 		rs.next();
 		int id = rs.getInt("Id");
 		rs.close();
@@ -274,17 +274,17 @@ public class DatabaseTest {
 	public void testDeleteTimeReport() throws SQLException {
 		List<Activity> activity = new ArrayList<Activity>();
 		activity.add(new Activity(ActivityType.SRS, 60));
-		TimeReport report = new TimeReport(new User("Oskar", ""), activity, false, 0, 1,
-				"testgroup");
+		TimeReport report = new TimeReport(new User("_Oskar", ""), activity, false, 0, 1,
+				"_testgroup");
 
-		db.createProjectGroup("testgroup");
-		db.addUser("Oskar", "");
+		db.createProjectGroup("_testgroup");
+		db.addUser("_Oskar", "");
 		db.createTimeReport(report);
 
 		// Collect id of TimeReport
 		Statement stmt = conn.createStatement();
 		ResultSet rs = stmt
-				.executeQuery("SELECT Id FROM TimeReports WHERE Username='Oskar' AND WeekNumber=1");
+				.executeQuery("SELECT Id FROM TimeReports WHERE Username='_Oskar' AND WeekNumber=1");
 		assertTrue(rs.next());
 		int id = rs.getInt("Id");
 		rs.close();
@@ -311,8 +311,8 @@ public class DatabaseTest {
 	public void testGetUsersInProject() throws Exception {
 		List<String> expectedUsername = Arrays.asList("a", "b", "c", "d", "e", "f");
 		List<String> unexpectedUsername = Arrays.asList("wrong", "error");
-		String project = "prjct";
-		String wrongProject = "NOTprjct";
+		String project = "_prjct";
+		String wrongProject = "_NOTprjct";
 
 		db.createProjectGroup(project);
 		for(String a:expectedUsername){
@@ -337,8 +337,8 @@ public class DatabaseTest {
 		
 	@Test
 	public void testDeleteUserFromProjectGroup() throws SQLException {
-		String username = "Oskar";
-		String groupname = "testgroup";
+		String username = "_Oskar";
+		String groupname = "_testgroup";
 		db.createProjectGroup(groupname);
 		db.addUser(username, "");
 		db.addUserToProject(groupname, username);
@@ -351,10 +351,10 @@ public class DatabaseTest {
 	
 	@Test
 	public void testSignUsign() throws Exception{
-		String username = "asdqwdqwd";
+		String username = "_asdqwdqwd";
 		List<Activity> activity = new ArrayList<Activity>();
 		activity.add(new Activity(ActivityType.SRS, 60));
-		String projectgroup = "testgroup";
+		String projectgroup = "_testgroup";
 		TimeReport report = new TimeReport(new User(username, ""), activity, false, 0, 1,
 				projectgroup);
 
@@ -381,11 +381,11 @@ public class DatabaseTest {
 		List<Activity> activity = new ArrayList<Activity>();
 		activity.add(new Activity(ActivityType.SRS, 60));
 
-		TimeReport report = new TimeReport(new User("Oskar", ""), activity, false, 0, 1,
-				"testgroup");
+		TimeReport report = new TimeReport(new User("_Oskar", ""), activity, false, 0, 1,
+				"_testgroup");
 
-		db.createProjectGroup("testgroup");
-		db.addUser("Oskar", "");
+		db.createProjectGroup("_testgroup");
+		db.addUser("_Oskar", "");
 		db.createTimeReport(report);
 		int id = 0;
 		Statement stmt = conn.createStatement();
@@ -410,13 +410,13 @@ public class DatabaseTest {
 	public void testGetTimeReports() throws SQLException {
 		List<Activity> activity = new ArrayList<Activity>();
 		activity.add(new Activity(ActivityType.SRS, 60));
-		db.createProjectGroup("testgroup");
-		User u = new User("Oskar", "");
-		TimeReport report1 = new TimeReport(u, activity, false, 0, 1, "testgroup");
+		db.createProjectGroup("_testgroup");
+		User u = new User("_Oskar", "");
+		TimeReport report1 = new TimeReport(u, activity, false, 0, 1, "_testgroup");
 
-		TimeReport report2 = new TimeReport(u, activity, false, 0, 2, "testgroup");
+		TimeReport report2 = new TimeReport(u, activity, false, 0, 2, "_testgroup");
 
-		db.addUser("Oskar", "");
+		db.addUser("_Oskar", "");
 		db.createTimeReport(report1);
 		db.createTimeReport(report2);
 		ArrayList<Integer> id = new ArrayList<Integer>();
@@ -428,7 +428,7 @@ public class DatabaseTest {
 		rs.close();
 		stmt.close();
 
-		List<TimeReport> timereports = db.getTimeReports(u.getUsername(), "testgroup");
+		List<TimeReport> timereports = db.getTimeReports(u.getUsername(), "_testgroup");
 		assertEquals(timereports.get(0).getID(), (int) id.get(1));
 		assertEquals(timereports.get(1).getID(), (int) id.get(0));
 	}
@@ -437,10 +437,10 @@ public class DatabaseTest {
 	public void testUpdateTimeReport() throws SQLException {
 		List<Activity> activity = new ArrayList<Activity>();
 		activity.add(new Activity(ActivityType.SRS, 60));
-		db.createProjectGroup("testgroup");
-		User u = new User("Oskar", "");
-		TimeReport report1 = new TimeReport(u, activity, false, 0, 1, "testgroup");
-		db.addUser("Oskar", "");
+		db.createProjectGroup("_testgroup");
+		User u = new User("_Oskar", "");
+		TimeReport report1 = new TimeReport(u, activity, false, 0, 1, "_testgroup");
+		db.addUser("_Oskar", "");
 		db.createTimeReport(report1);
 		ArrayList<Integer> id = new ArrayList<Integer>();
 		Statement stmt = conn.createStatement();
@@ -454,7 +454,7 @@ public class DatabaseTest {
 		activity.add(new Activity(ActivityType.SRS, 10));
 		activity.add(new Activity(ActivityType.SDDD, 20));
 		
-		TimeReport newTimeReport = new TimeReport(u, activity, false, id.get(0), 1, "testgroup");
+		TimeReport newTimeReport = new TimeReport(u, activity, false, id.get(0), 1, "_testgroup");
 		db.updateTimeReport(newTimeReport);
 		TimeReport updatedTimereport = db.getTimeReport(id.get(0));
 		assertEquals((int)id.get(0), updatedTimereport.getID());
@@ -485,8 +485,8 @@ public class DatabaseTest {
 	
 	@Test
 	public void testMakeUserPRojectManager() throws SQLException {
-		String username = "user1";
-		String projectname = "group1";
+		String username = "_user1";
+		String projectname = "_group1";
 		db.addUser(username, "");
 		db.createProjectGroup(projectname);
 		db.addUserToProject(projectname, username);
@@ -500,8 +500,8 @@ public class DatabaseTest {
 	
 	@Test
 	public void testDemoteUserProjectManager() throws SQLException {
-		String username = "user1";
-		String projectname = "group1";
+		String username = "_user1";
+		String projectname = "_group1";
 		db.addUser(username, "");
 		db.createProjectGroup(projectname);
 		db.addUserToProject(projectname, username);
@@ -516,8 +516,8 @@ public class DatabaseTest {
 	
 	@Test
 	public void testGetRole() throws SQLException {
-		String username = "user1";
-		String projectname = "group1";
+		String username = "_user1";
+		String projectname = "_group1";
 		db.addUser(username, "");
 		db.createProjectGroup(projectname);
 		db.addUserToProject(projectname, username);
@@ -526,6 +526,8 @@ public class DatabaseTest {
 		Role r = db.getRole(username, projectname);
 		assertEquals(r, Role.Architect);
 	}
+	
+	@Test
 	public void testGetProjectManagers() throws SQLException {
 		String manager = "_user1";
 		String user = "_user2";

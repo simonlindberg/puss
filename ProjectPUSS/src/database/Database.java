@@ -590,6 +590,10 @@ public class Database {
 			}
 			rs.close();
 			stmt.close();
+			
+			stmt = conn.createStatement();
+			stmt.executeUpdate("DELETE FROM Memberships WHERE Username='" + username + "'");
+			stmt.close();
 
 			stmt = conn.createStatement();
 			String statement = "DELETE FROM Users WHERE username='" + username + "'";
