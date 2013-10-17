@@ -80,6 +80,7 @@ public class ProjectAdmin extends ServletBase {
 			
 			html.printAddProjectGroupForm();
 			html.printProjectGroups(database.getProjects());
+			html.printLink("administration", "Administrera användare");
 			
 		} else {
 			// redirect to mainpage
