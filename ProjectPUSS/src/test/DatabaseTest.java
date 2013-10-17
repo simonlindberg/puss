@@ -389,7 +389,7 @@ public class DatabaseTest {
 		db.createTimeReport(report);
 		int id = 0;
 		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports limit 1");
+		ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports order by Id desc limit 1");
 		rs.next();
 		id = rs.getInt("Id");
 		rs.close();
@@ -514,6 +514,33 @@ public class DatabaseTest {
 		rs.close();
 	}
 	
+	@Test
+	public void testGetProjectManagersInProjectGroup() throws SQLException {
+		List<String> expectedUsers = Arrays.asList("_user1", "_user2");
+		List<String> actualUsers = new ArrayList<String>();
+		String projectname = "_project1";
+		db.createProjectGroup(projectname);
+		for (String s: expectedUsers) {
+			db.addUser(s, "");
+			db.addUserToProject(projectname, s);
+			db.setUserRole(s, projectname, Role.Manager);
+		}
+		db.addUser("_user3", "");
+		db.addUserToProject(projectname, "_user3");
+		db.setUserRole("_user3", projectname, null);
+		
+		ResultSet rs = conn.createStatement().executeQuery("SELECT Username FROM Memberships WHERE Role='" + Role.Manager.toString() + "'");
+		while (rs.next()) {
+			actualUsers.add(rs.getString("Username"));
+		}
+		
+		assertTrue(!actualUsers.contains("user3"));
+		for (int i = 0; i < expectedUsers.size(); i++) {
+			Assert.assertTrue(actualUsers.contains(expectedUsers.get(i)));
+		}
+		rs.close();
+	}
+		
 	@Test
 	public void testGetRole() throws SQLException {
 		String username = "_user1";
