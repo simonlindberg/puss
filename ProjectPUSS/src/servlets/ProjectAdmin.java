@@ -78,9 +78,10 @@ public class ProjectAdmin extends ServletBase {
 				
 			}
 			
+			html.printLink("administration", "Administrera användare");
 			html.printAddProjectGroupForm();
 			html.printProjectGroups(database.getProjects());
-			html.printLink("administration", "Administrera användare");
+			
 			
 		} else {
 			// redirect to mainpage
