@@ -33,9 +33,9 @@ public class MainPage extends ServletBase {
 		
 		html.printProjectChooser(projects.indexOf(currentProjectGroup), projects);
 		
-		html.printLink("create", "Skapa en ny tidrapport");
-		html.printLink("create", "Uppdatera en tidrapport");
-		html.printLink("list", "Lista tidrapporter");
+		html.printLink("timereport?page=create", "Skapa en ny tidrapport");
+		html.printLink("timereport?page=update", "Uppdatera en tidrapport");
+		html.printLink("list?page=delete", "Lista tidrapporter");
 		html.printLink("showmembers", "Visa medlemmar");
 		html.printLink("statistics", "Statistik");
 	}

@@ -9,8 +9,8 @@ import items.TimeReport;
 import items.User;
 
 import java.io.PrintWriter;
+import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +26,23 @@ public class HTMLWriter {
 	final static public String LOGIN_USERNAME = "username";
 	final static public String LOGIN_PASSWORD = "password";
 	final static public String PROJECT_CHOOSER = "select";
+	
+	final static public String ID = "id";
+	
+	final static public String SDP = "sdp";
+	final static public String SRS = "srs";
+	final static public String SVVS = "svvs";
+	final static public String STLDD = "stldd";
+	final static public String SVVI = "svvi";
+	final static public String SDDD = "sddd";
+	final static public String SVVR = "svvr";
+	final static public String SSD = "ssd";
+	final static public String PFR = "pfr";
+	final static public String FUNCTION_TEST = "functest";
+	final static public String SYSTEM_TEST= "systest";
+	final static public String REG_TEST = "regtest";
+	final static public String MEETING = "meeting";
+	final static public String WEEK = "week";
 
 	private PrintWriter writer;
 
@@ -52,7 +69,7 @@ public class HTMLWriter {
 		int week = timereport.getWeek();
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		Date date = new Date();
+		Date date = new Date(System.currentTimeMillis());
 		String time = sdf.format(date);
 		
 		int sdp = user.getTimeForActivity(ActivityType.SDP, week);
@@ -71,9 +88,12 @@ public class HTMLWriter {
 		
 		int sum = sdp+srs+svvs+stldd+svvi+sddd+svvr+ssd+pfr+functest+systest+regtest+meeting;
 		
+		String cmd = "";
+		if (command.equals(Command.show))
+			cmd = " readonly ";
+		
 		String html = "";
-		html += "<form method='post' action='e_puss'>";
-		html += "<input type='hidden' name='Command' value='InsertNew'>";
+		html += "<form method='post' action='create'>";
 		html += "	<table border='1'><tbody>";
 		html += "		<tr>";
 		html += "			<td><b>Name:</b></td><td>"+user.getUsername()+"</td>";
@@ -81,7 +101,7 @@ public class HTMLWriter {
 		html += "		</tr>";
 		html += "		<tr>";
 		html += "			<td><b>Projectgroup</b>:</td><td>"+timereport.getProjectGroup()+"</td>";
-		html += "			<td><b>Week:</b></td><td><input type='text' name='week' value='"+timereport.getWeek()+"' size='3'></td>";
+		html += "			<td><b>Week:</b></td><td><input"+cmd+"type='text' name='"+WEEK+"' value='"+timereport.getWeek()+"' size='3'></td>";
 		html += "		</tr>";
 		html += "		<tr><td colspan='3' bgcolor='lightgrey'><font size='+1'><b>Del A: Total tid denna vecka (minuter)</b></font></td>";
 		html += "		<td>"+sum+"</td></tr>";
@@ -91,47 +111,47 @@ public class HTMLWriter {
 		html += "		<tr>";
 		html += "			<td>11</td>";
 		html += "			<td colspan='2'>SDP</td>";
-		html += "			<td><i><input type='text' name='SDP' value='"+sdp+"' size='3'></i></td>";
+		html += "			<td><i><input"+cmd+" type='text' name='"+SDP+"' value='"+sdp+"' size='3'></i></td>";
 		html += "		</tr>";
 		html += "		<tr>";
 		html += "			<td>12</td>";
 		html += "			<td colspan='2'>SRS</td>";
-		html += "			<td><i><input type='text' name='SRS' value='"+srs+"' size='3'></i></td>";
+		html += "			<td><i><input"+cmd+" type='text' name='"+SRS+"' value='"+srs+"' size='3'></i></td>";
 		html += "		</tr>";
 		html += "		<tr>";
 		html += "			<td>13</td>";
 		html += "			<td colspan='2'>SVVS</td>";
-		html += "			<td><i><input type='text' name='SVVS' value='"+svvs+"' size='3'></i></td>";
+		html += "			<td><i><input"+cmd+" type='text' name='"+SVVS+"' value='"+svvs+"' size='3'></i></td>";
 		html += "		</tr>";
 		html += "		<tr>";
 		html += "			<td>14</td>";
 		html += "			<td colspan='2'>STLDD</td>";
-		html += "			<td><i><input type='text' name='STLDD' value='"+stldd+"' size='3'></i></td>";
+		html += "			<td><i><input"+cmd+" type='text' name='"+STLDD+"' value='"+stldd+"' size='3'></i></td>";
 		html += "		</tr>";
 		html += "		<tr>";
 		html += "			<td>15</td>";
 		html += "			<td colspan='2'>SVVI</td>";
-		html += "			<td><i><input type='text' name='SVVI' value='"+svvi+"' size='3'></i></td>";
+		html += "			<td><i><input"+cmd+" type='text' name='"+SVVI+"' value='"+svvi+"' size='3'></i></td>";
 		html += "		</tr>";
 		html += "		<tr>";
 		html += "			<td>16</td>";
 		html += "			<td colspan='2'>SDDD</td>";
-		html += "			<td><i><input type='text' name='SDDD' value='"+sddd+"' size='3'></i></td>";
+		html += "			<td><i><input"+cmd+" type='text' name='"+SDDD+"' value='"+sddd+"' size='3'></i></td>";
 		html += "		</tr>";
 		html += "		<tr>";
 		html += "			<td>17</td>";
 		html += "			<td colspan='2'>SVVR</td>";
-		html += "			<td><i><input type='text' name='SVVR' value='"+svvr+"' size='3'></i></td>";
+		html += "			<td><i><input"+cmd+" type='text' name='"+SVVR+"' value='"+svvr+"' size='3'></i></td>";
 		html += "		</tr>";
 		html += "		<tr>";
 		html += "			<td>18</td>";
 		html += "			<td colspan='2'>SSD</td>";
-		html += "			<td><i><input type='text' name='SSD' value='"+ssd+"' size='3'></i></td>";
+		html += "			<td><i><input"+cmd+" type='text' name='"+SSD+"' value='"+ssd+"' size='3'></i></td>";
 		html += "		</tr>";
 		html += "		<tr>";
 		html += "			<td>19</td>";
 		html += "			<td colspan='2'>PFR</td>";
-		html += "			<td><i><input type='text' name='PFR' value='"+pfr+"' size='3'></i></td>";
+		html += "			<td><i><input"+cmd+" type='text' name='"+PFR+"' value='"+pfr+"' size='3'></i></td>";
 		html += "		</tr>";
 		html += "		<tr>";
 		html += "			<td bgcolor='lightgrey' colspan='4'></td>	";
@@ -139,35 +159,36 @@ public class HTMLWriter {
 		html += "		<tr>";
 		html += "			<td>21</td>";
 		html += "			<td colspan='2'>Funktionstest</td>";
-		html += "			<td><i><input type='text' name='Funktionstest' value='"+functest+"' size='3'></i></td>";
+		html += "			<td><i><input"+cmd+" type='text' name='"+FUNCTION_TEST+"' value='"+functest+"' size='3'></i></td>";
 		html += "		</tr>";
 		html += "		<tr>";
 		html += "			<td>22</td>";
 		html += "			<td colspan='2'>Systemtest</td>";
-		html += "			<td><i><input type='text' name='Systemtest' value='"+systest+"' size='3'></i></td>";
+		html += "			<td><i><input"+cmd+" type='text' name='"+SYSTEM_TEST+"' value='"+systest+"' size='3'></i></td>";
 		html += "		</tr>";
 		html += "		<tr>";
 		html += "			<td>23</td>";
 		html += "			<td colspan='2'>Regressionstest</td>";
-		html += "			<td><i><input type='text' name='Regressionstest' value='"+regtest+"' size='3'></i></td>";
+		html += "			<td><i><input"+cmd+" type='text' name='"+REG_TEST+"' value='"+regtest+"' size='3'></i></td>";
 		html += "		</tr>";
 		html += "		<tr>";
 		html += "			<td>30</td>";
 		html += "			<td colspan='2'>Möte</td>";
-		html += "			<td><i><input type='text' name='Mote' value='"+meeting+"' size='3'></i></td>";
+		html += "			<td><i><input"+cmd+" type='text' name='"+MEETING+"' value='"+meeting+"' size='3'></i></td>";
 		html += "		</tr>";
 		html += "		<tr><td colspan='4' bgcolor='lightgrey'><font size='+1'><b>Del C: Signatur</b></font></td></tr><tr>";
 		html += "		<tr><td colspan='3'><b>Signerad av manager</b></td><td>"+timereport.getSigned()+"</td></tr>";
 		html += "	</tbody></table>";
 		html += "	<input type='hidden' name='FormFields' value='SDP, SRS, SVVS, STLDD, SVVI, SDDD, SVVR, SSD, PFR, Funktionstest, Systemtest, Regressionstest, Mote'>";
 		
-		html += "	<input type='submit' value='Submit time report'>";
+		html += "	<input type='submit' name='submitreport' value='Submit time report'>";
 		if (role.equals(Role.Manager))
-			html += "	<input type='submit' value='Sign time report'>";
+			html += "	<input type='submit' name='signreport' value='Sign time report'>";
 		else
-			html += "	<input type='submit' value='Delete time report'>";
+			html += "	<input type='submit' name='deletereport' value='Delete time report'>";
 		
 		html += "</form>";
+		writer.print(html);
 	}
 
 	/**

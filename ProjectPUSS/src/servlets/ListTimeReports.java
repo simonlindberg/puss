@@ -24,7 +24,7 @@ import database.Database;
  * för alla.
  * 
  */
-@WebServlet("/TimeReports")
+@WebServlet("/list")
 public class ListTimeReports extends ServletBase {
 
 	@Override

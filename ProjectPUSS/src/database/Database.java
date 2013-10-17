@@ -166,28 +166,31 @@ public class Database {
 		}
 
 		// Extract and save into table:Activity
-		try {
-			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports WHERE WeekNumber="
-					+ timereport.getWeek() + " AND Username='" + timereport.getUser().getUsername()
-					+ "'");
-			rs.next();
-			int id = rs.getInt("Id");
-			stmt.close();
-			for (Activity a : timereport.getActivities()) {
-				stmt = conn.createStatement();
-				String statement = "INSERT INTO Activity (Id, ActivityName, ActivityNumber, MinutesWorked, Type) VALUES("
-						+ id + ",'" + a.getType().toString() + "', 0," + a.getLength() + ",'...')";
-				stmt.executeUpdate(statement);
+		if (timereport.getActivities() != null) {
+			// Activities will be null if we ar ecreating a new timereport
+			try {
+				Statement stmt = conn.createStatement();
+				ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports WHERE WeekNumber="
+						+ timereport.getWeek() + " AND Username='" + timereport.getUser().getUsername()
+						+ "'");
+				rs.next();
+				int id = rs.getInt("Id");
 				stmt.close();
+				for (Activity a : timereport.getActivities()) {
+					stmt = conn.createStatement();
+					String statement = "INSERT INTO Activity (Id, ActivityName, ActivityNumber, MinutesWorked, Type) VALUES("
+							+ id + ",'" + a.getType().toString() + "', 0," + a.getLength() + ",'...')";
+					stmt.executeUpdate(statement);
+					stmt.close();
+				}
+			} catch (SQLException ex) {
+				System.out.println("SQLException: " + ex.getMessage());
+				System.out.println("SQLState: " + ex.getSQLState());
+				System.out.println("VendorError: " + ex.getErrorCode());
+				return false;
 			}
-		} catch (SQLException ex) {
-			System.out.println("SQLException: " + ex.getMessage());
-			System.out.println("SQLState: " + ex.getSQLState());
-			System.out.println("VendorError: " + ex.getErrorCode());
-			return false;
 		}
-
+		
 		return true;
 	}
 
