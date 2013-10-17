@@ -229,7 +229,55 @@ public class Database {
 	 * @return true om det lyckas, annars false.
 	 */
 	public boolean updateTimeReport(TimeReport timereport) {
-		return false;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Id='" + timereport.getID() + "'");
+			if (!rs.next()) {
+				System.out.println("Id:"+timereport.getID());
+				return false;
+			}
+			stmt.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+
+		// Extract and save into table:TimeReports
+		try {
+			stmt = conn.createStatement();
+			String statement = "UPDATE TimeReports SET WeekNumber = '"+timereport.getWeek()+"',"
+					+ "Date = NOW(), SIGNED=0 WHERE Id='"+timereport.getID()+"'";
+			stmt.executeUpdate(statement);
+			stmt.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+			return false;
+		}
+
+		// Extract and save into table:Activity
+		try {
+			stmt = conn.createStatement();
+			String removeAll = "DELETE FROM Activity WHERE Id='"+timereport.getID()+"'";
+			stmt.executeUpdate(removeAll);
+			for (Activity a : timereport.getActivities()) {
+				stmt = conn.createStatement();				
+				String insertNew = "INSERT INTO Activity (Id, ActivityName, ActivityNumber, MinutesWorked, Type) VALUES("
+						+ timereport.getID() + ",'" + a.getType().toString() + "', 0," + a.getLength() + ",'...')";
+				stmt.executeUpdate(insertNew);
+				stmt.close();
+			}
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
