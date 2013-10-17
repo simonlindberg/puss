@@ -791,4 +791,24 @@ public class Database {
 		
 		return 0;
 	}
+
+	public List<TimeReport> getAllTimeReports(String projectGroup) {
+		List<TimeReport> reports = new ArrayList<TimeReport>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE AND GroupName='" + projectGroup + "'");
+			while (rs.next()) {
+				int id = rs.getInt("id");
+				reports.add(getTimeReport(id));
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+		return reports;
+	}
 }
