@@ -778,7 +778,7 @@ public class Database {
 				id = rs.getInt("Id");
 				stmt.close();
 				stmt = conn.createStatement();
-				rs = stmt.executeQuery("SELECT MinutesWorked FROM Activity WHERE Id=" + id);
+				rs = stmt.executeQuery("SELECT MinutesWorked FROM Activity WHERE Id=" + id + " AND ActivityName='" + type.toString() + "'");
 				if (rs.next()) {
 					return rs.getInt("MinutesWorked");
 				}
