@@ -543,4 +543,22 @@ public class DatabaseTest {
 		assertEquals(1, managers.size());
 		assertEquals(manager, managers.get(0).getUsername());
 	}
+	
+	@Test
+	public void testGetTimeForActivity() throws SQLException {
+		String user = "_user1";
+		String group = "_group1";
+		db.addUser(user, "");
+		db.createProjectGroup(group);
+		User u = db.getUser(user);
+		Activity a = new Activity(ActivityType.FunctionTest, 65);
+		List<Activity> activities = new ArrayList<Activity>();
+		activities.add(a);
+		TimeReport tr = new TimeReport(u, activities, false, 0, 1, group);
+		db.createTimeReport(tr);
+		
+		int time = u.getTimeForActivity(ActivityType.FunctionTest, 1);
+		assertEquals(65, time);
+		
+	}
 }
