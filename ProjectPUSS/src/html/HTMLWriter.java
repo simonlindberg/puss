@@ -81,7 +81,36 @@ public class HTMLWriter {
 	 *            rollen för den användare som anropade metoden.
 	 * 
 	 */
-	public void printUsers(List<User> users, Role role) {
+	public void printUsers(List<User> users, Role role, HashMap<String, Role> userRoles) {
+		if (users != null && users.size() > 0) {
+			writer.print("<table><tr><th>Användare</th><th>Roll</th><th></th></tr>");
+			for (User u : users) {
+				String extra = "";
+				if(role.equals(Role.Manager)){
+					extra =  "<select name=\"role\">";
+					for(Role r : Role.values()){
+						if(!r.equals(Role.Manager)){
+							Role userRole = userRoles.get(u.getUsername());
+							String selected = r.equals(userRole) ? "selected=selected" : "";
+							extra += "<option value=\""+r.toString()+"\""
+									+ " " + selected + ">"+r.toString()+"</option>";
+						}
+					}
+					extra += "</select>";
+							
+				}
+				writer.print("<tr><td>"
+						+ u.getUsername()
+						+ "</td><td>"
+						+ userRoles.get(u.getUsername())
+						+ "</td><td>"
+						+ 	extra
+						+ "</td></tr>");
+			}
+			writer.print("</table>");
+		} else {
+			printErrorMessage("Där finns inga medlemmar");
+		}
 	}
 
 	/**

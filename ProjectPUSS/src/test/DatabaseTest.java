@@ -389,7 +389,7 @@ public class DatabaseTest {
 		db.createTimeReport(report);
 		int id = 0;
 		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports limit 1");
+		ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports ORDER BY Id DESC limit 1");
 		rs.next();
 		id = rs.getInt("Id");
 		rs.close();
