@@ -456,9 +456,10 @@ public class Database {
 	 */
 	public boolean addUserToProject(String projectName, String username) {
 		try {
-			return conn.createStatement().execute(
-					"insert into Memberships (Username, Groupname) values ('" + username + "', '"
-							+ projectName + "')");
+			String realname = getUser(username).getUsername();
+			return conn.createStatement().executeUpdate(
+					"insert into Memberships (Username, Groupname) values ('" + realname + "', '"
+							+ projectName + "')") == 1;
 		} catch (SQLException e) {
 			System.out.println("");
 			e.printStackTrace();
@@ -480,9 +481,9 @@ public class Database {
 	 */
 	public boolean deleteUserFromProject(String projectName, String userName) {
 		try {
-			return conn.createStatement().execute(
+			return conn.createStatement().executeUpdate(
 					"delete from Memberships where Groupname='" + projectName + "' AND Username='"
-							+ userName + "'");
+							+ userName + "'") == 1;
 		} catch (SQLException e) {
 			System.out.println("");
 			e.printStackTrace();
@@ -589,6 +590,10 @@ public class Database {
 				deleteTimeReport(id);
 			}
 			rs.close();
+			stmt.close();
+			
+			stmt = conn.createStatement();
+			stmt.executeUpdate("DELETE FROM Memberships WHERE Username='" + username + "'");
 			stmt.close();
 
 			stmt = conn.createStatement();

@@ -498,7 +498,7 @@ public class HTMLWriter {
 			writer.print("<table><tr><th>Projektgrupper</th><th></th></tr>");
 			for (String s : groups) {
 				writer.print("<tr><td>"
-						+ "<a href=\"projectoverview?groupName="
+						+ "<a href=\"projectoverview?project="
 						+ s
 						+ "\">" + s + "</a>"
 						+ "</td><td><a href=\"projectadmin?action=removeProjectGroup&projectName="
@@ -533,29 +533,30 @@ public class HTMLWriter {
 	public void printProjectGroupMembers(List<User> users,
 			List<User> projectManagers, String projectName) {
 		if (!(users.size() == 0 && projectManagers.size() == 0)) {
-			writer.print("<table><tr><th>Användarnamn</th><th></th><th></th></tr>");
+			writer.print("<table><tr><th>Projektledare</th><th></th><th></th></tr>");
 			for (User u : projectManagers) {
 				writer.print("<tr><td>"
 						+ u.getUsername()
-						+ "</td><td><a href=\"/ProjectPUSS/projectoverview?action=makeUser&project="
+						+ "</td><td><a href=\"projectoverview?action=demoteUser&project="
 						+ projectName
 						+ "&username="
 						+ u.getUsername()
 						+ "\">Gör till användare</a></td><td>"
-						+ "<a href=\"/ProjectPUSS/projectoverview?action=deleteUser&project="
+						+ "<a href=\"projectoverview?action=deleteUser&project="
 						+ projectName + "&username=" + u.getUsername()
 						+ "\">Ta bort</a>" + "</td></tr>");
 			}
+			writer.print("<tr><th>Användare</th><th></th><th></th></tr>");
 			for (User u : users) {
 				if (!projectManagers.contains(u)) {
 					writer.print("<tr><td>"
 							+ u.getUsername()
-							+ "</td><td><a href=\"/ProjectPUSS/projectoverview?action=makeManager&project="
+							+ "</td><td><a href=\"projectoverview?action=promoteUser&project="
 							+ projectName
 							+ "&username="
 							+ u.getUsername()
 							+ "\">Gör till projektledare</a></td><td>"
-							+ "<a href=\"/ProjectPUSS/projectoverview?action=deleteUser&project="
+							+ "<a href=\"projectoverview?action=deleteUser&project="
 							+ projectName + "&username=" + u.getUsername()
 							+ "\">Ta bort</a>" + "</td></tr>");
 				}

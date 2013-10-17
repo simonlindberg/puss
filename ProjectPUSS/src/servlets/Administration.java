@@ -38,6 +38,9 @@ public class Administration extends ServletBase {
      * @return True if the username corresponds to the requirements
      */
     private boolean checkNewName(String name) {
+    	if (Database.ADMIN.equals(name)) {
+    		return false;
+    	}
     	int length = name.length();
     	boolean ok = (length>=5 && length<=10);
     	if (ok)
