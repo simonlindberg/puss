@@ -373,7 +373,26 @@ public class Database {
 	 * 
 	 */
 	public List<User> getProjectManagersInProject(String projectName) {
+		List<User> managers = new ArrayList<User>();
+		
+		try {
+			ResultSet rs = conn.createStatement().executeQuery(
+					"SELECT * FROM Memberships WHERE Groupname='" + 
+					projectName + "' AND Role='" + Role.Manager.toString() + "'");
+			
+			while(rs.next()) {
+				managers.add(new User(rs.getString("Username"), ""));
+			}
+			
+			return managers;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return null;
+	
 	}
 
 	/**

@@ -478,4 +478,23 @@ public class DatabaseTest {
 		assertEquals(rs.getString("Role"), "null");
 		rs.close();
 	}
+	
+	@Test
+	public void testGetProjectManagers() throws SQLException {
+		String manager = "_user1";
+		String user = "_user2";
+		String projectname = "_group1";
+		db.addUser(manager, "");
+		db.addUser(user, "");
+		db.createProjectGroup(projectname);
+		db.addUserToProject(projectname, manager);
+		db.addUserToProject(projectname, user);
+		db.setUserRole(manager, projectname, Role.Manager);
+		
+		List<User> managers = db.getProjectManagersInProject(projectname);
+		assertEquals(1, managers.size());
+		assertEquals(manager, managers.get(0).getUsername());
+		
+		
+	}
 }
