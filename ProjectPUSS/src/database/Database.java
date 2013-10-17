@@ -730,7 +730,7 @@ public class Database {
 			Role r = Role.valueOf(role);
 			return r;
 		} catch (Exception e) {
-			return null;
+			return Role.NoRole;
 		}
 
 	}
@@ -781,7 +781,7 @@ public class Database {
 				id = rs.getInt("Id");
 				stmt.close();
 				stmt = conn.createStatement();
-				rs = stmt.executeQuery("SELECT MinutesWorked FROM Activity WHERE Id=" + id);
+				rs = stmt.executeQuery("SELECT MinutesWorked FROM Activity WHERE Id=" + id + " AND ActivityName='" + type.toString() + "'");
 				if (rs.next()) {
 					return rs.getInt("MinutesWorked");
 				}

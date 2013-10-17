@@ -389,7 +389,7 @@ public class DatabaseTest {
 		db.createTimeReport(report);
 		int id = 0;
 		Statement stmt = conn.createStatement();
-		ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports order by Id desc limit 1");
+		ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports ORDER BY Id DESC limit 1");
 		rs.next();
 		id = rs.getInt("Id");
 		rs.close();
@@ -578,14 +578,38 @@ public class DatabaseTest {
 		db.addUser(user, "");
 		db.createProjectGroup(group);
 		User u = db.getUser(user);
-		Activity a = new Activity(ActivityType.FunctionTest, 65);
+		Activity a1 = new Activity(ActivityType.FunctionTest, 65);
 		List<Activity> activities = new ArrayList<Activity>();
-		activities.add(a);
+		activities.add(a1);
+		TimeReport tr = new TimeReport(u, activities, false, 0, 1, group);
+		db.createTimeReport(tr);
+		
+		int time = u.getTimeForActivity(ActivityType.FunctionTest, 1);
+		assertEquals(65, time);
+	}
+	
+	@Test
+	public void testGetTimeForActivityMultiple() throws SQLException {
+		String user = "_user1";
+		String group = "_group1";
+		db.addUser(user, "");
+		db.createProjectGroup(group);
+		User u = db.getUser(user);
+		Activity a1 = new Activity(ActivityType.FunctionTest, 65);
+		Activity a2 = new Activity(ActivityType.Meeting, Integer.MAX_VALUE);
+		List<Activity> activities = new ArrayList<Activity>();
+		activities.add(a1);
+		activities.add(a2);
 		TimeReport tr = new TimeReport(u, activities, false, 0, 1, group);
 		db.createTimeReport(tr);
 		
 		int time = u.getTimeForActivity(ActivityType.FunctionTest, 1);
 		assertEquals(65, time);
 		
+		assertEquals(0, u.getTimeForActivity(ActivityType.SDP, 1));
+		
+		assertEquals(Integer.MAX_VALUE, u.getTimeForActivity(ActivityType.Meeting, 1));
+		
+		assertEquals(0, u.getTimeForActivity(ActivityType.Meeting, 2));
 	}
 }

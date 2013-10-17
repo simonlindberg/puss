@@ -7,5 +7,5 @@ package items;
  * 
  */
 public enum Role {
-	Developer, Manager, Tester, Architect,
+	Developer, Manager, Tester, Architect, NoRole,
 }

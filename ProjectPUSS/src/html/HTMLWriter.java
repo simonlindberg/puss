@@ -10,6 +10,8 @@ import items.User;
 
 import java.io.PrintWriter;
 import java.sql.Date;
+import java.util.Collections;
+import java.util.Comparator;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +46,10 @@ public class HTMLWriter {
 	final static public String MEETING = "meeting";
 	final static public String WEEK = "week";
 
+	final static public String SELECT_USERROLE = "role_for_";
+	final static public String SUBMIT_UPDATE_ROLE = "updateRoles";
+	
+
 	private PrintWriter writer;
 
 	/**
@@ -67,11 +73,11 @@ public class HTMLWriter {
 	public void printTimeReport(TimeReport timereport, Command command, Role role) {
 		User user = timereport.getUser();
 		int week = timereport.getWeek();
-		
+
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date date = new Date(System.currentTimeMillis());
 		String time = sdf.format(date);
-		
+
 		int sdp = user.getTimeForActivity(ActivityType.SDP, week);
 		int srs = user.getTimeForActivity(ActivityType.SRS, week);
 		int svvs = user.getTimeForActivity(ActivityType.SVVS, week);
@@ -86,25 +92,26 @@ public class HTMLWriter {
 		int regtest = user.getTimeForActivity(ActivityType.RegressionTest, week);
 		int meeting = user.getTimeForActivity(ActivityType.Meeting, week);
 		
-		int sum = sdp+srs+svvs+stldd+svvi+sddd+svvr+ssd+pfr+functest+systest+regtest+meeting;
-		
 		String cmd = "";
 		if (command.equals(Command.show))
 			cmd = " readonly ";
-		
+
+		int sum = sdp + srs + svvs + stldd + svvi + sddd + svvr + ssd + pfr + functest + systest
+				+ regtest + meeting;
+
 		String html = "";
 		html += "<form method='post' action='create'>";
 		html += "	<table border='1'><tbody>";
 		html += "		<tr>";
-		html += "			<td><b>Name:</b></td><td>"+user.getUsername()+"</td>";
-		html += "			<td><b>Date:</b></td><td>"+time+"</td>";
+		html += "			<td><b>Name:</b></td><td>" + user.getUsername() + "</td>";
+		html += "			<td><b>Date:</b></td><td>" + time + "</td>";
 		html += "		</tr>";
 		html += "		<tr>";
 		html += "			<td><b>Projectgroup</b>:</td><td>"+timereport.getProjectGroup()+"</td>";
 		html += "			<td><b>Week:</b></td><td><input"+cmd+"type='text' name='"+WEEK+"' value='"+timereport.getWeek()+"' size='3'></td>";
 		html += "		</tr>";
 		html += "		<tr><td colspan='3' bgcolor='lightgrey'><font size='+1'><b>Del A: Total tid denna vecka (minuter)</b></font></td>";
-		html += "		<td>"+sum+"</td></tr>";
+		html += "		<td>" + sum + "</td></tr>";
 		html += "		<tr><td colspan='4' bgcolor='lightgrey' nowrap=''><font size='+1'><b>Del B: Antalet minuter per aktivitet</b></font>";
 		html += "		<br>(Summan av alla separata aktiviteter räknas ut automatiskt och fylls i ovan.)</td></tr>";
 		html += "		<tr><th>Nummer</th><th colspan='2'>Aktivitet</th><th>Total tid</th></tr>";
@@ -177,16 +184,15 @@ public class HTMLWriter {
 		html += "			<td><i><input"+cmd+" type='text' name='"+MEETING+"' value='"+meeting+"' size='3'></i></td>";
 		html += "		</tr>";
 		html += "		<tr><td colspan='4' bgcolor='lightgrey'><font size='+1'><b>Del C: Signatur</b></font></td></tr><tr>";
-		html += "		<tr><td colspan='3'><b>Signerad av manager</b></td><td>"+timereport.getSigned()+"</td></tr>";
+		html += "		<tr><td colspan='3'><b>Signerad av manager</b></td><td>"
+				+ timereport.getSigned() + "</td></tr>";
 		html += "	</tbody></table>";
 		html += "	<input type='hidden' name='FormFields' value='SDP, SRS, SVVS, STLDD, SVVI, SDDD, SVVR, SSD, PFR, Funktionstest, Systemtest, Regressionstest, Mote'>";
-		
 		html += "	<input type='submit' name='submitreport' value='Submit time report'>";
 		if (role.equals(Role.Manager))
 			html += "	<input type='submit' name='signreport' value='Sign time report'>";
 		else
 			html += "	<input type='submit' name='deletereport' value='Delete time report'>";
-		
 		html += "</form>";
 		writer.print(html);
 	}
@@ -219,7 +225,41 @@ public class HTMLWriter {
 	 *            rollen för den användare som anropade metoden.
 	 * 
 	 */
-	public void printUsers(List<User> users, Role role) {
+	public void printUsers(List<User> users, Role role, HashMap<String, Role> userRoles) {
+		if (users != null && users.size() > 0) {
+			writer.print("<form action=\"showmembers\" method=\"POST\">");
+			writer.print("<table><tr><th>Användare</th><th>Roll</th><th></th></tr>");
+			String submitButton = "";
+			for (User u : users) {
+				String extra = "";
+				Role userRole = userRoles.get(u.getUsername());
+				if(role.equals(Role.Manager) && !userRole.equals(Role.Manager) ){
+					submitButton = "<input type=\"submit\" value=\"Uppdatera rollerna\" name=\""+HTMLWriter.SUBMIT_UPDATE_ROLE+"\" />";
+					extra =  "<select name=\"" +HTMLWriter.SELECT_USERROLE +u.getUsername()+"\">";
+					for(Role r : Role.values()){
+						if(!r.equals(Role.Manager)){
+							String selected = r.equals(userRole) ? "selected=selected" : "";
+							extra += "<option value=\""+r.toString()+"\""
+									+ " " + selected + ">"+r.toString()+"</option>";
+						}
+					}
+					extra += "</select>";
+							
+				}
+				writer.print("<tr><td>"
+						+ u.getUsername()
+						+ "</td><td>"
+						+ userRoles.get(u.getUsername())
+						+ "</td><td>"
+						+ 	extra
+						+ "</td></tr>");
+			}
+			writer.print("<tr><td colspan=\"3\" align=\"right\">"+submitButton+"</td></tr>");
+			writer.print("</table>");
+			writer.print("</form>");
+		} else {
+			printErrorMessage("Där finns inga medlemmar");
+		}
 	}
 
 	/**
@@ -247,6 +287,8 @@ public class HTMLWriter {
 		String xAxisName = gs.getXName();
 		String yAxisName = gs.getYName();
 
+		String title = "";
+
 		String html = "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.min.js\"></script>";
 		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.jqplot.min.js\"></script>";
 		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.barRenderer.min.js\"></script>";
@@ -262,12 +304,12 @@ public class HTMLWriter {
 
 		html += "<script>";
 		html += "$.jqplot.config.enablePlugins = true;";
-		// html += "var s1 = [['a',2],['b',6],['c',7],['d',10]];";
 
 		html += "var s1 = [";
 
 		switch (gs.getGraphType()) {
 		case "userWeekTime":
+			title = "Spenderad tid per vecka";
 			for (int i = 0; i < timeReports.size(); i++) {
 
 				List<Activity> activities = timeReports.get(i).getActivities();
@@ -284,7 +326,8 @@ public class HTMLWriter {
 
 			break;
 
-		case "ActivityTime":
+		case "activityTime":
+			title = "Spenderad tid per aktivitet";
 			HashMap<ActivityType, Integer> actTimes = new HashMap<ActivityType, Integer>();
 
 			for (int i = 0; i < timeReports.size(); i++) {
@@ -308,7 +351,8 @@ public class HTMLWriter {
 			html = html.substring(0, html.length() - 1);
 
 			break;
-		case "PlUserTime":
+		case "plUserTime":
+			title = "Spenderad tid per gruppmedlem";
 			HashMap<User, Integer> userTimes = new HashMap<User, Integer>();
 
 			for (int i = 0; i < timeReports.size(); i++) {
@@ -342,6 +386,9 @@ public class HTMLWriter {
 		html += "];";
 
 		html += "plot1 = $.jqplot('chart', [s1], {";
+
+		html += "	title:'" + title + "',";
+
 		html += "	animate: !$.jqplot.use_excanvas,";
 		html += "	seriesDefaults:{";
 		html += "		renderer:$.jqplot.BarRenderer,";
@@ -403,6 +450,8 @@ public class HTMLWriter {
 		String xAxisName = gs.getXName();
 		String yAxisName = gs.getYName();
 
+		String title = "";
+
 		String html = "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.min.js\"></script>";
 		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.jqplot.min.js\"></script>";
 		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.highlighter.min.js\"></script>";
@@ -421,36 +470,101 @@ public class HTMLWriter {
 
 		html += "<script>";
 
-		html += "var line=[['23-May-08', 578.55], ['20-Jun-08', 566.5], ['25-Jul-08', 480.88], ['22-Aug-08', 509.84],";
-		html += "	['26-Sep-08', 454.13], ['24-Oct-08', 379.75], ['21-Nov-08', 303], ['26-Dec-08', 308.56],";
-		html += "	['23-Jan-09', 299.14], ['20-Feb-09', 346.51], ['20-Mar-09', 325.99], ['24-Apr-09', 386.15]];";
+		// html +=
+		// "var line=[['23-May-08', 578.55], ['20-Jun-08', 566.5], ['25-Jul-08', 480.88], ['22-Aug-08', 509.84],";
+		// html +=
+		// "	['26-Sep-08', 454.13], ['24-Oct-08', 379.75], ['21-Nov-08', 303], ['26-Dec-08', 308.56],";
+		// html +=
+		// "	['23-Jan-09', 299.14], ['20-Feb-09', 346.51], ['20-Mar-09', 325.99], ['24-Apr-09', 386.15]];";
+
+		html += "var line = [";
+
+		int totalTime;
 
 		switch (gs.getGraphType()) {
 		case "weekBurnDown":
+			title = "Burn down chart för tid mellan specifierade veckor";
+			totalTime = 0;
+
+			Collections.sort(timeReports, new Comparator<TimeReport>() {
+				@Override
+				public int compare(final TimeReport object1, final TimeReport object2) {
+					return object1.getWeek() - object2.getWeek();
+				}
+			});
+
 			for (int i = 0; i < timeReports.size(); i++) {
 
+				List<Activity> activities = timeReports.get(i).getActivities();
+
+				for (Activity a : activities) {
+					totalTime += a.getLength();
+				}
+
 			}
+
+			for (int i = 0; i < timeReports.size(); i++) {
+				int weekTime = 0;
+
+				List<Activity> activities = timeReports.get(i).getActivities();
+
+				for (Activity a : activities) {
+					weekTime += a.getLength();
+				}
+
+				html += "[" + timeReports.get(i).getWeek() + "," + totalTime + "],";
+
+				totalTime = totalTime - weekTime;
+			}
+
+			html = html.substring(0, html.length() - 1);
+
 			break;
 		case "activityBurnDown":
-			for (int i = 0; i < timeReports.size(); i++) {
 
+			title = "Burn down chart för specifierad aktivitet";
+			totalTime = 0;
+			for (int i = 0; i < timeReports.size(); i++) {
+				List<Activity> activities = timeReports.get(i).getActivities();
+
+				Activity act = activities.get(gs.getYType());
+
+				totalTime += act.getLength();
 			}
+
+			for (int i = 0; i < timeReports.size(); i++) {
+				List<Activity> activities = timeReports.get(i).getActivities();
+
+				Activity act = activities.get(gs.getYType());
+
+				html += "[" + timeReports.get(i).getWeek() + "," + totalTime + "],";
+
+				totalTime = totalTime - act.getLength();
+			}
+
+			html = html.substring(0, html.length() - 1);
+
 			break;
 		case "userBurnDown":
+
+			title = "Burn down chart för specifierad användare";
 			for (int i = 0; i < timeReports.size(); i++) {
 
 			}
 			break;
 		}
 
+		html += "];";
+
 		html += "var plot1 = $.jqplot('chart', [line], {";
 		html += "	animate: !$.jqplot.use_excanvas,";
-		html += "	title:'Data Point Highlighting',";
+
+		html += "	title:'" + title + "',";
+
 		html += "	axes:{";
 		html += "		xaxis:{";
 		html += "			renderer:$.jqplot.DateAxisRenderer,";
 		html += "			tickOptions:{";
-		html += "				formatString:'%b&nbsp;%#d',";
 		html += "				labelPosition: 'middle'";
 		html += "			},";
 		html += "			tickRenderer:$.jqplot.CanvasAxisTickRenderer,";
@@ -466,7 +580,6 @@ public class HTMLWriter {
 		html += "		},";
 		html += "		yaxis:{";
 		html += "			tickOptions:{";
-		html += "				formatString:'$%.2f',";
 		html += "				labelPosition: 'middle'";
 		html += "			},";
 		html += "			tickRenderer:$.jqplot.CanvasAxisTickRenderer,";
@@ -503,8 +616,8 @@ public class HTMLWriter {
 	 */
 	public void printHead(User user) {
 		writer.print("<html><head><meta charset=\"latin1\"><title>E-PUSS 1301</title></head><body><h1>E-PUSS 1301</h1>");
-		if(user != null){
-			writer.print("<p>Hejsan " + user.getUsername()+ "! Tryck ");
+		if (user != null) {
+			writer.print("<p>Hejsan " + user.getUsername() + "! Tryck ");
 			printLink("login", "här");
 			writer.print(" om du vill logga ut.</p>");
 		}
@@ -599,10 +712,8 @@ public class HTMLWriter {
 		if (groups != null && groups.size() > 0) {
 			writer.print("<table><tr><th>Projektgrupper</th><th></th></tr>");
 			for (String s : groups) {
-				writer.print("<tr><td>"
-						+ "<a href=\"projectoverview?project="
-						+ s
-						+ "\">" + s + "</a>"
+				writer.print("<tr><td>" + "<a href=\"projectoverview?project=" + s + "\">" + s
+						+ "</a>"
 						+ "</td><td><a href=\"projectadmin?action=removeProjectGroup&projectName="
 						+ s + "\">Ta bort</a></td></tr>");
 			}
@@ -637,30 +748,22 @@ public class HTMLWriter {
 		if (!(users.size() == 0 && projectManagers.size() == 0)) {
 			writer.print("<table><tr><th>Projektledare</th><th></th><th></th></tr>");
 			for (User u : projectManagers) {
-				writer.print("<tr><td>"
-						+ u.getUsername()
+				writer.print("<tr><td>" + u.getUsername()
 						+ "</td><td><a href=\"projectoverview?action=demoteUser&project="
-						+ projectName
-						+ "&username="
-						+ u.getUsername()
-						+ "\">Gör till användare</a></td><td>"
-						+ "<a href=\"projectoverview?action=deleteUser&project="
 						+ projectName + "&username=" + u.getUsername()
-						+ "\">Ta bort</a>" + "</td></tr>");
+						+ "\">Gör till användare</a></td><td>"
+						+ "<a href=\"projectoverview?action=deleteUser&project=" + projectName
+						+ "&username=" + u.getUsername() + "\">Ta bort</a>" + "</td></tr>");
 			}
 			writer.print("<tr><th>Användare</th><th></th><th></th></tr>");
 			for (User u : users) {
 				if (!projectManagers.contains(u)) {
-					writer.print("<tr><td>"
-							+ u.getUsername()
+					writer.print("<tr><td>" + u.getUsername()
 							+ "</td><td><a href=\"projectoverview?action=promoteUser&project="
-							+ projectName
-							+ "&username="
-							+ u.getUsername()
-							+ "\">Gör till projektledare</a></td><td>"
-							+ "<a href=\"projectoverview?action=deleteUser&project="
 							+ projectName + "&username=" + u.getUsername()
-							+ "\">Ta bort</a>" + "</td></tr>");
+							+ "\">Gör till projektledare</a></td><td>"
+							+ "<a href=\"projectoverview?action=deleteUser&project=" + projectName
+							+ "&username=" + u.getUsername() + "\">Ta bort</a>" + "</td></tr>");
 				}
 			}
 			writer.print("</table>");
