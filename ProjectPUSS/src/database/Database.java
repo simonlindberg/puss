@@ -103,12 +103,14 @@ public class Database {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM Timereports WHERE " + "Username='"
-					+ userID + "' AND GroupName='" + projectGroup + "'");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Username='"+userID+"'");
+			System.out.println("Username:"+userID + "\nproject:"+projectGroup);
 			while (rs.next()) {
+				System.out.println("row: " + rs.getRow());
 				int id = rs.getInt("id");
 				reports.add(getTimeReport(id));
 			}
+			rs.close();
 			stmt.close();
 		} catch (SQLException ex) {
 			System.out.println("SQLException: " + ex.getMessage());

@@ -351,7 +351,6 @@ public class DatabaseTest {
 	}
 	
 	@Test
-
 	public void testGetTimeReport() throws SQLException {
 		List<Activity> activity = new ArrayList<Activity>();
 		activity.add(new Activity(ActivityType.SRS, 60));
@@ -384,6 +383,43 @@ public class DatabaseTest {
 		assertEquals(tr.getSigned(), report.getSigned());
 		assertEquals(tr.getUser().getUsername(), report.getUser().getUsername());
 		assertEquals(tr.getWeek(), report.getWeek());
+	}
+	
+	@Test
+	public void testGetTimeReports() throws SQLException {
+		List<Activity> activity = new ArrayList<Activity>();
+		activity.add(new Activity(ActivityType.SRS, 60));
+		db.createProjectGroup("testgroup");
+		User u = new User("Oskar", "");
+		TimeReport report1 = new TimeReport(u, activity, false, 0, 1,
+				"testgroup");
+		
+		TimeReport report2 = new TimeReport(u, activity, false, 0, 1,
+				"testgroup");
+
+		
+		db.addUser("Oskar", "");
+		db.createTimeReport(report1);
+		db.createTimeReport(report2);		
+		Statement stmt;
+		int[] id = new int[2];
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports ORDER BY Id DESC LIMIT 2");
+			int i=0;
+			while(rs.next()){
+				id[i++] = rs.getInt("Id");
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		List<TimeReport> timereports = db.getTimeReports(u.getUsername(), "testgroup");
+		assertEquals(timereports.get(0).getID(), id[0]);
+		assertEquals(timereports.get(1).getID(), id[1]);
+		
 	}
 	@Test
 	public void testDeleteProjectGroup() throws SQLException {
