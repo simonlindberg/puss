@@ -755,4 +755,38 @@ public class Database {
 		}
 		return null;
 	}
+	
+	/**
+	* Hämtar för en specifik användare tiden för en viss aktivitet under en given vecka.
+	*
+	* @param user
+	*		användaren som man försöker hämta tiden från.
+	* @param type
+	*		aktiviteten som man försöker hämta tiden från.
+	* @param week
+	*		vecka som man försöker hämta tiden från.
+	*
+	* @return Tiden som användaren spenderat på aktiviteten.
+	*
+	*/
+	public int getTimeForActivity(User user, ActivityType type, int week) {
+		int id = 0;
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports WHERE Username='" + user.getUsername() + "' AND WeekNumber=" + week);
+			if (rs.next()) {
+				id = rs.getInt("Id");
+				stmt.close();
+				stmt = conn.createStatement();
+				rs = stmt.executeQuery("SELECT MinutesWorked FROM Activity WHERE Id=" + id + " AND ActivityName='" + type.toString() + "'");
+				if (rs.next()) {
+					return rs.getInt("MinutesWorked");
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
 }
