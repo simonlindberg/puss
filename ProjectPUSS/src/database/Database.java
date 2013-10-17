@@ -456,8 +456,9 @@ public class Database {
 	 */
 	public boolean addUserToProject(String projectName, String username) {
 		try {
+			String realname = getUser(username).getUsername();
 			return conn.createStatement().executeUpdate(
-					"insert into Memberships (Username, Groupname) values ('" + username + "', '"
+					"insert into Memberships (Username, Groupname) values ('" + realname + "', '"
 							+ projectName + "')") == 1;
 		} catch (SQLException e) {
 			System.out.println("");

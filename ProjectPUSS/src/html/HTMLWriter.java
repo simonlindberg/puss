@@ -504,7 +504,7 @@ public class HTMLWriter {
 	public void printProjectGroupMembers(List<User> users,
 			List<User> projectManagers, String projectName) {
 		if (!(users.size() == 0 && projectManagers.size() == 0)) {
-			writer.print("<table><tr><th>Användarnamn</th><th></th><th></th></tr>");
+			writer.print("<table><tr><th>Projektledare</th><th></th><th></th></tr>");
 			for (User u : projectManagers) {
 				writer.print("<tr><td>"
 						+ u.getUsername()
@@ -517,6 +517,7 @@ public class HTMLWriter {
 						+ projectName + "&username=" + u.getUsername()
 						+ "\">Ta bort</a>" + "</td></tr>");
 			}
+			writer.print("<tr><th>Användare</th><th></th><th></th></tr>");
 			for (User u : users) {
 				if (!projectManagers.contains(u)) {
 					writer.print("<tr><td>"
