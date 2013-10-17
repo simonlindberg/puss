@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.sql.Date;
 import java.util.Collections;
 import java.util.Comparator;
+import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -28,9 +29,7 @@ public class HTMLWriter {
 	final static public String LOGIN_USERNAME = "username";
 	final static public String LOGIN_PASSWORD = "password";
 	final static public String PROJECT_CHOOSER = "select";
-	
 	final static public String LIST_COMMAND = "command";
-	
 	final static public String ID = "id";
 	
 	final static public String SDP = "sdp";
@@ -51,7 +50,6 @@ public class HTMLWriter {
 	final static public String SELECT_USERROLE = "role_for_";
 	final static public String SUBMIT_UPDATE_ROLE = "updateRoles";
 	
-
 	private PrintWriter writer;
 
 	/**
@@ -213,9 +211,9 @@ public class HTMLWriter {
 		if (role.equals(Role.Manager))
 			writer.print("<input type='submit' name='signreport' value='"
 					+ (timereport.getSigned() ? "Avsignera " : "Signera") + " tidrapport'>");
-		else
+		
+		writer.print("</form>");
 
-			writer.print("</form>");
 	}
 
 	/**
@@ -232,7 +230,59 @@ public class HTMLWriter {
 	 * 
 	 */
 	public void printTimeReports(List<TimeReport> timereports, Command command, Role role) {
-		writer.print("TEST");
+		if(timereports.size() == 0){
+			printErrorMessage("Inga tidrapporter! Gå tillbaka till <a href=\"mainpage\">huvudsidan</a> och skapa en först.");
+		} else {
+			if (command.equals(Command.sign)) {
+				writer.print("<form method=\"POST\" action=\"listreports\">");
+			} else {
+				writer.print("<form action=\"timereport\">");
+			}
+			writer.print("<input type=\"hidden\" value=\"" + command.toString()+ "\" name=\"" + LIST_COMMAND + "\">");
+			writer.print("<table border=\"1\">");
+			writer.print("<thead><tr><th>!</th><th>Användare</th><th>Senast uppdaterad</th><th>Vecka</th><th>Total tid</th><th>Signerad</th></tr></thead>");
+			writer.print("<tbody>");
+			
+			for (TimeReport tr : timereports) {
+				writer.print("<tr>");
+				writer.print("<td><input type=\"radio\" name=\""+ ID +"\" value=" + tr.getID() + ">" + "</td>");
+				writer.print("<td>" +tr.getUser().getUsername()+ "</td>");
+				writer.print("<td>" +tr.getDate() + "</td>");
+				writer.print("<td>" + tr.getWeek()+ "</td>");
+				writer.print("<td>" + sum(tr) + "</td>");
+				writer.print("<td>" + (tr.getSigned() ? "JA" : "NEJ") + "</td>");
+				writer.print("</tr>");
+			}
+			
+			writer.print("</tbody>");
+			writer.print("</table>");
+
+			writer.print("<input type=\"submit\" value=\"" + submitName(command) + "\">");
+
+			writer.print("</form>");
+		}
+	}
+	
+	private String submitName(Command c){
+		switch (c) {
+		case delete:
+			return "Ta bort";
+		case show:
+			return "Visa";
+		case sign:
+			return "Signera/Avsignera";
+		case update:
+			return "Uppdatera";
+		default:
+			return "Kör";
+		}
+	}
+	
+	private int sum(TimeReport tr){
+		int sum = 0;
+		for(Activity a: tr.getActivities())
+			sum += a.getLength();
+		return sum;
 	}
 
 	/**
@@ -637,8 +687,8 @@ public class HTMLWriter {
 	 */
 	public void printHead(User user) {
 		writer.print("<html><head><meta charset=\"latin1\"><title>E-PUSS 1301</title></head><body><h1>E-PUSS 1301</h1>");
-		if (user != null) {
-			writer.print("<p>Hejsan " + user.getUsername() + "! Tryck ");
+		if(user != null){
+			writer.print("<p>Hejsan <b>" + user.getUsername()+ "</b>! Tryck ");
 			printLink("login", "här");
 			writer.print(" om du vill logga ut.</p>");
 		}

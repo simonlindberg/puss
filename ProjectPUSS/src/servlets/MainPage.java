@@ -1,6 +1,8 @@
 package servlets;
 
 import html.HTMLWriter;
+import items.Command;
+import items.Role;
 import items.User;
 
 import java.io.IOException;
@@ -28,15 +30,21 @@ public class MainPage extends ServletBase {
 		List<String> projects = database.getProjects(user);
 
 		String currentProjectGroup = (String) session.getAttribute(PROJECT);
-		System.out.println(currentProjectGroup);
 		currentProjectGroup = currentProjectGroup == null ? projects.get(0) : currentProjectGroup;
 
-		if (projects.size() > 0) {
-			html.printProjectChooser(projects.indexOf(currentProjectGroup), projects);
 
-			//html.printLink("timereport?"+HTMLWriter.LIST_COMMAND, "Skapa en ny tidrapport");
-			html.printLink("timereport", "Uppdatera en tidrapport");
-			html.printLink("list", "Lista tidrapporter");
+		if (projects.size() > 0) {
+			
+			html.printProjectChooser(projects.indexOf(currentProjectGroup), projects);
+			Role role = database.getRole(user.getUsername(), currentProjectGroup);
+			
+			html.printLink("create", "Skapa en ny tidrapport");
+			html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.update.toString(), "Uppdatera en tidrapport");
+			html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.show.toString(), "Visa tidrapporter");
+			html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.delete.toString(), "Ta bort tidrapporter");
+			if (Role.Manager.equals(role)){
+				html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.sign.toString(), "Ta bort tidrapporter");
+			}
 			html.printLink("showmembers", "Visa medlemmar");
 			html.printLink("statistics", "Statistik");
 		} else {
