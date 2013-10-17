@@ -10,6 +10,8 @@ import items.TimeReport;
 import items.User;
 
 import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -107,6 +109,7 @@ public class HTMLWriter {
 	public void printGraph(List<TimeReport> timeReports, GraphSettings gs) {
 		String xAxisName = gs.getXName();
 		String yAxisName = gs.getYName();
+		String title = "";
 		
 		String html = "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.min.js\"></script>";
 		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.jqplot.min.js\"></script>";
@@ -123,12 +126,12 @@ public class HTMLWriter {
 
 		html += "<script>";
 		html += "$.jqplot.config.enablePlugins = true;";
-		//html += "var s1 = [['a',2],['b',6],['c',7],['d',10]];";
 		
 		html += "var s1 = [";
 
 		switch (gs.getGraphType()) {
 		case "userWeekTime":
+			title = "Spenderad tid per vecka";
 			for (int i = 0; i < timeReports.size(); i++) {
 
 				List<Activity> activities = timeReports.get(i).getActivities();
@@ -147,6 +150,7 @@ public class HTMLWriter {
 			break;
 
 		case "activityTime":
+			title = "Spenderad tid per aktivitet";
 			HashMap<ActivityType, Integer> actTimes = new HashMap<ActivityType, Integer>();
 
 			for (int i = 0; i < timeReports.size(); i++) {
@@ -172,6 +176,7 @@ public class HTMLWriter {
 
 			break;
 		case "plUserTime":
+			title = "Spenderad tid per gruppmedlem";
 			HashMap<User, Integer> userTimes = new HashMap<User, Integer>();
 
 			for (int i = 0; i < timeReports.size(); i++) {
@@ -204,6 +209,9 @@ public class HTMLWriter {
 		html += "];";
 		  
 		html += "plot1 = $.jqplot('chart', [s1], {";
+		
+		html += "	title:'" + title + "',";
+		
 		html += "	animate: !$.jqplot.use_excanvas,";
 		html += "	seriesDefaults:{";
 		html += "		renderer:$.jqplot.BarRenderer,";
@@ -265,6 +273,7 @@ public class HTMLWriter {
 		
 		String xAxisName = gs.getXName();
 		String yAxisName = gs.getYName();
+		String title = "";
 		
 		String html = "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.min.js\"></script>";
 		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.jqplot.min.js\"></script>";
@@ -285,38 +294,96 @@ public class HTMLWriter {
 
 		html += "<script>";
 
-		html += "var line=[['23-May-08', 578.55], ['20-Jun-08', 566.5], ['25-Jul-08', 480.88], ['22-Aug-08', 509.84],";
-		html += "	['26-Sep-08', 454.13], ['24-Oct-08', 379.75], ['21-Nov-08', 303], ['26-Dec-08', 308.56],";
-		html += "	['23-Jan-09', 299.14], ['20-Feb-09', 346.51], ['20-Mar-09', 325.99], ['24-Apr-09', 386.15]];";
+		//html += "var line=[['23-May-08', 578.55], ['20-Jun-08', 566.5], ['25-Jul-08', 480.88], ['22-Aug-08', 509.84],";
+		//html += "	['26-Sep-08', 454.13], ['24-Oct-08', 379.75], ['21-Nov-08', 303], ['26-Dec-08', 308.56],";
+		//html += "	['23-Jan-09', 299.14], ['20-Feb-09', 346.51], ['20-Mar-09', 325.99], ['24-Apr-09', 386.15]];";
+
+		html += "var line = [";
+
+		int totalTime;
 		
-		switch(gs.getGraphType()){
+		switch (gs.getGraphType()) {
 		case "weekBurnDown":
-			for(int i = 0; i < timeReports.size(); i++){
+			title = "Burn down chart för tid mellan specifierade veckor";
+			totalTime = 0;
+			
+		    Collections.sort(timeReports, new Comparator<TimeReport>() {
+		        @Override
+		        public int compare(final TimeReport object1, final TimeReport object2) {
+		            return object1.getWeek() - object2.getWeek();
+		        }
+		       } );
+			
+			for (int i = 0; i < timeReports.size(); i++) {
 				
+				List<Activity> activities = timeReports.get(i).getActivities();
+
+				for (Activity a : activities) {
+					totalTime += a.getLength();
+				}
+
 			}
+			
+			for (int i = 0; i < timeReports.size(); i++) {
+				int weekTime = 0;
+				
+				List<Activity> activities = timeReports.get(i).getActivities();
+
+				for (Activity a : activities) {
+					weekTime += a.getLength();
+				}
+				
+				html += "[" + timeReports.get(i).getWeek() + "," + totalTime + "],";
+				
+				totalTime = totalTime - weekTime;
+			}
+			
+			html = html.substring(0, html.length() - 1);
+
 			break;
 		case "activityBurnDown":
-			for(int i = 0; i < timeReports.size(); i++){
+			title = "Burn down chart för specifierad aktivitet";
+			totalTime = 0;
+			for (int i = 0; i < timeReports.size(); i++) {
+				List<Activity> activities = timeReports.get(i).getActivities();
 				
+				Activity act = activities.get(gs.getYType());
+				
+				totalTime += act.getLength();
 			}
+			
+			for (int i = 0; i < timeReports.size(); i++) {
+				List<Activity> activities = timeReports.get(i).getActivities();
+				
+				Activity act = activities.get(gs.getYType());
+				
+				html += "[" + timeReports.get(i).getWeek() + "," + totalTime + "],";
+				
+				totalTime = totalTime - act.getLength();
+			}
+			
+			html = html.substring(0, html.length() - 1);
+			
 			break;
 		case "userBurnDown":
+			title = "Burn down chart för specifierad användare";
 			for(int i = 0; i < timeReports.size(); i++){
 				
 			}
 			break;
 		}
 		
-		
+		html += "];";
 		
 		html += "var plot1 = $.jqplot('chart', [line], {";
 		html += "	animate: !$.jqplot.use_excanvas,";
-		html += "	title:'Data Point Highlighting',";
+		
+		html += "	title:'" + title + "',";
+		
 		html += "	axes:{";
 		html += "		xaxis:{";
 		html += "			renderer:$.jqplot.DateAxisRenderer,";
 		html += "			tickOptions:{";
-		html += "				formatString:'%b&nbsp;%#d',";
 		html += "				labelPosition: 'middle'";
 		html += "			},";
 		html += "			tickRenderer:$.jqplot.CanvasAxisTickRenderer,";
@@ -332,7 +399,6 @@ public class HTMLWriter {
 		html += "		},";
 		html += "		yaxis:{";
 		html += "			tickOptions:{";
-		html += "				formatString:'$%.2f',";
 		html += "				labelPosition: 'middle'";
 		html += "			},";
 		html += "			tickRenderer:$.jqplot.CanvasAxisTickRenderer,";
