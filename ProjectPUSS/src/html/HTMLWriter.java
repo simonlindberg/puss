@@ -203,8 +203,12 @@ public class HTMLWriter {
 		if(timereports.size() == 0){
 			printErrorMessage("Inga tidrapporter! Gå tillbaka till <a href=\"mainpage\">huvudsidan</a> och skapa en först.");
 		} else {
-			writer.print("<form action=\"timereport\">");
-			writer.print("<input type=\"hidden\" value=\"" + command.toString()+ "\" name=\""+LIST_COMMAND +"\">");
+			if (command.equals(Command.sign)) {
+				writer.print("<form method=\"POST\" action=\"listreports\">");
+			} else {
+				writer.print("<form action=\"timereport\">");
+			}
+			writer.print("<input type=\"hidden\" value=\"" + command.toString()+ "\" name=\"" + LIST_COMMAND + "\">");
 			writer.print("<table border=\"1\">");
 			writer.print("<thead><tr><th>!</th><th>Användare</th><th>Senast uppdaterad</th><th>Vecka</th><th>Total tid</th><th>Signerad</th></tr></thead>");
 			writer.print("<tbody>");
@@ -219,6 +223,7 @@ public class HTMLWriter {
 				writer.print("<td>" + (tr.getSigned() ? "JA" : "NEJ") + "</td>");
 				writer.print("</tr>");
 			}
+			
 			writer.print("</tbody>");
 			writer.print("</table>");
 
@@ -235,7 +240,7 @@ public class HTMLWriter {
 		case show:
 			return "Visa";
 		case sign:
-			return "Signera";
+			return "Signera/Avsignera";
 		case update:
 			return "Uppdatera";
 		default:
