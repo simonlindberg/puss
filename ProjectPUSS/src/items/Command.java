@@ -6,5 +6,5 @@ package items;
  * för att veta vad som ska visas och om man ska kunna ändra eller inte.
  */
 public enum Command {
-	delete, show, update, create
+	delete, show, update, create, sign
 }
