@@ -727,7 +727,7 @@ public class Database {
 			Role r = Role.valueOf(role);
 			return r;
 		} catch (Exception e) {
-			return null;
+			return Role.NoRole;
 		}
 
 	}

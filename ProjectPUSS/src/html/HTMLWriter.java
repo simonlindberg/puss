@@ -83,14 +83,17 @@ public class HTMLWriter {
 	 */
 	public void printUsers(List<User> users, Role role, HashMap<String, Role> userRoles) {
 		if (users != null && users.size() > 0) {
+			writer.print("<form action=\"showmembers\" method=\"POST\">");
 			writer.print("<table><tr><th>Användare</th><th>Roll</th><th></th></tr>");
+			String submitButton = "";
 			for (User u : users) {
 				String extra = "";
-				if(role.equals(Role.Manager)){
-					extra =  "<select name=\"role\">";
+				Role userRole = userRoles.get(u.getUsername());
+				if(role.equals(Role.Manager) && !userRole.equals(Role.Manager) ){
+					submitButton = "<input type=\"submit\" value=\"Uppdatera rollerna\" name=\"updateRoles\" />";
+					extra =  "<select name=\"role_for_"+u.getUsername()+"\">";
 					for(Role r : Role.values()){
 						if(!r.equals(Role.Manager)){
-							Role userRole = userRoles.get(u.getUsername());
 							String selected = r.equals(userRole) ? "selected=selected" : "";
 							extra += "<option value=\""+r.toString()+"\""
 									+ " " + selected + ">"+r.toString()+"</option>";
@@ -107,7 +110,9 @@ public class HTMLWriter {
 						+ 	extra
 						+ "</td></tr>");
 			}
+			writer.print("<tr><td colspan=\"3\" align=\"right\">"+submitButton+"</td></tr>");
 			writer.print("</table>");
+			writer.print("</form>");
 		} else {
 			printErrorMessage("Där finns inga medlemmar");
 		}
