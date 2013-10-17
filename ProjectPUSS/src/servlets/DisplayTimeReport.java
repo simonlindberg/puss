@@ -46,7 +46,7 @@ public class DisplayTimeReport extends ServletBase {
 		if(role==null){
 			html.printErrorMessage("Du saknar befogenhet för att skapa eller visa en tidrapport.");
 		} else {
-			html.printSuccessMessage(page + "<br/>");
+			html.printSuccessMessage(role.toString() + "<br/>");
 			// Check command
 			if (page.equals(Command.create.toString())) {
 				TimeReport t = new TimeReport(user, null, false, 0, -1, projectgroup);
@@ -90,23 +90,45 @@ public class DisplayTimeReport extends ServletBase {
 					new Activity(ActivityType.RegressionTest, Integer.parseInt(request.getParameter(HTMLWriter.REG_TEST))),
 					new Activity(ActivityType.Meeting, Integer.parseInt(request.getParameter(HTMLWriter.MEETING)))
 					);
-			TimeReport t = new TimeReport(
-					user,
-					activities,
-					false,
-					Integer.parseInt(id),
-					Integer.parseInt(request.getParameter(HTMLWriter.WEEK)),
-					projectgroup
-					);
-			// database.updateTimeReport(t)
+
 			if (page.equals(Command.create.toString())) {
+				TimeReport t = new TimeReport(
+						user,
+						activities,
+						false,
+						0,
+						Integer.parseInt(request.getParameter(HTMLWriter.WEEK)),
+						projectgroup
+						);
 				database.createTimeReport(t);
 				response.sendRedirect("mainpage");
 			} else {
+				System.out.println("TEMP");
+				TimeReport t = new TimeReport(
+						user,
+						activities,
+						false,
+						Integer.parseInt(id),
+						Integer.parseInt(request.getParameter(HTMLWriter.WEEK)),
+						projectgroup
+						);
 				database.updateTimeReport(t);
 				doGet(request, response);
 			}
-		}	
+		}
+		
+		String deleteReport = request.getParameter("deletereport");
+		if (deleteReport != null) {
+			database.deleteTimeReport(Integer.parseInt(id));
+			response.sendRedirect("mainpage");
+		}
+		
+		String signReport = request.getParameter("signreport");
+		if (signReport != null) {
+			TimeReport t = database.getTimeReport(Integer.parseInt(id));
+			database.signTimeReport(t);
+			doGet(request, response);
+		}
 	}
 
 }

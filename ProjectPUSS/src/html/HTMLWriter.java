@@ -29,6 +29,8 @@ public class HTMLWriter {
 	final static public String LOGIN_PASSWORD = "password";
 	final static public String PROJECT_CHOOSER = "select";
 	
+	final static public String LIST_COMMAND = "command";
+	
 	final static public String ID = "id";
 	
 	final static public String SDP = "sdp";
@@ -99,102 +101,121 @@ public class HTMLWriter {
 		int sum = sdp + srs + svvs + stldd + svvi + sddd + svvr + ssd + pfr + functest + systest
 				+ regtest + meeting;
 
-		String html = "";
-		html += "<form method='post' action='create'>";
-		html += "	<table border='1'><tbody>";
-		html += "		<tr>";
-		html += "			<td><b>Name:</b></td><td>" + user.getUsername() + "</td>";
-		html += "			<td><b>Date:</b></td><td>" + time + "</td>";
-		html += "		</tr>";
-		html += "		<tr>";
-		html += "			<td><b>Projectgroup</b>:</td><td>"+timereport.getProjectGroup()+"</td>";
-		html += "			<td><b>Week:</b></td><td><input"+cmd+"type='text' name='"+WEEK+"' value='"+timereport.getWeek()+"' size='3'></td>";
-		html += "		</tr>";
-		html += "		<tr><td colspan='3' bgcolor='lightgrey'><font size='+1'><b>Del A: Total tid denna vecka (minuter)</b></font></td>";
-		html += "		<td>" + sum + "</td></tr>";
-		html += "		<tr><td colspan='4' bgcolor='lightgrey' nowrap=''><font size='+1'><b>Del B: Antalet minuter per aktivitet</b></font>";
-		html += "		<br>(Summan av alla separata aktiviteter räknas ut automatiskt och fylls i ovan.)</td></tr>";
-		html += "		<tr><th>Nummer</th><th colspan='2'>Aktivitet</th><th>Total tid</th></tr>";
-		html += "		<tr>";
-		html += "			<td>11</td>";
-		html += "			<td colspan='2'>SDP</td>";
-		html += "			<td><i><input"+cmd+" type='text' name='"+SDP+"' value='"+sdp+"' size='3'></i></td>";
-		html += "		</tr>";
-		html += "		<tr>";
-		html += "			<td>12</td>";
-		html += "			<td colspan='2'>SRS</td>";
-		html += "			<td><i><input"+cmd+" type='text' name='"+SRS+"' value='"+srs+"' size='3'></i></td>";
-		html += "		</tr>";
-		html += "		<tr>";
-		html += "			<td>13</td>";
-		html += "			<td colspan='2'>SVVS</td>";
-		html += "			<td><i><input"+cmd+" type='text' name='"+SVVS+"' value='"+svvs+"' size='3'></i></td>";
-		html += "		</tr>";
-		html += "		<tr>";
-		html += "			<td>14</td>";
-		html += "			<td colspan='2'>STLDD</td>";
-		html += "			<td><i><input"+cmd+" type='text' name='"+STLDD+"' value='"+stldd+"' size='3'></i></td>";
-		html += "		</tr>";
-		html += "		<tr>";
-		html += "			<td>15</td>";
-		html += "			<td colspan='2'>SVVI</td>";
-		html += "			<td><i><input"+cmd+" type='text' name='"+SVVI+"' value='"+svvi+"' size='3'></i></td>";
-		html += "		</tr>";
-		html += "		<tr>";
-		html += "			<td>16</td>";
-		html += "			<td colspan='2'>SDDD</td>";
-		html += "			<td><i><input"+cmd+" type='text' name='"+SDDD+"' value='"+sddd+"' size='3'></i></td>";
-		html += "		</tr>";
-		html += "		<tr>";
-		html += "			<td>17</td>";
-		html += "			<td colspan='2'>SVVR</td>";
-		html += "			<td><i><input"+cmd+" type='text' name='"+SVVR+"' value='"+svvr+"' size='3'></i></td>";
-		html += "		</tr>";
-		html += "		<tr>";
-		html += "			<td>18</td>";
-		html += "			<td colspan='2'>SSD</td>";
-		html += "			<td><i><input"+cmd+" type='text' name='"+SSD+"' value='"+ssd+"' size='3'></i></td>";
-		html += "		</tr>";
-		html += "		<tr>";
-		html += "			<td>19</td>";
-		html += "			<td colspan='2'>PFR</td>";
-		html += "			<td><i><input"+cmd+" type='text' name='"+PFR+"' value='"+pfr+"' size='3'></i></td>";
-		html += "		</tr>";
-		html += "		<tr>";
-		html += "			<td bgcolor='lightgrey' colspan='4'></td>	";
-		html += "		</tr>		";
-		html += "		<tr>";
-		html += "			<td>21</td>";
-		html += "			<td colspan='2'>Funktionstest</td>";
-		html += "			<td><i><input"+cmd+" type='text' name='"+FUNCTION_TEST+"' value='"+functest+"' size='3'></i></td>";
-		html += "		</tr>";
-		html += "		<tr>";
-		html += "			<td>22</td>";
-		html += "			<td colspan='2'>Systemtest</td>";
-		html += "			<td><i><input"+cmd+" type='text' name='"+SYSTEM_TEST+"' value='"+systest+"' size='3'></i></td>";
-		html += "		</tr>";
-		html += "		<tr>";
-		html += "			<td>23</td>";
-		html += "			<td colspan='2'>Regressionstest</td>";
-		html += "			<td><i><input"+cmd+" type='text' name='"+REG_TEST+"' value='"+regtest+"' size='3'></i></td>";
-		html += "		</tr>";
-		html += "		<tr>";
-		html += "			<td>30</td>";
-		html += "			<td colspan='2'>Möte</td>";
-		html += "			<td><i><input"+cmd+" type='text' name='"+MEETING+"' value='"+meeting+"' size='3'></i></td>";
-		html += "		</tr>";
-		html += "		<tr><td colspan='4' bgcolor='lightgrey'><font size='+1'><b>Del C: Signatur</b></font></td></tr><tr>";
-		html += "		<tr><td colspan='3'><b>Signerad av manager</b></td><td>"
-				+ timereport.getSigned() + "</td></tr>";
-		html += "	</tbody></table>";
-		html += "	<input type='hidden' name='FormFields' value='SDP, SRS, SVVS, STLDD, SVVI, SDDD, SVVR, SSD, PFR, Funktionstest, Systemtest, Regressionstest, Mote'>";
-		html += "	<input type='submit' name='submitreport' value='Submit time report'>";
+		writer.print("<form method='post' action='timereport?" + HTMLWriter.LIST_COMMAND + "="
+				+ command.toString() + "&id=" + timereport.getID() + "'>");
+		writer.print("<table border='1'><tbody>");
+		writer.print("<tr>");
+		writer.print("<td><b>Name:</b></td><td>" + user.getUsername() + "</td>");
+		writer.print("<td><b>Date:</b></td><td>" + time + "</td>");
+		writer.print("</tr>");
+		writer.print("<tr>");
+		writer.print("<td><b>Projectgroup</b>:</td><td>" + timereport.getProjectGroup() + "</td>");
+		writer.print("<td><b>Week:</b></td><td><input" + cmd + " type='text' name='" + WEEK
+				+ "' value='" + timereport.getWeek() + "' size='3'></td>");
+		writer.print("</tr>");
+		writer.print("<tr><td colspan='3' bgcolor='lightgrey'><font size='+1'><b>Del A: Total tid denna vecka (minuter)</b></font></td>");
+		writer.print("<td>" + sum + "</td></tr>");
+		writer.print("<tr><td colspan='4' bgcolor='lightgrey' nowrap=''><font size='+1'><b>Del B: Antalet minuter per aktivitet</b></font>");
+		writer.print("<br>(Summan av alla separata aktiviteter räknas ut automatiskt och fylls i ovan.)</td></tr>");
+		writer.print("<tr><th>Nummer</th><th colspan='2'>Aktivitet</th><th>Total tid</th></tr>");
+		writer.print("<tr>");
+		writer.print("<td>11</td>");
+		writer.print("<td colspan='2'>SDP</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SDP + "' value='" + sdp
+				+ "' size='3'></i></td>");
+		writer.print("</tr>");
+		writer.print("<tr>");
+		writer.print("<td>12</td>");
+		writer.print("<td colspan='2'>SRS</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SRS + "' value='" + srs
+				+ "' size='3'></i></td>");
+		writer.print("</tr>");
+		writer.print("<tr>");
+		writer.print("<td>13</td>");
+		writer.print("<td colspan='2'>SVVS</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SVVS + "' value='" + svvs
+				+ "' size='3'></i></td>");
+		writer.print("</tr>");
+		writer.print("<tr>");
+		writer.print("<td>14</td>");
+		writer.print("<td colspan='2'>STLDD</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + STLDD + "' value='" + stldd
+				+ "' size='3'></i></td>");
+		writer.print("</tr>");
+		writer.print("<tr>");
+		writer.print("<td>15</td>");
+		writer.print("<td colspan='2'>SVVI</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SVVI + "' value='" + svvi
+				+ "' size='3'></i></td>");
+		writer.print("</tr>");
+		writer.print("<tr>");
+		writer.print("<td>16</td>");
+		writer.print("<td colspan='2'>SDDD</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SDDD + "' value='" + sddd
+				+ "' size='3'></i></td>");
+		writer.print("</tr>");
+		writer.print("<tr>");
+		writer.print("<td>17</td>");
+		writer.print("<td colspan='2'>SVVR</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SVVR + "' value='" + svvr
+				+ "' size='3'></i></td>");
+		writer.print("</tr>");
+		writer.print("<tr>");
+		writer.print("<td>18</td>");
+		writer.print("<td colspan='2'>SSD</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SSD + "' value='" + ssd
+				+ "' size='3'></i></td>");
+		writer.print("</tr>");
+		writer.print("<tr>");
+		writer.print("<td>19</td>");
+		writer.print("<td colspan='2'>PFR</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + PFR + "' value='" + pfr
+				+ "' size='3'></i></td>");
+		writer.print("</tr>");
+		writer.print("<tr>");
+		writer.print("<td bgcolor='lightgrey' colspan='4'></td>");
+		writer.print("</tr>");
+		writer.print("<tr>");
+		writer.print("<td>21</td>");
+		writer.print("<td colspan='2'>Funktionstest</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + FUNCTION_TEST + "' value='"
+				+ functest + "' size='3'></i></td>");
+		writer.print("</tr>");
+		writer.print("<tr>");
+		writer.print("<td>22</td>");
+		writer.print("<td colspan='2'>Systemtest</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SYSTEM_TEST + "' value='"
+				+ systest + "' size='3'></i></td>");
+		writer.print("</tr>");
+		writer.print("<tr>");
+		writer.print("<td>23</td>");
+		writer.print("<td colspan='2'>Regressionstest</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + REG_TEST + "' value='"
+				+ regtest + "' size='3'></i></td>");
+		writer.print("</tr>");
+		writer.print("<tr>");
+		writer.print("<td>30</td>");
+		writer.print("<td colspan='2'>Möte</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + MEETING + "' value='"
+				+ meeting + "' size='3'></i></td>");
+		writer.print("</tr>");
+		writer.print("<tr><td colspan='4' bgcolor='lightgrey'><font size='+1'><b>Del C: Signatur</b></font></td></tr><tr>");
+		writer.print("<tr><td colspan='3'><b>Signerad av manager</b></td><td>"
+				+ (timereport.getSigned() ? "JA" : "NEJ") + "</td></tr>");
+		writer.print("</tbody></table>");
+
+		if (!command.equals(Command.show)) {
+			writer.print("<input type='submit' name='submitreport' value='Spara tidrapport'>");
+			if (command.equals(Command.update))
+				writer.print("<input type='submit' name='deletereport' value='Ta bort tidrapport'>");
+		}
+
 		if (role.equals(Role.Manager))
-			html += "	<input type='submit' name='signreport' value='Sign time report'>";
+			writer.print("<input type='submit' name='signreport' value='"
+					+ (timereport.getSigned() ? "Avsignera " : "Signera") + " tidrapport'>");
 		else
-			html += "	<input type='submit' name='deletereport' value='Delete time report'>";
-		html += "</form>";
-		writer.print(html);
+
+			writer.print("</form>");
 	}
 
 	/**
