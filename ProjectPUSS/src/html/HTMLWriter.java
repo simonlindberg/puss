@@ -469,8 +469,10 @@ public class HTMLWriter {
 			writer.print("<table><tr><th>Projektgrupper</th><th></th></tr>");
 			for (String s : groups) {
 				writer.print("<tr><td>"
+						+ "<a href=\"projectoverview?groupName="
 						+ s
-						+ "</td><td><a href=\"/ProjectPUSS/projectadmin?action=removeProjectGroup&projectName="
+						+ "\">" + s + "</a>"
+						+ "</td><td><a href=\"projectadmin?action=removeProjectGroup&projectName="
 						+ s + "\">Ta bort</a></td></tr>");
 			}
 
