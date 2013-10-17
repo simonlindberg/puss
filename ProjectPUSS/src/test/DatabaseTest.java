@@ -362,18 +362,13 @@ public class DatabaseTest {
 		db.createProjectGroup("testgroup");
 		db.addUser("Oskar", "");
 		db.createTimeReport(report);
-		Statement stmt;
 		int id = 0;
-		try {
-			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports limit 1");
-			rs.next();
-			id = rs.getInt("Id");
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports limit 1");
+		rs.next();
+		id = rs.getInt("Id");
+		rs.close();
+		stmt.close();
 
 		TimeReport tr = db.getTimeReport(id);
 		assertEquals(tr.getID(), id);
@@ -385,43 +380,34 @@ public class DatabaseTest {
 		assertEquals(tr.getUser().getUsername(), report.getUser().getUsername());
 		assertEquals(tr.getWeek(), report.getWeek());
 	}
-	
+
 	@Test
 	public void testGetTimeReports() throws SQLException {
 		List<Activity> activity = new ArrayList<Activity>();
 		activity.add(new Activity(ActivityType.SRS, 60));
 		db.createProjectGroup("testgroup");
 		User u = new User("Oskar", "");
-		TimeReport report1 = new TimeReport(u, activity, false, 0, 1,
-				"testgroup");
-		
-		TimeReport report2 = new TimeReport(u, activity, false, 0, 1,
-				"testgroup");
+		TimeReport report1 = new TimeReport(u, activity, false, 0, 1, "testgroup");
 
-		
+		TimeReport report2 = new TimeReport(u, activity, false, 0, 2, "testgroup");
+
 		db.addUser("Oskar", "");
 		db.createTimeReport(report1);
-		db.createTimeReport(report2);		
-		Statement stmt;
-		int[] id = new int[2];
-		try {
-			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports ORDER BY Id DESC LIMIT 2");
-			int i=0;
-			while(rs.next()){
-				id[i++] = rs.getInt("Id");
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
+		db.createTimeReport(report2);
+		ArrayList<Integer> id = new ArrayList<Integer>();
+		Statement stmt = conn.createStatement();
+		ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports ORDER BY Id DESC LIMIT 2");
+		while (rs.next()) {
+			id.add(rs.getInt("Id"));
 		}
-		
+		rs.close();
+		stmt.close();
+
 		List<TimeReport> timereports = db.getTimeReports(u.getUsername(), "testgroup");
-		assertEquals(timereports.get(0).getID(), id[0]);
-		assertEquals(timereports.get(1).getID(), id[1]);
-		
+		assertEquals(timereports.get(0).getID(), (int) id.get(1));
+		assertEquals(timereports.get(1).getID(), (int) id.get(0));
 	}
+	
 	@Test
 	public void testDeleteProjectGroup() throws SQLException {
 		String groupname = "testgroup";
