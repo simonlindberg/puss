@@ -34,7 +34,7 @@ public class HTMLWriterTest {
 	public void testPrintHead() {
 		hw.printHead(null);
 		assertEquals(
-				"<html><head><title>E-PUSS 1301</title></head><body><h1>E-PUSS 1301</h1>",
+				"<html><head><meta charset=\"latin1\"><title>E-PUSS 1301</title></head><body><h1>E-PUSS 1301</h1>",
 				sw.toString());
 	}
 
@@ -121,11 +121,11 @@ public class HTMLWriterTest {
 
 		hw.printProjectGroupMembers(users, projectManagers, "whatever");
 		
-		assertEquals("<table><tr><th>Användarnamn</th><th></th><th></th></tr><tr>"
+		assertEquals("<table><tr><th>Projektledare</th><th></th><th></th></tr><tr>"
 				+ "<td>Alpha</td><td>"
-				+ "<a href=\"/ProjectPUSS/projectoverview?action=makeUser&project=whatever&username=Alpha\">Gör till användare</a></td>"
-				+ "<td><a href=\"/ProjectPUSS/projectoverview?action=deleteUser&project=whatever&username=Alpha\">Ta bort</a></td>"
-				+ "</tr></table>", sw.toString());
+				+ "<a href=\"projectoverview?action=demoteUser&project=whatever&username=Alpha\">Gör till användare</a></td>"
+				+ "<td><a href=\"projectoverview?action=deleteUser&project=whatever&username=Alpha\">Ta bort</a></td>"
+				+ "</tr><tr><th>Användare</th><th></th><th></th></tr></table>", sw.toString());
 	}
 	
 	@Test
@@ -137,8 +137,8 @@ public class HTMLWriterTest {
 		hw.printProjectGroups(groups);
 		
 		assertEquals("<table><tr><th>Projektgrupper</th><th></th></tr>"
-				+ "<tr><td>Project1</td><td><a href=\"/ProjectPUSS/projectadmin?action=removeProjectGroup&projectName=Project1\">Ta bort</a></td></tr>"
-				+ "<tr><td>Project2</td><td><a href=\"/ProjectPUSS/projectadmin?action=removeProjectGroup&projectName=Project2\">Ta bort</a></td></tr></table>",sw.toString());
+				+ "<tr><td><a href=\"projectoverview?project=Project1\">Project1</a></td><td><a href=\"projectadmin?action=removeProjectGroup&projectName=Project1\">Ta bort</a></td></tr>"
+				+ "<tr><td><a href=\"projectoverview?project=Project2\">Project2</a></td><td><a href=\"projectadmin?action=removeProjectGroup&projectName=Project2\">Ta bort</a></td></tr></table>",sw.toString());
 		
 		
 	}

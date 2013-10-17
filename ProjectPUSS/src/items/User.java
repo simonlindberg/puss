@@ -1,5 +1,9 @@
 package items;
 
+import java.sql.SQLException;
+
+import database.Database;
+
 /**
  * Denna klassen beskriver en användare och innehåller information om
  * användarnamn och lösenord och används för att bifoga denna information till
@@ -44,5 +48,16 @@ public class User {
 			return username.equals(((User) obj).username);
 		}
 		return false;
+	}
+	
+	public int getTimeForActivity(ActivityType type, int week) {
+		try {
+			return Database.getInstance().getTimeForActivity(this, type, week);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
 	}
 }
