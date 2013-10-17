@@ -1,5 +1,6 @@
 package items;
 
+import java.sql.Date;
 import java.util.List;
 
 /**
@@ -12,26 +13,43 @@ import java.util.List;
  * informationen.
  */
 public class TimeReport {
-	
+
 	private User user;
 	private List<Activity> activities;
 	private boolean isSigned;
 	private int ID, week;
 	private String projectgroup;
-	
+	private Date date;
+
 	/**
 	 * 
 	 Tidrapportens konstruktor.
 	 * 
 	 */
-	public TimeReport(User user, List<Activity> activities, boolean signed,
-			int ID, int week, String projectgroup) {
-		this.user=user;
-		this.activities=activities;
-		this.isSigned=signed;
-		this.ID=ID;
-		this.week=week;
-		this.projectgroup=projectgroup;
+	public TimeReport(User user, List<Activity> activities, boolean signed, int ID, int week,
+			String projectgroup, Date date) {
+		this.user = user;
+		this.activities = activities;
+		this.isSigned = signed;
+		this.ID = ID;
+		this.week = week;
+		this.projectgroup = projectgroup;
+		this.date = date;
+	}
+
+	/**
+	 * 
+	 Tidrapportens konstruktor.
+	 * 
+	 */
+	public TimeReport(User user, List<Activity> activities, boolean signed, int ID, int week,
+			String projectgroup) {
+		this.user = user;
+		this.activities = activities;
+		this.isSigned = signed;
+		this.ID = ID;
+		this.week = week;
+		this.projectgroup = projectgroup;
 	}
 
 	/**
@@ -41,6 +59,15 @@ public class TimeReport {
 	 */
 	public int getWeek() {
 		return week;
+	}
+
+	/**
+	 * Hämtar datumet från tidrapporten.
+	 * 
+	 * @return datumet.
+	 */
+	public Date getDate() {
+		return date;
 	}
 
 	/**

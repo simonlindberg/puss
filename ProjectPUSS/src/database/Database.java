@@ -7,6 +7,7 @@ import items.TimeReport;
 import items.User;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -65,6 +66,7 @@ public class Database {
 			    User u = getUser(rs.getString("Username"));
 			    boolean signed = rs.getBoolean("Signed");
 			    String projectGroup = rs.getString("GroupName");
+			    Date date = rs.getDate("Date");
 			    List<Activity> activities = new ArrayList<Activity>();
 			    Statement stmt2 = conn.createStatement();
 			    ResultSet rs2 = stmt2.executeQuery("SELECT * FROM Activity WHERE Id='" + id + "'");
@@ -74,7 +76,7 @@ public class Database {
 			    	activities.add(new Activity(tp, worked));
 			    }
 			    
-			    tr = new TimeReport(u, activities, signed, rs.getInt("Id"), rs.getInt("WeekNumber") , projectGroup);
+			    tr = new TimeReport(u, activities, signed, rs.getInt("Id"), rs.getInt("WeekNumber") , projectGroup, date);
 			    rs2.close();
 			    stmt2.close();
 		    }
