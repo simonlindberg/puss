@@ -31,24 +31,30 @@ public class MainPage extends ServletBase {
 
 		String currentProjectGroup = (String) session.getAttribute(PROJECT);
 		currentProjectGroup = currentProjectGroup == null ? projects.get(0) : currentProjectGroup;
-		
-		html.printProjectChooser(projects.indexOf(currentProjectGroup), projects);
-		
-		Role role = database.getRole(user.getUsername(), currentProjectGroup);
-		
-		html.printLink("create", "Skapa en ny tidrapport");
-		html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.update.toString(), "Uppdatera en tidrapport");
-		html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.show.toString(), "Visa tidrapporter");
-		html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.delete.toString(), "Ta bort tidrapporter");
-		if (Role.Manager.equals(role)){
-			html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.sign.toString(), "Ta bort tidrapporter");
+
+		if (projects.size() > 0) {
+			
+			html.printProjectChooser(projects.indexOf(currentProjectGroup), projects);
+			
+			Role role = database.getRole(user.getUsername(), currentProjectGroup);
+			
+			html.printLink("create", "Skapa en ny tidrapport");
+			html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.update.toString(), "Uppdatera en tidrapport");
+			html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.show.toString(), "Visa tidrapporter");
+			html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.delete.toString(), "Ta bort tidrapporter");
+			if (Role.Manager.equals(role)){
+				html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.sign.toString(), "Ta bort tidrapporter");
+			}
+			html.printLink("showmembers", "Visa medlemmar");
+			html.printLink("statistics", "Statistik");
+		} else {
+			html.printErrorMessage("Du är inte medlem i någon grupp");
 		}
-		html.printLink("showmembers", "Visa medlemmar");
-		html.printLink("statistics", "Statistik");
 	}
-	
+
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException{
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
 		HttpSession session = request.getSession();
 
 		String chosen = (String) request.getParameter(HTMLWriter.PROJECT_CHOOSER);
@@ -57,7 +63,7 @@ public class MainPage extends ServletBase {
 		if (chosen != null) {
 			session.setAttribute(PROJECT, chosen);
 		}
-		
+
 		doGet(request, response);
 	}
 }

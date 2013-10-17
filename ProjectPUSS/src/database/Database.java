@@ -231,7 +231,55 @@ public class Database {
 	 * @return true om det lyckas, annars false.
 	 */
 	public boolean updateTimeReport(TimeReport timereport) {
-		return false;
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE Id='" + timereport.getID() + "'");
+			if (!rs.next()) {
+				System.out.println("Id:"+timereport.getID());
+				return false;
+			}
+			stmt.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+
+		// Extract and save into table:TimeReports
+		try {
+			stmt = conn.createStatement();
+			String statement = "UPDATE TimeReports SET WeekNumber = '"+timereport.getWeek()+"',"
+					+ "Date = NOW(), SIGNED=0 WHERE Id='"+timereport.getID()+"'";
+			stmt.executeUpdate(statement);
+			stmt.close();
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+			return false;
+		}
+
+		// Extract and save into table:Activity
+		try {
+			stmt = conn.createStatement();
+			String removeAll = "DELETE FROM Activity WHERE Id='"+timereport.getID()+"'";
+			stmt.executeUpdate(removeAll);
+			for (Activity a : timereport.getActivities()) {
+				stmt = conn.createStatement();				
+				String insertNew = "INSERT INTO Activity (Id, ActivityName, ActivityNumber, MinutesWorked, Type) VALUES("
+						+ timereport.getID() + ",'" + a.getType().toString() + "', 0," + a.getLength() + ",'...')";
+				stmt.executeUpdate(insertNew);
+				stmt.close();
+			}
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -375,7 +423,26 @@ public class Database {
 	 * 
 	 */
 	public List<User> getProjectManagersInProject(String projectName) {
+		List<User> managers = new ArrayList<User>();
+		
+		try {
+			ResultSet rs = conn.createStatement().executeQuery(
+					"SELECT * FROM Memberships WHERE Groupname='" + 
+					projectName + "' AND Role='" + Role.Manager.toString() + "'");
+			
+			while(rs.next()) {
+				managers.add(new User(rs.getString("Username"), ""));
+			}
+			
+			return managers;
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return null;
+	
 	}
 
 	/**
@@ -391,9 +458,10 @@ public class Database {
 	 */
 	public boolean addUserToProject(String projectName, String username) {
 		try {
-			return conn.createStatement().execute(
-					"insert into Memberships (Username, Groupname) values ('" + username + "', '"
-							+ projectName + "')");
+			String realname = getUser(username).getUsername();
+			return conn.createStatement().executeUpdate(
+					"insert into Memberships (Username, Groupname) values ('" + realname + "', '"
+							+ projectName + "')") == 1;
 		} catch (SQLException e) {
 			System.out.println("");
 			e.printStackTrace();
@@ -415,9 +483,9 @@ public class Database {
 	 */
 	public boolean deleteUserFromProject(String projectName, String userName) {
 		try {
-			return conn.createStatement().execute(
+			return conn.createStatement().executeUpdate(
 					"delete from Memberships where Groupname='" + projectName + "' AND Username='"
-							+ userName + "'");
+							+ userName + "'") == 1;
 		} catch (SQLException e) {
 			System.out.println("");
 			e.printStackTrace();
@@ -461,8 +529,10 @@ public class Database {
 	 */
 	public boolean deleteProjectGroup(String projectName) {
 		try {
-			return conn.createStatement().execute(
-					"delete from Memberships where Groupname='" + projectName + "'");
+			conn.createStatement().executeUpdate(
+					"DELETE FROM Memberships WHERE Groupname='" + projectName + "'");
+			return conn.createStatement().executeUpdate(
+					"DELETE FROM ProjectGroups WHERE Groupname='" + projectName + "'") == 1;
 		} catch (SQLException e) {
 			System.out.println("");
 			e.printStackTrace();
@@ -522,6 +592,10 @@ public class Database {
 				deleteTimeReport(id);
 			}
 			rs.close();
+			stmt.close();
+			
+			stmt = conn.createStatement();
+			stmt.executeUpdate("DELETE FROM Memberships WHERE Username='" + username + "'");
 			stmt.close();
 
 			stmt = conn.createStatement();
@@ -652,9 +726,10 @@ public class Database {
 			e.printStackTrace();
 		}
 		try {
-			return Role.valueOf(role);
-		} catch (IllegalArgumentException e) {
-			return null;
+			Role r = Role.valueOf(role);
+			return r;
+		} catch (Exception e) {
+			return Role.NoRole;
 		}
 
 	}
@@ -681,5 +756,39 @@ public class Database {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	/**
+	* Hämtar för en specifik användare tiden för en viss aktivitet under en given vecka.
+	*
+	* @param user
+	*		användaren som man försöker hämta tiden från.
+	* @param type
+	*		aktiviteten som man försöker hämta tiden från.
+	* @param week
+	*		vecka som man försöker hämta tiden från.
+	*
+	* @return Tiden som användaren spenderat på aktiviteten.
+	*
+	*/
+	public int getTimeForActivity(User user, ActivityType type, int week) {
+		int id = 0;
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports WHERE Username='" + user.getUsername() + "' AND WeekNumber=" + week);
+			if (rs.next()) {
+				id = rs.getInt("Id");
+				stmt.close();
+				stmt = conn.createStatement();
+				rs = stmt.executeQuery("SELECT MinutesWorked FROM Activity WHERE Id=" + id + " AND ActivityName='" + type.toString() + "'");
+				if (rs.next()) {
+					return rs.getInt("MinutesWorked");
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
 	}
 }
