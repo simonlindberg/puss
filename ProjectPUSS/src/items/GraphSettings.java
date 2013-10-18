@@ -7,20 +7,17 @@ package items;
  */
 public class GraphSettings {
 	private String graphType;
-	private int xType;
-	private int yType;
+	private ActivityType actType;
 	private String xName;
 	private String yName;
-	
+
 	/**
 	 * Konstruktor som skapar en instans av klassen och sätter värden till
 	 * respektive variabler.
 	 */
-	public GraphSettings(String graphType, int xType, int yType, String xName,
-			String yName) {
+	public GraphSettings(String graphType, ActivityType actType, String xName, String yName) {
 		this.graphType = graphType;
-		this.xType = xType;
-		this.yType = yType;
+		this.actType = actType;
 		this.xName = xName;
 		this.yName = yName;
 	}
@@ -36,20 +33,10 @@ public class GraphSettings {
 
 	/**
 	 * 
-	 Returnerar den typ av information som ska finnas på X-axeln.
-	 * 
+	 Returnerar den satta activityType.
 	 */
-	public int getXType() {
-		return xType;
-	}
-
-	/**
-	 * 
-	 Returnerar den typ av information som ska finnas på Y-axeln.
-	 * 
-	 */
-	public int getYType() {
-		return yType;
+	public ActivityType getActivityType() {
+		return actType;
 	}
 
 	/**
@@ -70,3 +57,4 @@ public class GraphSettings {
 		return yName;
 	}
 }
+

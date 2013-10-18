@@ -16,6 +16,7 @@ import java.util.Comparator;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -511,341 +512,6 @@ public class HTMLWriter {
 	public void printGraphChoice() {
 	}
 
-	/**
-	 * Genererar en graf från timeReports med de inställningar som är satta i
-	 * gs.
-	 * 
-	 * @param timeReports
-	 *            lista med tidrapporter.
-	 * 
-	 * @param gs
-	 *            inställningar för grafen.
-	 * 
-	 * 
-	 * 
-	 */
-	public void printGraph(List<TimeReport> timeReports, GraphSettings gs) {
-		String xAxisName = gs.getXName();
-		String yAxisName = gs.getYName();
-
-		String title = "";
-
-		String html = "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.min.js\"></script>";
-		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.jqplot.min.js\"></script>";
-		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.barRenderer.min.js\"></script>";
-		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.categoryAxisRenderer.min.js\"></script>";
-		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.pointLabels.min.js\"></script>";
-		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.canvasTextRenderer.min.js\"></script>";
-		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.canvasAxisLabelRenderer.min.js\"></script>";
-		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.canvasAxisTickRenderer.min.js\"></script>";
-		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.dateAxisRenderer.min.js\"></script>";
-		html += "<link rel=\"stylesheet\" type=\"text/css\" href=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.jqplot.min.css\" />";
-
-		html += "<div id=\"chart\" ></div>";
-
-		html += "<script>";
-		html += "$.jqplot.config.enablePlugins = true;";
-
-		html += "var s1 = [";
-
-		switch (gs.getGraphType()) {
-		case "userWeekTime":
-			title = "Spenderad tid per vecka";
-			for (int i = 0; i < timeReports.size(); i++) {
-
-				List<Activity> activities = timeReports.get(i).getActivities();
-
-				int totalTime = 0;
-
-				for (Activity a : activities) {
-					totalTime += a.getLength();
-				}
-
-				html += "[" + timeReports.get(i).getWeek() + "," + totalTime + "],";
-			}
-			html = html.substring(0, html.length() - 1);
-
-			break;
-
-		case "activityTime":
-			title = "Spenderad tid per aktivitet";
-			HashMap<ActivityType, Integer> actTimes = new HashMap<ActivityType, Integer>();
-
-			for (int i = 0; i < timeReports.size(); i++) {
-
-				List<Activity> activities = timeReports.get(i).getActivities();
-
-				for (Activity a : activities) {
-					if (actTimes.containsKey(a.getType())) {
-						actTimes.put(a.getType(), actTimes.get(a.getType()) + a.getLength());
-					} else {
-						actTimes.put(a.getType(), a.getLength());
-					}
-				}
-			}
-
-			Set<ActivityType> types = actTimes.keySet();
-
-			for (ActivityType t : types) {
-				html += "['" + t.toString() + "'," + actTimes.get(t).toString() + "],";
-			}
-			html = html.substring(0, html.length() - 1);
-
-			break;
-		case "plUserTime":
-			title = "Spenderad tid per gruppmedlem";
-			HashMap<User, Integer> userTimes = new HashMap<User, Integer>();
-
-			for (int i = 0; i < timeReports.size(); i++) {
-
-				List<Activity> activities = timeReports.get(i).getActivities();
-
-				int totalTime = 0;
-
-				for (Activity a : activities) {
-					totalTime += a.getLength();
-				}
-
-				if (userTimes.containsKey(timeReports.get(i).getUser())) {
-					userTimes.put(timeReports.get(i).getUser(),
-							userTimes.get(timeReports.get(i).getUser()) + totalTime);
-				} else {
-					userTimes.put(timeReports.get(i).getUser(), totalTime);
-				}
-			}
-
-			Set<User> users = userTimes.keySet();
-
-			for (User u : users) {
-				html += "['" + u.toString() + "'," + userTimes.get(u).toString() + "],";
-			}
-			html = html.substring(0, html.length() - 1);
-
-			break;
-		}
-
-		html += "];";
-
-		html += "plot1 = $.jqplot('chart', [s1], {";
-
-		html += "	title:'" + title + "',";
-
-		html += "	animate: !$.jqplot.use_excanvas,";
-		html += "	seriesDefaults:{";
-		html += "		renderer:$.jqplot.BarRenderer,";
-		html += "		pointLabels: { show: true }";
-		html += "	},";
-		html += "	legend: {show:false},";
-		html += "	axes: {";
-		html += "		xaxis: {";
-		html += "			tickOptions:{";
-		html += "				labelPosition: 'middle'";
-		html += "			},";
-		html += "			tickRenderer:$.jqplot.CanvasAxisTickRenderer,";
-		html += "			labelRenderer: $.jqplot.CanvasAxisLabelRenderer,";
-
-		html += "			label:'" + xAxisName + "',";
-
-		html += "			labelOptions:{";
-		html += "				fontFamily:'Helvetica',";
-		html += "				fontSize: '14pt'";
-		html += "			},";
-		html += "			renderer: $.jqplot.CategoryAxisRenderer,";
-		html += "		},";
-		html += "		yaxis: {";
-		html += "			tickOptions:{";
-		html += "				labelPosition: 'middle'";
-		html += "			},";
-		html += "			tickRenderer:$.jqplot.CanvasAxisTickRenderer,";
-		html += "			labelRenderer: $.jqplot.CanvasAxisLabelRenderer,";
-
-		html += "			label:'" + yAxisName + "',";
-
-		html += "			labelOptions:{";
-		html += "				fontFamily:'Helvetica',";
-		html += "				fontSize: '14pt'";
-		html += "			},";
-		html += "		}";
-		html += "	},";
-		html += "	highlighter: { show: false }";
-		html += "});";
-		html += "</script>";
-
-		writer.print(html);
-	}
-
-	/**
-	 * 
-	 * Genererar en burn down chart från timeReports med de inställningar som är
-	 * satta i gs.
-	 * 
-	 * @param timeReports
-	 *            lista med tidrapporter.
-	 * @param gs
-	 *            inställningar för grafen.
-	 * 
-	 * 
-	 */
-	public void printBurndownChart(List<TimeReport> timeReports, GraphSettings gs) {
-
-		String xAxisName = gs.getXName();
-		String yAxisName = gs.getYName();
-
-		String title = "";
-
-		String html = "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.min.js\"></script>";
-		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.jqplot.min.js\"></script>";
-		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.highlighter.min.js\"></script>";
-		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.cursor.min.js\"></script>";
-		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.dateAxisRenderer.min.js\"></script>";
-
-		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.canvasTextRenderer.min.js\"></script>";
-		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.canvasAxisLabelRenderer.min.js\"></script>";
-		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.canvasAxisTickRenderer.min.js\"></script>";
-		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.dateAxisRenderer.min.js\"></script>";
-		html += "<script type=\"text/javascript\" src=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/plugins/jqplot.categoryAxisRenderer.min.js\"></script>";
-
-		html += "<link rel=\"stylesheet\" type=\"text/css\" href=\"/h/d6/w/dt09jn4/Desktop/PUSskit/dist/jquery.jqplot.min.css\" />";
-
-		html += "<div id=\"chart\" ></div>";
-
-		html += "<script>";
-
-		// html +=
-		// "var line=[['23-May-08', 578.55], ['20-Jun-08', 566.5], ['25-Jul-08', 480.88], ['22-Aug-08', 509.84],";
-		// html +=
-		// "	['26-Sep-08', 454.13], ['24-Oct-08', 379.75], ['21-Nov-08', 303], ['26-Dec-08', 308.56],";
-		// html +=
-		// "	['23-Jan-09', 299.14], ['20-Feb-09', 346.51], ['20-Mar-09', 325.99], ['24-Apr-09', 386.15]];";
-
-		html += "var line = [";
-
-		int totalTime;
-
-		switch (gs.getGraphType()) {
-		case "weekBurnDown":
-			title = "Burn down chart för tid mellan specifierade veckor";
-			totalTime = 0;
-
-			Collections.sort(timeReports, new Comparator<TimeReport>() {
-				@Override
-				public int compare(final TimeReport object1, final TimeReport object2) {
-					return object1.getWeek() - object2.getWeek();
-				}
-			});
-
-			for (int i = 0; i < timeReports.size(); i++) {
-
-				List<Activity> activities = timeReports.get(i).getActivities();
-
-				for (Activity a : activities) {
-					totalTime += a.getLength();
-				}
-
-			}
-
-			for (int i = 0; i < timeReports.size(); i++) {
-				int weekTime = 0;
-
-				List<Activity> activities = timeReports.get(i).getActivities();
-
-				for (Activity a : activities) {
-					weekTime += a.getLength();
-				}
-
-				html += "[" + timeReports.get(i).getWeek() + "," + totalTime + "],";
-
-				totalTime = totalTime - weekTime;
-			}
-
-			html = html.substring(0, html.length() - 1);
-
-			break;
-		case "activityBurnDown":
-
-			title = "Burn down chart för specifierad aktivitet";
-			totalTime = 0;
-			for (int i = 0; i < timeReports.size(); i++) {
-				List<Activity> activities = timeReports.get(i).getActivities();
-
-				Activity act = activities.get(gs.getYType());
-
-				totalTime += act.getLength();
-			}
-
-			for (int i = 0; i < timeReports.size(); i++) {
-				List<Activity> activities = timeReports.get(i).getActivities();
-
-				Activity act = activities.get(gs.getYType());
-
-				html += "[" + timeReports.get(i).getWeek() + "," + totalTime + "],";
-
-				totalTime = totalTime - act.getLength();
-			}
-
-			html = html.substring(0, html.length() - 1);
-
-			break;
-		case "userBurnDown":
-
-			title = "Burn down chart för specifierad användare";
-			for (int i = 0; i < timeReports.size(); i++) {
-
-			}
-			break;
-		}
-
-		html += "];";
-
-		html += "var plot1 = $.jqplot('chart', [line], {";
-		html += "	animate: !$.jqplot.use_excanvas,";
-
-		html += "	title:'" + title + "',";
-
-		html += "	axes:{";
-		html += "		xaxis:{";
-		html += "			renderer:$.jqplot.DateAxisRenderer,";
-		html += "			tickOptions:{";
-		html += "				labelPosition: 'middle'";
-		html += "			},";
-		html += "			tickRenderer:$.jqplot.CanvasAxisTickRenderer,";
-		html += "			labelRenderer: $.jqplot.CanvasAxisLabelRenderer,";
-
-		html += "				label:'" + xAxisName + "',";
-
-		html += "			labelOptions:{";
-		html += "				fontFamily:'Helvetica',";
-		html += "				fontSize: '14pt'";
-		html += "			},";
-		html += "			renderer: $.jqplot.CategoryAxisRenderer,";
-		html += "		},";
-		html += "		yaxis:{";
-		html += "			tickOptions:{";
-		html += "				labelPosition: 'middle'";
-		html += "			},";
-		html += "			tickRenderer:$.jqplot.CanvasAxisTickRenderer,";
-		html += "			labelRenderer: $.jqplot.CanvasAxisLabelRenderer,";
-
-		html += "            	label:'" + yAxisName + "',";
-
-		html += "			labelOptions:{";
-		html += "				fontFamily:'Helvetica',";
-		html += "				fontSize: '14pt'";
-		html += "			},";
-		html += "		}";
-		html += "	},";
-		html += "	highlighter: {";
-		html += "		show: true,";
-		html += "		sizeAdjust: 7.5";
-		html += "	},";
-		html += "	cursor: {";
-		html += "		show: false";
-		html += "	}";
-		html += "});";
-		html += "</script>";
-
-		writer.print(html);
-	}
 
 	/**
 	 * 
@@ -1066,6 +732,479 @@ public class HTMLWriter {
 	 */
 	public void printLink(String url, String text) {
 		writer.println("<a href=\"" + url + "\">" + text + "</a>");
+	}
+
+	/**
+	 * Skriver ut en lista med val för vilken typ av graf som ska genereras.
+	 * @param userRole Användarens roll.
+	 */
+	public void printGraphChoice(Role userRole) {
+
+		writer.print("<p> Välj typ av graf </p>");
+		writer.print("<form method=\"POST\" action=\"statistics\" name=\"graphchooser\" id = \"graphchooser\">");
+		writer.print("<select name=\" graphChooser \" id=\" graphChooser \"  onchange=\"this.form.submit()\" >");
+
+		writer.print("<option value=\"userWeekTime\" selected='selected'>Arbetstid per vecka</option>");
+		writer.print("<option value=\"ActivityTime\">Arbetstid per aktivitet</option>");
+
+		if (userRole == Role.Manager) {
+			writer.print("<option value=\"PlUserTime\">Arbetstid per användare</option>"); 
+			writer.print("<option value=\"weekBurnDown\">Burn down chart för arbetstid per vecka</option>"); 
+			writer.print("<option value=\"activityBurnDown\">Burn down chart för specifik aktivitet</option>"); 
+			writer.print("<option value=\"userBurnDown\">Burn down chart för specifik användare</option>"); 
+		}
+
+		writer.print("</select>");
+		writer.print("</form>");
+
+	}
+
+
+
+	/**
+	 * Skriver ut två drop down listor där användaren kan välja två veckornummer. 
+	 * @param startWeek Första veckan användaren kan välja.
+	 * @param lastWeek Sista veckan användaren kan välja.
+	 */
+	public void printWeekChoice(int startWeek, int lastWeek) {
+
+		writer.print("<p> Välj startvecka </p>");
+		writer.print("<form method=\"POST\" action=\"statistics\" name=\"startweek\" id = \"startweek\">");
+		writer.print("<select name=\" startweek \" id=\" startweek \"  onchange=\"this.form.submit()\" >");
+
+		for (int i = startWeek; i <= lastWeek; i++) {
+			writer.print("<option value=\"" + i + "\" selected='selected'>Vecka " + i + "</option>");
+		}
+
+		writer.print("</select>");
+		writer.print("</form>");
+
+		writer.print("<p> Välj slutvecka </p>");
+		writer.print("<form method=\"POST\" action=\"statistics\" name=\"lastweek\" id = \"lastweek\">");
+		writer.print("<select name=\" lastweek \" id=\" lastweek \"  onchange=\"this.form.submit()\" >");
+
+		for (int i = startWeek; i <= lastWeek; i++) {
+			writer.print("<option value=\"" + i + "\" selected='selected'>Vecka " + i + "</option>");
+		}
+
+		writer.print("</select>");
+		writer.print("</form>");
+
+	}
+
+
+
+
+
+/**
+	 * Skriver ut en drop down lista med alla de olika typer av aktiviteter användaren kan välja.
+	 */
+	public void printActivityChoice() {
+		
+		writer.print("<p> Välj typ av aktivitet </p>");
+		writer.print("<form method=\"POST\" action=\"statistics\" name=\"activityChoice\" id = \"activityChoice\">");
+		writer.print("<select name=\" activityChoice \" id=\" activityChoice \"  onchange=\"this.form.submit()\" >");
+
+		for (int i = 0; i < ActivityType.values().length; i++) {
+			writer.print("<option value=\"" + (ActivityType.values())[i] + "\" selected='selected'>" + (ActivityType.values())[i] + "</option>");
+			
+		}
+
+		writer.print("</select>");
+		writer.print("</form>");
+
+		
+	}
+
+
+
+
+	/**
+	 * Skriver ut en drop down lista med användare som användaren kan välja.
+	 * @param userList Lista med användare.
+	 */
+	public void printUserChoice(List<User> userList){
+		
+		
+		writer.print("<p> Välj användare </p>");
+		writer.print("<form method=\"POST\" action=\"statistics\" name=\"userChoice\" id = \"userChoice\">");
+		writer.print("<select name=\" userChoice \" id=\" userChoice \"  onchange=\"this.form.submit()\" >");
+
+		for (int i = 0; i < userList.size(); i++) {
+			writer.print("<option value=\"" + userList.get(i).getUsername() + "\" selected='selected'>" + userList.get(i).getUsername() + "</option>");
+			
+		}
+
+		writer.print("</select>");
+		writer.print("</form>");
+		
+		
+		
+	}
+
+	/**
+	 * Genererar en graf från timeReports med de inställningar som är satta i
+	 * gs.
+	 * 
+	 * @param timeReports
+	 *            lista med tidrapporter.
+	 * 
+	 * @param gs
+	 *            inställningar för grafen.
+	 * 
+	 */
+	public void printGraph(List<TimeReport> timeReports, GraphSettings gs) {
+		String xAxisName = gs.getXName();
+		String yAxisName = gs.getYName();
+
+		String title = "";
+
+		String html = "<script type=\"text/javascript\" src=\"jquery.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"jquery.jqplot.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"jqplot.barRenderer.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"jqplot.categoryAxisRenderer.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"jqplot.pointLabels.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"jqplot.canvasTextRenderer.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"jqplot.canvasAxisLabelRenderer.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"jqplot.canvasAxisTickRenderer.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"jqplot.dateAxisRenderer.min.js\"></script>";
+		html += "<link rel=\"stylesheet\" type=\"text/css\" href=\"jquery.jqplot.min.css\" />";
+
+		html += "<div id=\"chart\" ></div>";
+
+		html += "<script>";
+		html += "$.jqplot.config.enablePlugins = true;";
+
+		html += "var s1 = [";
+
+		switch (gs.getGraphType()) {
+		case "userWeekTime":
+			title = "Spenderad tid per vecka";
+			for (int i = 0; i < timeReports.size(); i++) {
+
+				List<Activity> activities = timeReports.get(i).getActivities();
+
+				int totalTime = 0;
+
+				for (Activity a : activities) {
+					totalTime += a.getLength();
+				}
+
+				html += "[" + timeReports.get(i).getWeek() + "," + totalTime + "],";
+			}
+			html = html.substring(0, html.length() - 1);
+
+			break;
+
+		case "activityTime":
+			title = "Spenderad tid per aktivitet";
+			HashMap<ActivityType, Integer> actTimes = new HashMap<ActivityType, Integer>();
+
+			for (int i = 0; i < timeReports.size(); i++) {
+
+				List<Activity> activities = timeReports.get(i).getActivities();
+
+				for (Activity a : activities) {
+					if (actTimes.containsKey(a.getType())) {
+						actTimes.put(a.getType(), actTimes.get(a.getType()) + a.getLength());
+					} else {
+						actTimes.put(a.getType(), a.getLength());
+					}
+				}
+			}
+
+			if (!actTimes.isEmpty()) {
+
+				Set<ActivityType> types = actTimes.keySet();
+
+				for (ActivityType t : types) {
+					html += "['" + t.toString() + "'," + actTimes.get(t).toString() + "],";
+				}
+				html = html.substring(0, html.length() - 1);
+			} else {
+				printErrorMessage("Det finns ingen arbetstid registrerad för vald aktivitet");
+			}
+			break;
+		case "plUserTime":
+			title = "Spenderad tid per gruppmedlem";
+			HashMap<User, Integer> userTimes = new HashMap<User, Integer>();
+
+			for (int i = 0; i < timeReports.size(); i++) {
+
+				List<Activity> activities = timeReports.get(i).getActivities();
+
+				int totalTime = 0;
+
+				for (Activity a : activities) {
+					totalTime += a.getLength();
+				}
+
+				if (userTimes.containsKey(timeReports.get(i).getUser())) {
+					userTimes.put(timeReports.get(i).getUser(),
+							userTimes.get(timeReports.get(i).getUser()) + totalTime);
+				} else {
+					userTimes.put(timeReports.get(i).getUser(), totalTime);
+				}
+			}
+
+			Set<User> users = userTimes.keySet();
+
+			for (User u : users) {
+				html += "['" + u.toString() + "'," + userTimes.get(u).toString() + "],";
+			}
+			html = html.substring(0, html.length() - 1);
+
+			break;
+		}
+
+		html += "];";
+
+		html += "plot1 = $.jqplot('chart', [s1], {";
+
+		html += "	title:'" + title + "',";
+
+		html += "	animate: !$.jqplot.use_excanvas,";
+		html += "	seriesDefaults:{";
+		html += "		renderer:$.jqplot.BarRenderer,";
+		html += "		pointLabels: { show: true }";
+		html += "	},";
+		html += "	legend: {show:false},";
+		html += "	axes: {";
+		html += "		xaxis: {";
+		html += "			tickOptions:{";
+		html += "				labelPosition: 'middle'";
+		html += "			},";
+		html += "			tickRenderer:$.jqplot.CanvasAxisTickRenderer,";
+		html += "			labelRenderer: $.jqplot.CanvasAxisLabelRenderer,";
+
+		html += "			label:'" + xAxisName + "',";
+
+		html += "			labelOptions:{";
+		html += "				fontFamily:'Helvetica',";
+		html += "				fontSize: '14pt'";
+		html += "			},";
+		html += "			renderer: $.jqplot.CategoryAxisRenderer,";
+		html += "		},";
+		html += "		yaxis: {";
+		html += "			tickOptions:{";
+		html += "				labelPosition: 'middle'";
+		html += "			},";
+		html += "			tickRenderer:$.jqplot.CanvasAxisTickRenderer,";
+		html += "			labelRenderer: $.jqplot.CanvasAxisLabelRenderer,";
+
+		html += "			label:'" + yAxisName + "',";
+
+		html += "			labelOptions:{";
+		html += "				fontFamily:'Helvetica',";
+		html += "				fontSize: '14pt'";
+		html += "			},";
+		html += "		}";
+		html += "	},";
+		html += "	highlighter: { show: false }";
+		html += "});";
+		html += "</script>";
+
+		writer.print(html);
+	}
+
+	/**
+	 * 
+	 * Genererar en burn down chart från timeReports med de inställningar som är
+	 * satta i gs.
+	 * 
+	 * @param timeReports
+	 *            lista med tidrapporter.
+	 * @param gs
+	 *            inställningar för grafen.
+	 * 
+	 * 
+	 */
+	public void printBurndownChart(List<TimeReport> timeReports, GraphSettings gs) {
+
+		String xAxisName = gs.getXName();
+		String yAxisName = gs.getYName();
+
+		String title = "";
+
+		String html = "<script type=\"text/javascript\" src=\"jquery.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"jquery.jqplot.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"jqplot.highlighter.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"jqplot.cursor.min.js\"></script>";
+
+		html += "<script type=\"text/javascript\" src=\"jqplot.canvasTextRenderer.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"jqplot.canvasAxisLabelRenderer.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"jqplot.canvasAxisTickRenderer.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"jqplot.dateAxisRenderer.min.js\"></script>";
+		html += "<script type=\"text/javascript\" src=\"jqplot.categoryAxisRenderer.min.js\"></script>";
+
+		html += "<link rel=\"stylesheet\" type=\"text/css\" href=\"jquery.jqplot.min.css\" />";
+
+		html += "<div id=\"chart\" ></div>";
+
+		html += "<script>";
+
+		html += "var line = [";
+
+		int totalTime;
+
+		Collections.sort(timeReports, new Comparator<TimeReport>() {
+			@Override
+			public int compare(final TimeReport object1, final TimeReport object2) {
+				return object1.getWeek() - object2.getWeek();
+			}
+		});
+
+		switch (gs.getGraphType()) {
+		case "weekBurnDown":
+			title = "Burn down chart för tid mellan specifierade veckor";
+			totalTime = 0;
+
+			for (int i = 0; i < timeReports.size(); i++) {
+
+				List<Activity> activities = timeReports.get(i).getActivities();
+
+				for (Activity a : activities) {
+					totalTime += a.getLength();
+				}
+
+			}
+
+			for (int i = 0; i < timeReports.size(); i++) {
+				int weekTime = 0;
+
+				List<Activity> activities = timeReports.get(i).getActivities();
+
+				for (Activity a : activities) {
+					weekTime += a.getLength();
+				}
+
+				html += "[" + timeReports.get(i).getWeek() + "," + totalTime + "],";
+
+				totalTime = totalTime - weekTime;
+			}
+
+			html = html.substring(0, html.length() - 1);
+
+			break;
+		case "activityBurnDown":
+			title = "Burn down chart för specifierad aktivitet";
+			totalTime = 0;
+			HashMap<Integer, Integer> weekTime = new HashMap<Integer, Integer>();
+
+			for (int i = 0; i < timeReports.size(); i++) {
+				List<Activity> activities = timeReports.get(i).getActivities();
+
+				for (Activity a : activities) {
+					if (a.getType() == gs.getActivityType()) {
+						totalTime += a.getLength();
+
+						if (weekTime.containsKey(timeReports.get(i).getWeek())) {
+							weekTime.put(timeReports.get(i).getWeek(),
+									weekTime.get(timeReports.get(i).getWeek()) + a.getLength());
+						} else {
+							weekTime.put(timeReports.get(i).getWeek(), a.getLength());
+						}
+					}
+				}
+			}
+
+			if (!weekTime.isEmpty()) {
+
+				Object[] keys = weekTime.keySet().toArray();
+				Arrays.sort(keys);
+
+				for (int i = 0; i < keys.length; i++) {
+					html += "[" + keys[i] + "," + totalTime + "],";
+
+					totalTime = totalTime - weekTime.get(keys[i]);
+				}
+
+				html = html.substring(0, html.length() - 1);
+
+			} else {
+				printErrorMessage("Det finns ingen arbetstid registrerad för vald aktivitet");
+			}
+
+			break;
+		case "userBurnDown":
+			title = "Burn down chart för specifierad användare";
+			totalTime = 0;
+
+			HashMap<Integer, Integer> userWeekTime = new HashMap<Integer, Integer>();
+
+			for (int i = 0; i < timeReports.size(); i++) {
+				List<Activity> activities = timeReports.get(i).getActivities();
+
+				for (Activity a : activities) {
+					totalTime += a.getLength();
+
+					if (userWeekTime.containsKey(timeReports.get(i).getWeek())) {
+						userWeekTime.put(timeReports.get(i).getWeek(),
+								userWeekTime.get(timeReports.get(i).getWeek()) + a.getLength());
+					} else {
+						userWeekTime.put(timeReports.get(i).getWeek(), a.getLength());
+					}
+				}
+			}
+
+			for (int i = 0; i < timeReports.size(); i++) {
+				html += "[" + timeReports.get(i).getWeek() + "," + totalTime + "],";
+
+				totalTime = totalTime - userWeekTime.get(timeReports.get(i).getWeek());
+			}
+			break;
+		}
+
+		html += "];";
+
+		html += "var plot1 = $.jqplot('chart', [line], {";
+		html += "	animate: !$.jqplot.use_excanvas,";
+
+		html += "	title:'" + title + "',";
+
+		html += "	axes:{";
+		html += "		xaxis:{";
+		html += "			renderer:$.jqplot.DateAxisRenderer,";
+		html += "			tickOptions:{";
+		html += "				labelPosition: 'middle'";
+		html += "			},";
+		html += "			tickRenderer:$.jqplot.CanvasAxisTickRenderer,";
+		html += "			labelRenderer: $.jqplot.CanvasAxisLabelRenderer,";
+
+		html += "				label:'" + xAxisName + "',";
+
+		html += "			labelOptions:{";
+		html += "				fontFamily:'Helvetica',";
+		html += "				fontSize: '14pt'";
+		html += "			},";
+		html += "			renderer: $.jqplot.CategoryAxisRenderer,";
+		html += "		},";
+		html += "		yaxis:{";
+		html += "			tickOptions:{";
+		html += "				labelPosition: 'middle'";
+		html += "			},";
+		html += "			tickRenderer:$.jqplot.CanvasAxisTickRenderer,";
+		html += "			labelRenderer: $.jqplot.CanvasAxisLabelRenderer,";
+
+		html += "            	label:'" + yAxisName + "',";
+
+		html += "			labelOptions:{";
+		html += "				fontFamily:'Helvetica',";
+		html += "				fontSize: '14pt'";
+		html += "			},";
+		html += "		}";
+		html += "	},";
+		html += "	highlighter: {";
+		html += "		show: true,";
+		html += "		sizeAdjust: 7.5";
+		html += "	},";
+		html += "	cursor: {";
+		html += "		show: false";
+		html += "	}";
+		html += "});";
+		html += "</script>";
+
+		writer.print(html);
 	}
 
 }
