@@ -1,6 +1,7 @@
 package database;
 
 import items.Activity;
+import items.ActivitySubType;
 import items.ActivityType;
 import items.Role;
 import items.TimeReport;
@@ -73,7 +74,13 @@ public class Database {
 			    while (rs2.next()) {
 			    	ActivityType tp = ActivityType.valueOf(rs2.getString("ActivityName"));
 			    	int worked = rs2.getInt("MinutesWorked");
-			    	activities.add(new Activity(tp, worked));
+			    	ActivitySubType tsp;
+			    	try {
+			    		tsp = ActivitySubType.valueOf(rs2.getString("Type"));
+			    	} catch(IllegalArgumentException e){
+			    		tsp = ActivitySubType.noSubType;
+			    	}
+			    	activities.add(new Activity(tp, worked, tsp));
 			    }
 			    
 			    tr = new TimeReport(u, activities, signed, rs.getInt("Id"), rs.getInt("WeekNumber") , projectGroup, date);
@@ -181,7 +188,7 @@ public class Database {
 				for (Activity a : timereport.getActivities()) {
 					stmt = conn.createStatement();
 					String statement = "INSERT INTO Activity (Id, ActivityName, ActivityNumber, MinutesWorked, Type) VALUES("
-							+ id + ",'" + a.getType().toString() + "', 0," + a.getLength() + ",'...')";
+							+ id + ",'" + a.getType().toString() + "', 0," + a.getLength() + ", '" + a.getSubType().toString()+"')";
 					stmt.executeUpdate(statement);
 					stmt.close();
 				}
@@ -271,7 +278,7 @@ public class Database {
 			for (Activity a : timereport.getActivities()) {
 				stmt = conn.createStatement();				
 				String insertNew = "INSERT INTO Activity (Id, ActivityName, ActivityNumber, MinutesWorked, Type) VALUES("
-						+ timereport.getID() + ",'" + a.getType().toString() + "', 0," + a.getLength() + ",'...')";
+						+ timereport.getID() + ",'" + a.getType().toString() + "', 0," + a.getLength() + ", '"+a.getSubType().toString()+"')";
 				stmt.executeUpdate(insertNew);
 				stmt.close();
 			}
@@ -685,16 +692,6 @@ public class Database {
 	 */
 	public void startTransaction() throws SQLException {
 		conn.setAutoCommit(false);
-	}
-
-	/**
-	 * Commit the current transactions to the database
-	 * 
-	 * @throws SQLException
-	 */
-	public void commit() throws SQLException {
-		conn.commit();
-		conn.setAutoCommit(true);
 	}
 
 	/**

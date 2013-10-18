@@ -31,8 +31,12 @@ public class ListTimeReports extends ServletBase {
 		String projectGroup = (String) request.getSession().getAttribute(ServletBase.PROJECT);
 
 		Command command = Command.valueOf(request.getParameter(HTMLWriter.LIST_COMMAND));
+		String message = request.getParameter("message");
+		System.out.println(message);
 		Role role = database.getRole(user.getUsername(), projectGroup);
-		
+		if("success_create".equals(message)){
+			html.printSuccessMessage("Tidrapporten skapades");
+		}
 		if (command == null) {
 			html.printErrorMessage("Du har inte anget något kommando! Gå tillbaka till <a href=\"mainpage\"> huvudsidan</a> och börja om! ");
 		} else if (Role.Manager.equals(role) && command.equals(Command.sign)){

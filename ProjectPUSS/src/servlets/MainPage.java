@@ -30,8 +30,11 @@ public class MainPage extends ServletBase {
 		List<String> projects = database.getProjects(user);
 
 		String currentProjectGroup = (String) session.getAttribute(PROJECT);
-		currentProjectGroup = currentProjectGroup == null ? projects.get(0) : currentProjectGroup;
-
+		
+		if (currentProjectGroup == null) {
+			currentProjectGroup = projects.get(0);					
+			session.setAttribute(PROJECT, projects.get(0));
+		}
 
 		if (projects.size() > 0) {
 			

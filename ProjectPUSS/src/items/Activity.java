@@ -10,6 +10,7 @@ public class Activity {
 	
 	private ActivityType type;
 	private int length;
+	private ActivitySubType subtype;
 	/**
 	 * Konstruktor.
 	 * 
@@ -18,9 +19,10 @@ public class Activity {
 	 * @param length
 	 *            längden av aktiviten
 	 */
-	public Activity(ActivityType type, int length) {
+	public Activity(ActivityType type, int length, ActivitySubType subtype) {
 		this.type = type;
 		this.length = length;
+		this.subtype = subtype;
 	}
 
 	/**
@@ -35,6 +37,13 @@ public class Activity {
 	 */
 	public int getLength() {
 		return length;
+	}
+	
+	/**
+	 * Returnerar aktivitetens typ.
+	 */
+	public ActivitySubType getSubType() {
+		return subtype;
 	}
 
 }

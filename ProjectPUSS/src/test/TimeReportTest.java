@@ -10,6 +10,7 @@ import java.util.List;
 
 import html.HTMLWriter;
 import items.Activity;
+import items.ActivitySubType;
 import items.ActivityType;
 import items.TimeReport;
 import items.User;
@@ -31,21 +32,21 @@ public class TimeReportTest {
 		user = new User("test", "password");
 		activities = new ArrayList<Activity>();
 		Activity ac;
-		ac = new Activity(ActivityType.SDP, 10);
+		ac = new Activity(ActivityType.SDP, 10, ActivitySubType.I);
 		activities.add(0, ac);
-		ac = new Activity(ActivityType.SRS, 20);
+		ac = new Activity(ActivityType.SRS, 20, ActivitySubType.U);
 		activities.add(ac);
-		ac = new Activity(ActivityType.SVVS, 30);
+		ac = new Activity(ActivityType.SVVS, 30, ActivitySubType.noSubType);
 		activities.add(ac);
-		ac = new Activity(ActivityType.STLDD, 400);
+		ac = new Activity(ActivityType.STLDD, 400, ActivitySubType.noSubType);
 		activities.add(ac);
-		ac = new Activity(ActivityType.SVVI, 500);
+		ac = new Activity(ActivityType.SVVI, 500, ActivitySubType.noSubType);
 		activities.add(ac);
-		ac = new Activity(ActivityType.SDDD, 600);
+		ac = new Activity(ActivityType.SDDD, 600, ActivitySubType.noSubType);
 		activities.add(ac);
-		ac = new Activity(ActivityType.SVVR, 700);
+		ac = new Activity(ActivityType.SVVR, 700, ActivitySubType.noSubType);
 		activities.add(ac);
-		ac = new Activity(ActivityType.SSD, 800);
+		ac = new Activity(ActivityType.SSD, 800, ActivitySubType.noSubType);
 		activities.add(ac);
 		
 		tr1 = new TimeReport(user, activities, true, 0, 1, "group1");
@@ -92,10 +93,12 @@ public class TimeReportTest {
 		int i = 0;
 		assertEquals(ActivityType.SDP, tr1.getActivities().get(i).getType());
 		assertEquals(10, tr1.getActivities().get(i).getLength());
+		assertEquals(ActivitySubType.I, tr1.getActivities().get(i).getSubType());
 		
 		i++;
 		assertEquals(ActivityType.SRS, tr1.getActivities().get(i).getType());
 		assertEquals(20, tr1.getActivities().get(i).getLength());
+		assertEquals(ActivitySubType.U, tr1.getActivities().get(i).getSubType());
 		
 		i++;
 		assertEquals(ActivityType.SVVS, tr1.getActivities().get(i).getType());

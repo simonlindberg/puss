@@ -5,6 +5,7 @@ package test;
 
 import static org.junit.Assert.*;
 import items.Activity;
+import items.ActivitySubType;
 import items.ActivityType;
 import items.Role;
 import items.TimeReport;
@@ -132,7 +133,7 @@ public class DatabaseTest {
 		String result = "";
 
 		List<Activity> activity = new ArrayList<Activity>();
-		activity.add(new Activity(ActivityType.SRS, 60));
+		activity.add(new Activity(ActivityType.SRS, 60, ActivitySubType.I));
 
 		TimeReport report = new TimeReport(new User(name, psw), activity, false, 0, 1,
 				"_testgroup");
@@ -213,7 +214,8 @@ public class DatabaseTest {
 	public void testCreateTimereport() throws SQLException {
 
 		List<Activity> activity = new ArrayList<Activity>();
-		activity.add(new Activity(ActivityType.SRS, 60));
+		activity.add(new Activity(ActivityType.SRS, 60, ActivitySubType.I));
+		activity.add(new Activity(ActivityType.SRS, 60, ActivitySubType.F));
 
 		TimeReport report = new TimeReport(new User("_Oskar", ""), activity, false, 0, 1,
 				"_testgroup");
@@ -244,10 +246,14 @@ public class DatabaseTest {
 		stmt.close();
 
 		stmt = conn.createStatement();
-		rs = stmt.executeQuery("SELECT * FROM Activity WHERE Id=" + id);
-		assertTrue(rs.next());
-		assertEquals(rs.getString("ActivityName"), ActivityType.SRS.toString());
-		assertEquals(rs.getInt("MinutesWorked"), 60);
+		rs = stmt.executeQuery("SELECT * FROM Activity WHERE Id='" + id+ "' ORDER BY Id DESC, ActivityName DESC, Type DESC ");
+		int i=0;
+		while(rs.next()){
+			assertEquals(rs.getString("ActivityName"), activity.get(i).getType().toString());
+			assertEquals(rs.getString("Type"), activity.get(i).getSubType().toString());
+			assertEquals(rs.getInt("MinutesWorked"), 60);
+			i++;
+		}
 		rs.close();
 		stmt.close();
 	}
@@ -273,7 +279,7 @@ public class DatabaseTest {
 	@Test
 	public void testDeleteTimeReport() throws SQLException {
 		List<Activity> activity = new ArrayList<Activity>();
-		activity.add(new Activity(ActivityType.SRS, 60));
+		activity.add(new Activity(ActivityType.SRS, 60, ActivitySubType.I));
 		TimeReport report = new TimeReport(new User("_Oskar", ""), activity, false, 0, 1,
 				"_testgroup");
 
@@ -353,7 +359,7 @@ public class DatabaseTest {
 	public void testSignUsign() throws Exception{
 		String username = "_asdqwdqwd";
 		List<Activity> activity = new ArrayList<Activity>();
-		activity.add(new Activity(ActivityType.SRS, 60));
+		activity.add(new Activity(ActivityType.SRS, 60, ActivitySubType.I));
 		String projectgroup = "_testgroup";
 		TimeReport report = new TimeReport(new User(username, ""), activity, false, 0, 1,
 				projectgroup);
@@ -379,7 +385,7 @@ public class DatabaseTest {
 	@Test
 	public void testGetTimeReport() throws SQLException {
 		List<Activity> activity = new ArrayList<Activity>();
-		activity.add(new Activity(ActivityType.SRS, 60));
+		activity.add(new Activity(ActivityType.SRS, 60, ActivitySubType.I));
 
 		TimeReport report = new TimeReport(new User("_Oskar", ""), activity, false, 0, 1,
 				"_testgroup");
@@ -409,7 +415,7 @@ public class DatabaseTest {
 	@Test
 	public void testGetTimeReports() throws SQLException {
 		List<Activity> activity = new ArrayList<Activity>();
-		activity.add(new Activity(ActivityType.SRS, 60));
+		activity.add(new Activity(ActivityType.SRS, 60, ActivitySubType.I));
 		db.createProjectGroup("_testgroup");
 		User u = new User("_Oskar", "");
 		TimeReport report1 = new TimeReport(u, activity, false, 0, 1, "_testgroup");
@@ -436,7 +442,7 @@ public class DatabaseTest {
 	@Test
 	public void testUpdateTimeReport() throws SQLException {
 		List<Activity> activity = new ArrayList<Activity>();
-		activity.add(new Activity(ActivityType.SRS, 60));
+		activity.add(new Activity(ActivityType.SRS, 60, ActivitySubType.I));
 		db.createProjectGroup("_testgroup");
 		User u = new User("_Oskar", "");
 		TimeReport report1 = new TimeReport(u, activity, false, 0, 1, "_testgroup");
@@ -451,8 +457,9 @@ public class DatabaseTest {
 		rs.close();
 		stmt.close();
 		activity = new ArrayList<Activity>();
-		activity.add(new Activity(ActivityType.SRS, 10));
-		activity.add(new Activity(ActivityType.SDDD, 20));
+		activity.add(new Activity(ActivityType.SRS, 10, ActivitySubType.I));
+		activity.add(new Activity(ActivityType.SDDD, 20, ActivitySubType.I));
+		activity.add(new Activity(ActivityType.SDDD, 40, ActivitySubType.F));
 		
 		TimeReport newTimeReport = new TimeReport(u, activity, false, id.get(0), 1, "_testgroup");
 		db.updateTimeReport(newTimeReport);
@@ -463,9 +470,14 @@ public class DatabaseTest {
 		assertEquals(report1.getProjectGroup(), updatedTimereport.getProjectGroup());
 		assertEquals(activity.size(), updatedTimereport.getActivities().size());
 		assertEquals(ActivityType.SDDD, updatedTimereport.getActivities().get(0).getType());
-		assertEquals(20, updatedTimereport.getActivities().get(0).getLength());
-		assertEquals(ActivityType.SRS, updatedTimereport.getActivities().get(1).getType());
-		assertEquals(10, updatedTimereport.getActivities().get(1).getLength());
+		assertEquals(ActivitySubType.F, updatedTimereport.getActivities().get(0).getSubType());
+		assertEquals(40, updatedTimereport.getActivities().get(0).getLength());
+		assertEquals(ActivityType.SDDD, updatedTimereport.getActivities().get(1).getType());
+		assertEquals(ActivitySubType.I, updatedTimereport.getActivities().get(1).getSubType());
+		assertEquals(20, updatedTimereport.getActivities().get(1).getLength());
+		assertEquals(ActivityType.SRS, updatedTimereport.getActivities().get(2).getType());
+		assertEquals(ActivitySubType.I, updatedTimereport.getActivities().get(2).getSubType());
+		assertEquals(10, updatedTimereport.getActivities().get(2).getLength());
 	}
 	
 	@Test
@@ -578,7 +590,7 @@ public class DatabaseTest {
 		db.addUser(user, "");
 		db.createProjectGroup(group);
 		User u = db.getUser(user);
-		Activity a1 = new Activity(ActivityType.FunctionTest, 65);
+		Activity a1 = new Activity(ActivityType.FunctionTest, 65, ActivitySubType.noSubType);
 		List<Activity> activities = new ArrayList<Activity>();
 		activities.add(a1);
 		TimeReport tr = new TimeReport(u, activities, false, 0, 1, group);
@@ -595,8 +607,8 @@ public class DatabaseTest {
 		db.addUser(user, "");
 		db.createProjectGroup(group);
 		User u = db.getUser(user);
-		Activity a1 = new Activity(ActivityType.FunctionTest, 65);
-		Activity a2 = new Activity(ActivityType.Meeting, Integer.MAX_VALUE);
+		Activity a1 = new Activity(ActivityType.FunctionTest, 65, ActivitySubType.noSubType);
+		Activity a2 = new Activity(ActivityType.Meeting, Integer.MAX_VALUE, ActivitySubType.noSubType);
 		List<Activity> activities = new ArrayList<Activity>();
 		activities.add(a1);
 		activities.add(a2);

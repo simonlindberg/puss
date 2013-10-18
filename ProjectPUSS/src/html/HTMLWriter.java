@@ -1,6 +1,7 @@
 package html;
 
 import items.Activity;
+import items.ActivitySubType;
 import items.ActivityType;
 import items.Command;
 import items.GraphSettings;
@@ -14,6 +15,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -32,15 +34,51 @@ public class HTMLWriter {
 	final static public String LIST_COMMAND = "command";
 	final static public String ID = "id";
 	
-	final static public String SDP = "sdp";
-	final static public String SRS = "srs";
-	final static public String SVVS = "svvs";
-	final static public String STLDD = "stldd";
-	final static public String SVVI = "svvi";
-	final static public String SDDD = "sddd";
-	final static public String SVVR = "svvr";
-	final static public String SSD = "ssd";
-	final static public String PFR = "pfr";
+	final static public String SDP_F = "sdp_f";
+	final static public String SDP_I = "sdp_i";
+	final static public String SDP_O = "sdp_o";
+	final static public String SDP_U = "sdp_u";
+	
+	final static public String SRS_F = "srs_f";
+	final static public String SRS_I = "srs_i";
+	final static public String SRS_O = "srs_o";
+	final static public String SRS_U = "srs_u";
+	
+	final static public String SVVS_F = "svvs_f";
+	final static public String SVVS_I = "svvs_i";
+	final static public String SVVS_O = "svvs_o";
+	final static public String SVVS_U = "svvs_u";
+	
+	final static public String STLDD_F = "stldd_f";
+	final static public String STLDD_I = "stldd_i";
+	final static public String STLDD_O = "stldd_o";
+	final static public String STLDD_U = "stldd_u";
+	
+	final static public String SVVI_F = "svvi_f";
+	final static public String SVVI_I = "svvi_i";
+	final static public String SVVI_O = "svvi_o";
+	final static public String SVVI_U = "svvi_u";
+	
+	final static public String SDDD_F = "sddd_f";
+	final static public String SDDD_I = "sddd_i";
+	final static public String SDDD_O = "sddd_o";
+	final static public String SDDD_U = "sddd_u";
+	
+	final static public String SVVR_F = "svvr_f";
+	final static public String SVVR_I = "svvr_i";
+	final static public String SVVR_O = "svvr_o";
+	final static public String SVVR_U = "svvr_u";
+	
+	final static public String SSD_F = "ssd_f";
+	final static public String SSD_I = "ssd_i";
+	final static public String SSD_O = "ssd_o";
+	final static public String SSD_U = "ssd_u";
+	
+	final static public String PFR_F = "pfr_f";
+	final static public String PFR_I = "pfr_i";
+	final static public String PFR_O = "pfr_o";
+	final static public String PFR_U = "pfr_u";
+	
 	final static public String FUNCTION_TEST = "functest";
 	final static public String SYSTEM_TEST= "systest";
 	final static public String REG_TEST = "regtest";
@@ -73,12 +111,63 @@ public class HTMLWriter {
 	public void printTimeReport(TimeReport timereport, Command command, Role role) {
 		User user = timereport.getUser();
 		int week = timereport.getWeek();
-
+		List<Activity> activities = timereport.getActivities();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Date date = new Date(System.currentTimeMillis());
 		String time = sdf.format(date);
-
-		int sdp = user.getTimeForActivity(ActivityType.SDP, week);
+		
+		int sdp_f = getFromActivityList(activities, ActivityType.SDP, ActivitySubType.F);
+		int sdp_i = getFromActivityList(activities, ActivityType.SDP, ActivitySubType.I);
+		int sdp_o = getFromActivityList(activities, ActivityType.SDP, ActivitySubType.O);
+		int sdp_u = getFromActivityList(activities, ActivityType.SDP, ActivitySubType.U);
+		
+		int srs_f = getFromActivityList(activities, ActivityType.SRS, ActivitySubType.F);
+		int srs_i = getFromActivityList(activities, ActivityType.SRS, ActivitySubType.I);
+		int srs_o = getFromActivityList(activities, ActivityType.SRS, ActivitySubType.O);
+		int srs_u = getFromActivityList(activities, ActivityType.SRS, ActivitySubType.U);
+		
+		int svvs_f = getFromActivityList(activities, ActivityType.SVVS, ActivitySubType.F);
+		int svvs_i = getFromActivityList(activities, ActivityType.SVVS, ActivitySubType.I);
+		int svvs_o = getFromActivityList(activities, ActivityType.SVVS, ActivitySubType.O);
+		int svvs_u = getFromActivityList(activities, ActivityType.SVVS, ActivitySubType.U);
+		
+		int stldd_f = getFromActivityList(activities, ActivityType.STLDD, ActivitySubType.F);
+		int stldd_i = getFromActivityList(activities, ActivityType.STLDD, ActivitySubType.I);
+		int stldd_o = getFromActivityList(activities, ActivityType.STLDD, ActivitySubType.O);
+		int stldd_u = getFromActivityList(activities, ActivityType.STLDD, ActivitySubType.U);
+		
+		int svvi_f = getFromActivityList(activities, ActivityType.SVVI, ActivitySubType.F);
+		int svvi_i = getFromActivityList(activities, ActivityType.SVVI, ActivitySubType.I);
+		int svvi_o = getFromActivityList(activities, ActivityType.SVVI, ActivitySubType.O);
+		int svvi_u = getFromActivityList(activities, ActivityType.SVVI, ActivitySubType.U);
+		
+		int sddd_f = getFromActivityList(activities, ActivityType.SDDD, ActivitySubType.F);
+		int sddd_i = getFromActivityList(activities, ActivityType.SDDD, ActivitySubType.I);
+		int sddd_o = getFromActivityList(activities, ActivityType.SDDD, ActivitySubType.O);
+		int sddd_u = getFromActivityList(activities, ActivityType.SDDD, ActivitySubType.U);
+		
+		int svvr_f = getFromActivityList(activities, ActivityType.SVVR, ActivitySubType.F);
+		int svvr_i = getFromActivityList(activities, ActivityType.SVVR, ActivitySubType.I);
+		int svvr_o = getFromActivityList(activities, ActivityType.SVVR, ActivitySubType.O);
+		int svvr_u = getFromActivityList(activities, ActivityType.SVVR, ActivitySubType.U);
+		
+		int ssd_f = getFromActivityList(activities, ActivityType.SSD, ActivitySubType.F);
+		int ssd_i = getFromActivityList(activities, ActivityType.SSD, ActivitySubType.I);
+		int ssd_o = getFromActivityList(activities, ActivityType.SSD, ActivitySubType.O);
+		int ssd_u = getFromActivityList(activities, ActivityType.SSD, ActivitySubType.U);
+		
+		int pfr_f = getFromActivityList(activities, ActivityType.PFR, ActivitySubType.F);
+		int pfr_i = getFromActivityList(activities, ActivityType.PFR, ActivitySubType.I);
+		int pfr_o = getFromActivityList(activities, ActivityType.PFR, ActivitySubType.O);
+		int pfr_u = getFromActivityList(activities, ActivityType.PFR, ActivitySubType.U);
+		
+		int functest = getFromActivityList(activities, ActivityType.FunctionTest, ActivitySubType.noSubType);
+		int systest = getFromActivityList(activities, ActivityType.SystemTest, ActivitySubType.noSubType);
+		int regtest = getFromActivityList(activities, ActivityType.RegressionTest, ActivitySubType.noSubType);
+		int meeting = getFromActivityList(activities, ActivityType.Meeting, ActivitySubType.noSubType);
+		
+		/*
+		int sdp_f = user.getTimeForActivity(ActivityType.SDP, week);
 		int srs = user.getTimeForActivity(ActivityType.SRS, week);
 		int svvs = user.getTimeForActivity(ActivityType.SVVS, week);
 		int stldd = user.getTimeForActivity(ActivityType.STLDD, week);
@@ -90,115 +179,186 @@ public class HTMLWriter {
 		int functest = user.getTimeForActivity(ActivityType.FunctionTest, week);
 		int systest = user.getTimeForActivity(ActivityType.SystemTest, week);
 		int regtest = user.getTimeForActivity(ActivityType.RegressionTest, week);
-		int meeting = user.getTimeForActivity(ActivityType.Meeting, week);
+		int meeting = user.getTimeForActivity(ActivityType.Meeting, week);*/
 		
 		String cmd = "";
 		if (command.equals(Command.show))
 			cmd = " readonly ";
 
-		int sum = sdp + srs + svvs + stldd + svvi + sddd + svvr + ssd + pfr + functest + systest
-				+ regtest + meeting;
+		int sum = sdp_f + sdp_i + sdp_o + sdp_u + 
+					srs_f +  srs_i +  srs_o +  srs_u + 
+					svvs_f + svvs_i + svvs_o + svvs_u +
+					stldd_f + stldd_i + stldd_o + stldd_u +
+					svvi_f + svvi_i + svvi_o + svvi_u +
+					sddd_f + sddd_i + sddd_o + sddd_u +
+					svvr_f + svvr_i + svvr_o + svvr_u +
+					ssd_f + ssd_i + ssd_o + ssd_u +
+					pfr_f + pfr_i + pfr_o + pfr_u +
+					functest + systest + regtest + meeting;
 
 		writer.print("<form method='post' action='timereport?" + HTMLWriter.LIST_COMMAND + "="
 				+ command.toString() + "&id=" + timereport.getID() + "'>");
 		writer.print("<table border='1'><tbody>");
 		writer.print("<tr>");
-		writer.print("<td><b>Name:</b></td><td>" + user.getUsername() + "</td>");
-		writer.print("<td><b>Date:</b></td><td>" + time + "</td>");
+		writer.print("<td colspan='2'><b>Name:</b></td><td colspan='2'>" + user.getUsername() + "</td>");
+		writer.print("<td colspan='2'><b>Date:</b></td><td>" + time + "</td>");
 		writer.print("</tr>");
 		writer.print("<tr>");
-		writer.print("<td><b>Projectgroup</b>:</td><td>" + timereport.getProjectGroup() + "</td>");
-		writer.print("<td><b>Week:</b></td><td><input" + cmd + " type='text' name='" + WEEK
+		writer.print("<td colspan='2'><b>Projectgroup</b>:</td><td colspan='2'>" + timereport.getProjectGroup() + "</td>");
+		writer.print("<td colspan='2'><b>Week:</b></td><td><input" + cmd + " type='text' name='" + WEEK
 				+ "' value='" + timereport.getWeek() + "' size='3'></td>");
 		writer.print("</tr>");
-		writer.print("<tr><td colspan='3' bgcolor='lightgrey'><font size='+1'><b>Del A: Total tid denna vecka (minuter)</b></font></td>");
+		writer.print("<tr><td colspan='6' bgcolor='lightgrey'><font size='+1'><b>Del A: Total tid denna vecka (minuter)</b></font></td>");
 		writer.print("<td>" + sum + "</td></tr>");
-		writer.print("<tr><td colspan='4' bgcolor='lightgrey' nowrap=''><font size='+1'><b>Del B: Antalet minuter per aktivitet</b></font>");
+		writer.print("<tr><td colspan='7' bgcolor='lightgrey' nowrap=''><font size='+1'><b>Del B: Antalet minuter per aktivitet</b></font>");
 		writer.print("<br>(Summan av alla separata aktiviteter räknas ut automatiskt och fylls i ovan.)</td></tr>");
-		writer.print("<tr><th>Nummer</th><th colspan='2'>Aktivitet</th><th>Total tid</th></tr>");
+		writer.print("<tr><th>Nummer</th><th>Aktivitet</th><th>U</th><th>I</th><th>F</th><th>O</th><th>Total tid</th></tr>");
 		writer.print("<tr>");
 		writer.print("<td>11</td>");
-		writer.print("<td colspan='2'>SDP</td>");
-		writer.print("<td><i><input" + cmd + " type='text' name='" + SDP + "' value='" + sdp
+		writer.print("<td>SDP</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SDP_U + "' value='" + sdp_u
 				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SDP_I + "' value='" + sdp_i
+				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SDP_F + "' value='" + sdp_f
+				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SDP_O + "' value='" + sdp_o
+				+ "' size='3'></i></td>");
+		writer.print("<td><i> " + (sdp_u + sdp_i + sdp_f + sdp_o) + "</i></td>");
 		writer.print("</tr>");
 		writer.print("<tr>");
 		writer.print("<td>12</td>");
-		writer.print("<td colspan='2'>SRS</td>");
-		writer.print("<td><i><input" + cmd + " type='text' name='" + SRS + "' value='" + srs
+		writer.print("<td>SRS</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SRS_U + "' value='" + srs_u
 				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SRS_I + "' value='" + sdp_i
+				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SRS_F + "' value='" + sdp_f
+				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SRS_O + "' value='" + sdp_o
+				+ "' size='3'></i></td>");
+		writer.print("<td><i> " + (srs_u + srs_i + srs_f + srs_o) + "</i></td>");
 		writer.print("</tr>");
 		writer.print("<tr>");
 		writer.print("<td>13</td>");
-		writer.print("<td colspan='2'>SVVS</td>");
-		writer.print("<td><i><input" + cmd + " type='text' name='" + SVVS + "' value='" + svvs
+		writer.print("<td>SVVS</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SVVS_U + "' value='" + svvs_u
 				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SVVS_I + "' value='" + svvs_i
+				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SVVS_F + "' value='" + svvs_f
+				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SVVS_O + "' value='" + svvs_o
+				+ "' size='3'></i></td>");
+		writer.print("<td><i> " + (svvs_u + svvs_i + svvs_f + svvs_o) + "</i></td>");
 		writer.print("</tr>");
 		writer.print("<tr>");
 		writer.print("<td>14</td>");
-		writer.print("<td colspan='2'>STLDD</td>");
-		writer.print("<td><i><input" + cmd + " type='text' name='" + STLDD + "' value='" + stldd
+		writer.print("<td>STLDD</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + STLDD_U + "' value='" + stldd_u
 				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + STLDD_I + "' value='" + stldd_i
+				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + STLDD_F + "' value='" + stldd_f
+				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + STLDD_O + "' value='" + stldd_o
+				+ "' size='3'></i></td>");
+		writer.print("<td><i> " + (stldd_u + stldd_i + stldd_f + stldd_o) + "</i></td>");
 		writer.print("</tr>");
 		writer.print("<tr>");
 		writer.print("<td>15</td>");
-		writer.print("<td colspan='2'>SVVI</td>");
-		writer.print("<td><i><input" + cmd + " type='text' name='" + SVVI + "' value='" + svvi
+		writer.print("<td>SVVI</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SVVI_U + "' value='" + svvi_u
 				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SVVI_I + "' value='" + svvi_i
+				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SVVI_F + "' value='" + svvi_f
+				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SVVI_O + "' value='" + svvi_o
+				+ "' size='3'></i></td>");
+		writer.print("<td><i> " + (svvi_u + svvi_i + svvi_f + svvi_o) + "</i></td>");
 		writer.print("</tr>");
 		writer.print("<tr>");
 		writer.print("<td>16</td>");
-		writer.print("<td colspan='2'>SDDD</td>");
-		writer.print("<td><i><input" + cmd + " type='text' name='" + SDDD + "' value='" + sddd
+		writer.print("<td>SDDD</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SDDD_U + "' value='" + sddd_u
 				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SDDD_I + "' value='" + sddd_i
+				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SDDD_F + "' value='" + sddd_f
+				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SDDD_O + "' value='" + sddd_o
+				+ "' size='3'></i></td>");
+		writer.print("<td><i> " + (sddd_u + sddd_i + sddd_f + sddd_o) + "</i></td>");
 		writer.print("</tr>");
 		writer.print("<tr>");
 		writer.print("<td>17</td>");
-		writer.print("<td colspan='2'>SVVR</td>");
-		writer.print("<td><i><input" + cmd + " type='text' name='" + SVVR + "' value='" + svvr
+		writer.print("<td>SVVR</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SVVR_U + "' value='" + svvr_u
 				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SVVR_I + "' value='" + svvr_i
+				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SVVR_F + "' value='" + svvr_f
+				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SVVR_O + "' value='" + svvr_o
+				+ "' size='3'></i></td>");
+		writer.print("<td><i> " + (svvr_u + svvr_i + svvr_f + svvr_o) + "</i></td>");
 		writer.print("</tr>");
 		writer.print("<tr>");
 		writer.print("<td>18</td>");
-		writer.print("<td colspan='2'>SSD</td>");
-		writer.print("<td><i><input" + cmd + " type='text' name='" + SSD + "' value='" + ssd
+		writer.print("<td>SSD</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SSD_U + "' value='" + ssd_u
 				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SSD_I + "' value='" + ssd_i
+				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SSD_F + "' value='" + ssd_f
+				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SSD_O + "' value='" + ssd_o
+				+ "' size='3'></i></td>");
+		writer.print("<td><i> " + (ssd_u + ssd_i + ssd_f + ssd_o) + "</i></td>");
 		writer.print("</tr>");
 		writer.print("<tr>");
 		writer.print("<td>19</td>");
-		writer.print("<td colspan='2'>PFR</td>");
-		writer.print("<td><i><input" + cmd + " type='text' name='" + PFR + "' value='" + pfr
+		writer.print("<td>PFR</td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + PFR_U + "' value='" + pfr_u
 				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + PFR_I + "' value='" + pfr_i
+				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + PFR_F + "' value='" + pfr_f
+				+ "' size='3'></i></td>");
+		writer.print("<td><i><input" + cmd + " type='text' name='" + PFR_O + "' value='" + pfr_o
+				+ "' size='3'></i></td>");
+		writer.print("<td><i> " + (pfr_u + pfr_i + pfr_f + pfr_o) + "</i></td>");
 		writer.print("</tr>");
 		writer.print("<tr>");
 		writer.print("<td bgcolor='lightgrey' colspan='4'></td>");
 		writer.print("</tr>");
 		writer.print("<tr>");
 		writer.print("<td>21</td>");
-		writer.print("<td colspan='2'>Funktionstest</td>");
+		writer.print("<td colspan='5'>Funktionstest</td>");
 		writer.print("<td><i><input" + cmd + " type='text' name='" + FUNCTION_TEST + "' value='"
 				+ functest + "' size='3'></i></td>");
 		writer.print("</tr>");
 		writer.print("<tr>");
 		writer.print("<td>22</td>");
-		writer.print("<td colspan='2'>Systemtest</td>");
+		writer.print("<td colspan='5'>Systemtest</td>");
 		writer.print("<td><i><input" + cmd + " type='text' name='" + SYSTEM_TEST + "' value='"
 				+ systest + "' size='3'></i></td>");
 		writer.print("</tr>");
 		writer.print("<tr>");
 		writer.print("<td>23</td>");
-		writer.print("<td colspan='2'>Regressionstest</td>");
+		writer.print("<td colspan='5'>Regressionstest</td>");
 		writer.print("<td><i><input" + cmd + " type='text' name='" + REG_TEST + "' value='"
 				+ regtest + "' size='3'></i></td>");
 		writer.print("</tr>");
 		writer.print("<tr>");
 		writer.print("<td>30</td>");
-		writer.print("<td colspan='2'>Möte</td>");
+		writer.print("<td colspan='5'>Möte</td>");
 		writer.print("<td><i><input" + cmd + " type='text' name='" + MEETING + "' value='"
 				+ meeting + "' size='3'></i></td>");
 		writer.print("</tr>");
-		writer.print("<tr><td colspan='4' bgcolor='lightgrey'><font size='+1'><b>Del C: Signatur</b></font></td></tr><tr>");
-		writer.print("<tr><td colspan='3'><b>Signerad av manager</b></td><td>"
+		writer.print("<tr><td colspan='7' bgcolor='lightgrey'><font size='+1'><b>Del C: Signatur</b></font></td></tr><tr>");
+		writer.print("<tr><td colspan='6'><b>Signerad av manager</b></td><td>"
 				+ (timereport.getSigned() ? "JA" : "NEJ") + "</td></tr>");
 		writer.print("</tbody></table>");
 
@@ -214,6 +374,16 @@ public class HTMLWriter {
 		
 		writer.print("</form>");
 
+	}
+	
+	
+	private int getFromActivityList(List<Activity> activities, ActivityType at, ActivitySubType ast) {
+		for(Activity a : activities){
+			if(a.getType().equals(at) && a.getSubType().equals(ast)){
+				return a.getLength();
+			}
+		}
+		return 0;
 	}
 
 	/**

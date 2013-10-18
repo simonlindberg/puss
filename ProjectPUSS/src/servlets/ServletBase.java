@@ -76,6 +76,8 @@ public abstract class ServletBase extends HttpServlet {
 		doWork(request, writer);
 		writer.printFoot();
 	}
+	
+	
 
 	/**
 	 * Används för att delegar ut arbete till subklasserna.
