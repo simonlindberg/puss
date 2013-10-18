@@ -38,7 +38,7 @@ public class MainPage extends ServletBase {
 			html.printProjectChooser(projects.indexOf(currentProjectGroup), projects);
 			Role role = database.getRole(user.getUsername(), currentProjectGroup);
 			
-			html.printLink("create", "Skapa en ny tidrapport");
+			html.printLink("timereport?"+HTMLWriter.LIST_COMMAND+"="+Command.create.toString(), "Skapa en ny tidrapport");
 			html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.update.toString(), "Uppdatera en tidrapport");
 			html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.show.toString(), "Visa tidrapporter");
 			html.printLink("listreports?"+HTMLWriter.LIST_COMMAND + "=" + Command.delete.toString(), "Ta bort tidrapporter");

@@ -691,6 +691,9 @@ public class HTMLWriter {
 			writer.print("<p>Hejsan <b>" + user.getUsername()+ "</b>! Tryck ");
 			printLink("login", "här");
 			writer.print(" om du vill logga ut.</p>");
+			writer.print("<p>");
+			printLink("mainpage", "Startsidan");
+			writer.print("</p>");
 		}
 	}
 
