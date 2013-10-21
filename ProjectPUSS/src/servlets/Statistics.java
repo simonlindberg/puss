@@ -1,8 +1,12 @@
 package servlets;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.ArrayList;
+
+import items.Activity;
 import items.ActivityType;
 import items.GraphSettings;
 import items.Role;
@@ -10,8 +14,11 @@ import items.TimeReport;
 import items.User;
 import html.HTMLWriter;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * Denna klass bygger ut ServletBase och sköter generering av grafer och diagram
@@ -23,28 +30,52 @@ import javax.servlet.http.HttpServletRequest;
 @WebServlet("/statistics")
 public class Statistics extends ServletBase {
 
+	private boolean done = true;
+
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
 
-		User user = (User) request.getSession().getAttribute(ServletBase.USER);
-		String projectGroup = (String) request.getSession().getAttribute(ServletBase.PROJECT);
+		HttpSession session = request.getSession();
+
+		User user = (User) session.getAttribute(ServletBase.USER);
+		String projectGroup = (String) session.getAttribute(ServletBase.PROJECT);
 		Role userRole = database.getRole(user.getUsername(), projectGroup);
 
-		html.printGraphChoice(userRole);
-		String graphType = request.getParameter("graphChooser");
+		if (done) {
+			session.setAttribute("graphChoice", "inget val");
+			session.setAttribute("startWeekChoice", "inget val");
+			session.setAttribute("stopWeekChoice", "inget val");
+			session.setAttribute("activityChoice", "inget val");
+			session.setAttribute("userChoice", "inget val");
+			html.printGraphChoice(userRole);
+		}
+
+		String graphType = (String) session.getAttribute("graphChoice");
+
+		if (graphType == null) {
+			graphType = "inget val";
+			done = true;
+		} else {
+			done = false;
+		}
 
 		GraphSettings gs = null;
 		List<TimeReport> tr = null;
+		String start = null;
+		String stop = null;
+		List<User> users = null;
+		int firstWeek = 0;
+		int lastWeek = 0;
 
 		switch (graphType) {
 		case "userWeekTime":
 
 			tr = database.getTimeReports(user.getUsername(), projectGroup);
-			if (tr == null) {
+			if (tr == null || tr.isEmpty()) {
 				html.printErrorMessage("Det finns inga registrerade tidsrapporter för denna användare");
+				done = true;
 				break;
 			}
-			html.printGraphChoice(userRole);
 
 			Collections.sort(tr, new Comparator<TimeReport>() {
 				@Override
@@ -53,73 +84,111 @@ public class Statistics extends ServletBase {
 				}
 			});
 
-			int firstWeek = tr.get(0).getWeek();
-			int lastWeek = tr.get(tr.size() - 1).getWeek();
+			firstWeek = tr.get(0).getWeek();
+			if (firstWeek < 1) {
+				firstWeek = 1;
+			}
+			lastWeek = tr.get(tr.size() - 1).getWeek();
+			if (lastWeek < 1) {
+				lastWeek = 1;
+			}
 
-			html.printWeekChoice(firstWeek, lastWeek);
+			start = (String) session.getAttribute("startWeekChoice");
+			stop = (String) session.getAttribute("stopWeekChoice");
 
-			int startWeek = Integer.parseInt(request.getParameter("startweek"));
-			int stopWeek = Integer.parseInt(request.getParameter("lastweek"));
+			if (!start.equals("inget val") && !stop.equals("inget val")) {
 
-			if (stopWeek <= startWeek) {
-				html.printErrorMessage("Slutveckan måste vara större än startveckan");
+				int startWeek = Integer.parseInt(start);
+				int stopWeek = Integer.parseInt(stop);
+
+				if (stopWeek <= startWeek) {
+					html.printErrorMessage("Slutveckan måste vara större än startveckan");
+				} else {
+					int startIndex = 0;
+					int stopIndex = 0;
+					for (int i = 0; i < tr.size() - 1; i++) {
+						if (tr.get(i).getWeek() == startWeek || tr.get(i).getWeek() < startWeek) {
+							startIndex = tr.indexOf(tr.get(i));
+						}
+						if (tr.get(i).getWeek() == stopWeek || tr.get(i).getWeek() < stopWeek) {
+							stopIndex = tr.indexOf(tr.get(i + 1));
+						}
+					}
+					html.printSuccessMessage("Startvecka: " + start + ", Slutvecka: " + stop);
+					gs = new GraphSettings(graphType, null, "Veckonummer", "Arbetade minuter");
+					List<TimeReport> finalTimeReports = tr.subList(startIndex, stopIndex);
+					html.printGraph(finalTimeReports, gs);
+				}
+				done = true;
 			} else {
-				gs = new GraphSettings(graphType, null, "Veckonummer", "Arbetade timmar");
-				List<TimeReport> finalTimeReports = tr.subList(startWeek, stopWeek);
-				html.printGraph(finalTimeReports, gs);
-			}
-
-			break;
-
-		case "ActivityTime":
-
-			tr = database.getTimeReports(user.getUsername(), projectGroup);
-			if (tr == null) {
-				html.printErrorMessage("Det finns inga registrerade tidsrapporter för denna användare");
-				break;
-			}
-			html.printActivityChoice();
-			ActivityType activityChoice = ActivityType.valueOf(request
-					.getParameter("activityChoice"));
-			gs = new GraphSettings(graphType, activityChoice, "Aktivitet", "Arbetade timmar");
-			html.printGraph(tr, gs);
-
-			break;
-
-		case "PlUserTime":
-
-			List<User> users = database.getUsersInProject(projectGroup);
-			html.printUserChoice(users);
-			User finalUser = null;
-			String userChoice = request.getParameter("userChoice");
-
-			for (User u : users) {
-				if (u.getUsername().equals(userChoice)) {
-					finalUser = u;
+				html.printWeekChoice(firstWeek, lastWeek);
+				if (!start.equals("inget val")) {
+					html.printSuccessMessage("Startvecka: " + start);
+				}
+				if (!stop.equals("inget val")) {
+					html.printSuccessMessage("Slutvecka: " + stop);
 				}
 			}
+			break;
 
-			tr = database.getTimeReports(finalUser.getUsername(), projectGroup);
+		case "activityTime":
 
-			if (tr == null) {
+			tr = database.getTimeReports(user.getUsername(), projectGroup);
+			if (tr == null || tr.isEmpty()) {
 				html.printErrorMessage("Det finns inga registrerade tidsrapporter för denna användare");
 				break;
 			}
 
-			gs = new GraphSettings(graphType, null, "Veckonummer", "Arbetade timmar");
+			gs = new GraphSettings(graphType, null, "Aktivitet", "Arbetade minuter");
 			html.printGraph(tr, gs);
+			done = true;
 
+			break;
+
+		case "plUserTime":
+
+			users = database.getUsersInProject(projectGroup);
+			if(users == null || users.isEmpty()){
+				html.printErrorMessage("Det finns inga registrerade användare i projektet");
+				break;
+			}
+			
+			tr = new ArrayList<TimeReport>();
+
+			for (User u : users) {
+				tr.addAll(database.getTimeReports(u.getUsername(), projectGroup));
+
+			}
+
+			if (tr == null || tr.isEmpty()) {
+				html.printErrorMessage("Det finns inga registrerade tidsrapporter för användarna i projektgruppen.");
+				break;
+			}
+
+			gs = new GraphSettings(graphType, null, "Användare", "Arbetade minuter");
+			html.printGraph(tr, gs);
+			done = true;
 			break;
 
 		case "weekBurnDown":
 
-			tr = database.getAllTimeReports(projectGroup);
+			users = database.getUsersInProject(projectGroup);
+			if(users == null || users.isEmpty()){
+				html.printErrorMessage("Det finns inga registrerade användare i projektet");
+				break;
+			}
+			
+			tr = new ArrayList<TimeReport>();
 
-			if (tr == null) {
+			for (User u : users) {
+				tr.addAll(database.getTimeReports(u.getUsername(), projectGroup));
+
+			}
+
+			if (tr == null || tr.isEmpty()) {
 				html.printErrorMessage("Det finns inga registrerade tidsrapporter för denna projektgrupp");
 				break;
 			}
-			html.printGraphChoice(userRole);
 
 			Collections.sort(tr, new Comparator<TimeReport>() {
 				@Override
@@ -128,67 +197,149 @@ public class Statistics extends ServletBase {
 				}
 			});
 
-			int firstWeek2 = tr.get(0).getWeek();
-			int lastWeek2 = tr.get(tr.size() - 1).getWeek();
+			firstWeek = tr.get(0).getWeek();
+			if (firstWeek < 1) {
+				firstWeek = 1;
+			}
+			lastWeek = tr.get(tr.size() - 1).getWeek();
+			if (lastWeek < 1) {
+				lastWeek = 1;
+			}
 
-			html.printWeekChoice(firstWeek2, lastWeek2);
+			start = (String) session.getAttribute("startWeekChoice");
+			stop = (String) session.getAttribute("stopWeekChoice");
 
-			int startWeek2 = Integer.parseInt(request.getParameter("startweek"));
-			int stopWeek2 = Integer.parseInt(request.getParameter("lastweek"));
+			if (!start.equals("inget val") && !stop.equals("inget val")) {
 
-			if (stopWeek2 <= startWeek2) {
-				html.printErrorMessage("Slutveckan måste vara större än startveckan");
+				int startWeek = Integer.parseInt(start);
+				int stopWeek = Integer.parseInt(stop);
+
+				if (stopWeek <= startWeek) {
+					html.printErrorMessage("Slutveckan måste vara större än startveckan");
+				} else {
+					int startIndex = 0;
+					int stopIndex = 0;
+					for (int i = 0; i < tr.size() - 1; i++) {
+						if (tr.get(i).getWeek() == startWeek || tr.get(i).getWeek() < startWeek) {
+							startIndex = tr.indexOf(tr.get(i));
+						}
+						if (tr.get(i).getWeek() == stopWeek || tr.get(i).getWeek() < stopWeek) {
+							stopIndex = tr.indexOf(tr.get(i + 1));
+						}
+					}
+					html.printSuccessMessage("Startvecka: " + start + ", Slutvecka: " + stop);
+					gs = new GraphSettings(graphType, null, "Veckonummer", "Arbetade minuter");
+					List<TimeReport> finalTimeReports = tr.subList(startIndex, stopIndex);
+					html.printBurndownChart(finalTimeReports, gs);
+				}
+				done = true;
 			} else {
-				gs = new GraphSettings(graphType, null, "Veckonummer", "Återstående timmar");
-				List<TimeReport> finalTimeReports = tr.subList(startWeek2, stopWeek2);
-				html.printBurndownChart(finalTimeReports, gs);
+				html.printWeekChoice(firstWeek, lastWeek);
+				if (!start.equals("inget val")) {
+					html.printSuccessMessage("Startvecka: " + start);
+				}
+				if (!stop.equals("inget val")) {
+					html.printSuccessMessage("Slutvecka: " + stop);
+				}
+
 			}
 
 			break;
 
 		case "activityBurnDown":
 
-			tr = database.getAllTimeReports(projectGroup);
+			users = database.getUsersInProject(projectGroup);
+			if(users == null || users.isEmpty()){
+				html.printErrorMessage("Det finns inga registrerade användare i projektet");
+				break;
+			}
+			
+			tr = new ArrayList<TimeReport>();
 
-			if (tr == null) {
+			for (User u : users) {
+				tr.addAll(database.getTimeReports(u.getUsername(), projectGroup));
+
+			}
+
+			if (tr == null || tr.isEmpty()) {
 				html.printErrorMessage("Det finns inga registrerade tidsrapporter för denna projektgrupp");
 				break;
 			}
 
-			html.printActivityChoice();
-			ActivityType activityChoice2 = ActivityType.valueOf(request
-					.getParameter("activityChoice"));
-			gs = new GraphSettings(graphType, activityChoice2, "Veckonummer", "Återstående timmar");
-			html.printBurndownChart(tr, gs);
+			String actChoice = (String) session.getAttribute("activityChoice");
+
+			if (!actChoice.equals("inget val")) {
+				html.printSuccessMessage("Vald aktivitet: " + actChoice);
+				ActivityType activityChoice = ActivityType.valueOf(actChoice);
+				gs = new GraphSettings(graphType, activityChoice, "Veckonummer", "Arbetade minuter");
+				html.printBurndownChart(tr, gs);
+				done = true;
+			} else {
+				html.printActivityChoice();
+
+			}
 
 			break;
 
 		case "userBurnDown":
 
-			List<User> users2 = database.getUsersInProject(projectGroup);
-			html.printUserChoice(users2);
-			User finalUser2 = null;
-			String userChoice2 = request.getParameter("userChoice");
-
-			for (User u : users2) {
-				if (u.getUsername().equals(userChoice2)) {
-					finalUser2 = u;
-				}
-			}
-			tr = database.getTimeReports(finalUser2.getUsername(), projectGroup);
-
-			if (tr == null) {
-				html.printErrorMessage("Det finns inga registrerade tidsrapporter för denna användare");
+			users = database.getUsersInProject(projectGroup);
+			if(users == null || users.isEmpty()){
+				html.printErrorMessage("Det finns inga registrerade användare i projektet");
 				break;
 			}
 
-			gs = new GraphSettings(graphType, null, "Veckonummer", "Återstående timmar");
-			html.printBurndownChart(tr, gs);
+			String userChoice = (String) session.getAttribute("userChoice");
+			
+			if (!userChoice.equals("inget val")) {
+				html.printSuccessMessage("Vald användare: " + userChoice);
+				tr = database.getTimeReports(userChoice, projectGroup);
+
+				if (tr == null || tr.isEmpty()) {
+					html.printErrorMessage("Det finns inga registrerade tidsrapporter för denna användare");
+					done = true;
+					break;
+				}
+				
+				gs = new GraphSettings(graphType, null, "Veckonummer", "Arbetade minuter");
+				html.printBurndownChart(tr, gs);
+				done = true;
+			} else {
+				html.printUserChoice(users);
+			}
 
 			break;
+		}
+	}
 
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+		HttpSession session = request.getSession();
+
+		String graphChoice = (String) request.getParameter("graphChooser");
+		String startWeekChoice = (String) request.getParameter("startWeek");
+		String stopWeekChoice = (String) request.getParameter("stopWeek");
+		String activityChoice = (String) request.getParameter("activityChoose");
+		String userChoice = (String) request.getParameter("userChoose");
+
+		if (graphChoice != null) {
+			session.setAttribute("graphChoice", graphChoice);
+		}
+		if (startWeekChoice != null) {
+			session.setAttribute("startWeekChoice", startWeekChoice);
+		}
+		if (stopWeekChoice != null) {
+			session.setAttribute("stopWeekChoice", stopWeekChoice);
+		}
+		if (activityChoice != null) {
+			session.setAttribute("activityChoice", activityChoice);
+		}
+		if (userChoice != null) {
+			session.setAttribute("userChoice", userChoice);
 		}
 
+		doGet(request, response);
 	}
 }
 

@@ -736,22 +736,25 @@ public class HTMLWriter {
 
 	/**
 	 * Skriver ut en lista med val för vilken typ av graf som ska genereras.
-	 * @param userRole Användarens roll.
+	 * 
+	 * @param userRole
+	 *            Användarens roll.
 	 */
 	public void printGraphChoice(Role userRole) {
 
 		writer.print("<p> Välj typ av graf </p>");
 		writer.print("<form method=\"POST\" action=\"statistics\" name=\"graphchooser\" id = \"graphchooser\">");
-		writer.print("<select name=\" graphChooser \" id=\" graphChooser \"  onchange=\"this.form.submit()\" >");
+		writer.print("<select name=\"graphChooser\" id=\"graphChooser\"  onchange=\"this.form.submit()\" >");
 
-		writer.print("<option value=\"userWeekTime\" selected='selected'>Arbetstid per vecka</option>");
-		writer.print("<option value=\"ActivityTime\">Arbetstid per aktivitet</option>");
+		writer.print("<option selected disabled hidden value=''></option>");
+		writer.print("<option value=\"userWeekTime\">Arbetstid per vecka</option>");
+		writer.print("<option value=\"activityTime\">Arbetstid per aktivitet</option>");
 
 		if (userRole == Role.Manager) {
-			writer.print("<option value=\"PlUserTime\">Arbetstid per användare</option>"); 
-			writer.print("<option value=\"weekBurnDown\">Burn down chart för arbetstid per vecka</option>"); 
-			writer.print("<option value=\"activityBurnDown\">Burn down chart för specifik aktivitet</option>"); 
-			writer.print("<option value=\"userBurnDown\">Burn down chart för specifik användare</option>"); 
+		writer.print("<option value=\"plUserTime\">Arbetstid per användare</option>");
+		writer.print("<option value=\"weekBurnDown\">Burn down chart för arbetstid per vecka</option>");
+		writer.print("<option value=\"activityBurnDown\">Burn down chart för specifik aktivitet</option>");
+		writer.print("<option value=\"userBurnDown\">Burn down chart för specifik användare</option>");
 		}
 
 		writer.print("</select>");
@@ -759,32 +762,36 @@ public class HTMLWriter {
 
 	}
 
-
-
 	/**
-	 * Skriver ut två drop down listor där användaren kan välja två veckornummer. 
-	 * @param startWeek Första veckan användaren kan välja.
-	 * @param lastWeek Sista veckan användaren kan välja.
+	 * Skriver ut två drop down listor där användaren kan välja två
+	 * veckornummer.
+	 * 
+	 * @param startWeek
+	 *            Första veckan användaren kan välja.
+	 * @param lastWeek
+	 *            Sista veckan användaren kan välja.
 	 */
-	public void printWeekChoice(int startWeek, int lastWeek) {
+	public void printWeekChoice(int startWeek, int stopWeek) {
 
 		writer.print("<p> Välj startvecka </p>");
 		writer.print("<form method=\"POST\" action=\"statistics\" name=\"startweek\" id = \"startweek\">");
-		writer.print("<select name=\" startweek \" id=\" startweek \"  onchange=\"this.form.submit()\" >");
+		writer.print("<select name=\"startWeek\" id=\"startWeek\"  onchange=\"this.form.submit()\" >");
 
-		for (int i = startWeek; i <= lastWeek; i++) {
-			writer.print("<option value=\"" + i + "\" selected='selected'>Vecka " + i + "</option>");
+		writer.print("<option selected disabled hidden value=''></option>");
+		for (int i = startWeek; i <= stopWeek; i++) {
+			writer.print("<option value=\"" + i + "\">Vecka " + i + "</option>");
 		}
 
 		writer.print("</select>");
 		writer.print("</form>");
 
 		writer.print("<p> Välj slutvecka </p>");
-		writer.print("<form method=\"POST\" action=\"statistics\" name=\"lastweek\" id = \"lastweek\">");
-		writer.print("<select name=\" lastweek \" id=\" lastweek \"  onchange=\"this.form.submit()\" >");
+		writer.print("<form method=\"POST\" action=\"statistics\" name=\"stopweek\" id = \"stopweek\">");
+		writer.print("<select name=\"stopWeek\" id=\"stopWeek\"  onchange=\"this.form.submit()\" >");
 
-		for (int i = startWeek; i <= lastWeek; i++) {
-			writer.print("<option value=\"" + i + "\" selected='selected'>Vecka " + i + "</option>");
+		writer.print("<option selected disabled hidden value=''></option>");
+		for (int i = startWeek; i <= stopWeek; i++) {
+			writer.print("<option value=\"" + i + "\">Vecka " + i + "</option>");
 		}
 
 		writer.print("</select>");
@@ -792,54 +799,50 @@ public class HTMLWriter {
 
 	}
 
-
-
-
-
-/**
-	 * Skriver ut en drop down lista med alla de olika typer av aktiviteter användaren kan välja.
+	/**
+	 * Skriver ut en drop down lista med alla de olika typer av aktiviteter
+	 * användaren kan välja.
 	 */
 	public void printActivityChoice() {
-		
+
 		writer.print("<p> Välj typ av aktivitet </p>");
 		writer.print("<form method=\"POST\" action=\"statistics\" name=\"activityChoice\" id = \"activityChoice\">");
-		writer.print("<select name=\" activityChoice \" id=\" activityChoice \"  onchange=\"this.form.submit()\" >");
+		writer.print("<select name=\"activityChoose\" id=\"activityChoose\"  onchange=\"this.form.submit()\" >");
 
+		writer.print("<option selected disabled hidden value=''></option>");
 		for (int i = 0; i < ActivityType.values().length; i++) {
-			writer.print("<option value=\"" + (ActivityType.values())[i] + "\" selected='selected'>" + (ActivityType.values())[i] + "</option>");
-			
+			writer.print("<option value=\"" + (ActivityType.values())[i] + "\">"
+					+ (ActivityType.values())[i] + "</option>");
+
 		}
 
 		writer.print("</select>");
 		writer.print("</form>");
 
-		
 	}
-
-
-
 
 	/**
 	 * Skriver ut en drop down lista med användare som användaren kan välja.
-	 * @param userList Lista med användare.
+	 * 
+	 * @param userList
+	 *            Lista med användare.
 	 */
-	public void printUserChoice(List<User> userList){
-		
-		
+	public void printUserChoice(List<User> userList) {
+
 		writer.print("<p> Välj användare </p>");
 		writer.print("<form method=\"POST\" action=\"statistics\" name=\"userChoice\" id = \"userChoice\">");
-		writer.print("<select name=\" userChoice \" id=\" userChoice \"  onchange=\"this.form.submit()\" >");
+		writer.print("<select name=\"userChoose\" id=\"userChoose\"  onchange=\"this.form.submit()\" >");
 
+		writer.print("<option selected disabled hidden value=''></option>");
 		for (int i = 0; i < userList.size(); i++) {
-			writer.print("<option value=\"" + userList.get(i).getUsername() + "\" selected='selected'>" + userList.get(i).getUsername() + "</option>");
-			
+			writer.print("<option value=\"" + userList.get(i).getUsername() + "\">"
+					+ userList.get(i).getUsername() + "</option>");
+
 		}
 
 		writer.print("</select>");
 		writer.print("</form>");
-		
-		
-		
+
 	}
 
 	/**
@@ -906,7 +909,8 @@ public class HTMLWriter {
 
 				for (Activity a : activities) {
 					if (actTimes.containsKey(a.getType())) {
-						actTimes.put(a.getType(), actTimes.get(a.getType()) + a.getLength());
+						Integer time = actTimes.remove(a.getType());
+						actTimes.put(a.getType(), time + a.getLength());
 					} else {
 						actTimes.put(a.getType(), a.getLength());
 					}
@@ -922,12 +926,12 @@ public class HTMLWriter {
 				}
 				html = html.substring(0, html.length() - 1);
 			} else {
-				printErrorMessage("Det finns ingen arbetstid registrerad för vald aktivitet");
+				printErrorMessage("Det finns ingen arbetstid registrerad för användaren");
 			}
 			break;
 		case "plUserTime":
 			title = "Spenderad tid per gruppmedlem";
-			HashMap<User, Integer> userTimes = new HashMap<User, Integer>();
+			HashMap<String, Integer> userTimes = new HashMap<String, Integer>();
 
 			for (int i = 0; i < timeReports.size(); i++) {
 
@@ -939,18 +943,20 @@ public class HTMLWriter {
 					totalTime += a.getLength();
 				}
 
-				if (userTimes.containsKey(timeReports.get(i).getUser())) {
-					userTimes.put(timeReports.get(i).getUser(),
-							userTimes.get(timeReports.get(i).getUser()) + totalTime);
+				if (userTimes.containsKey(timeReports.get(i).getUser().getUsername())) {
+					Integer time = userTimes.remove(timeReports.get(i).getUser().getUsername());
+					totalTime += time;
+					userTimes.put(timeReports.get(i).getUser().getUsername(), totalTime);
 				} else {
-					userTimes.put(timeReports.get(i).getUser(), totalTime);
+					userTimes.put(timeReports.get(i).getUser().getUsername(), totalTime);
 				}
 			}
 
-			Set<User> users = userTimes.keySet();
+			Set<String> users = userTimes.keySet();
 
-			for (User u : users) {
-				html += "['" + u.toString() + "'," + userTimes.get(u).toString() + "],";
+			for (String u : users) {
+				html += "['" + u + "'," + userTimes.get(u).toString() + "],";
+				System.out.println(u + " " + userTimes.get(u).toString());
 			}
 			html = html.substring(0, html.length() - 1);
 
@@ -1139,18 +1145,29 @@ public class HTMLWriter {
 					totalTime += a.getLength();
 
 					if (userWeekTime.containsKey(timeReports.get(i).getWeek())) {
-						userWeekTime.put(timeReports.get(i).getWeek(),
-								userWeekTime.get(timeReports.get(i).getWeek()) + a.getLength());
+						int time = userWeekTime.remove(timeReports.get(i).getWeek());
+						time += a.getLength();
+						userWeekTime.put(timeReports.get(i).getWeek(), time);
 					} else {
 						userWeekTime.put(timeReports.get(i).getWeek(), a.getLength());
 					}
 				}
 			}
 
-			for (int i = 0; i < timeReports.size(); i++) {
-				html += "[" + timeReports.get(i).getWeek() + "," + totalTime + "],";
+			if (!userWeekTime.isEmpty()) {
+				Object[] keys = userWeekTime.keySet().toArray();
+				Arrays.sort(keys);
 
-				totalTime = totalTime - userWeekTime.get(timeReports.get(i).getWeek());
+				System.out.println(keys.length);
+				
+				for (int i = 0; i < keys.length; i++) {
+					html += "[" + keys[i] + "," + totalTime + "],";
+
+					totalTime = totalTime - userWeekTime.get(keys[i]);
+				}
+				html = html.substring(0, html.length() - 1);
+			}else {
+				printErrorMessage("Det finns ingen arbetstid registrerad för användaren");
 			}
 			break;
 		}
