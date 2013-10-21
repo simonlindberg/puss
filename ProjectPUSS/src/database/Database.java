@@ -797,7 +797,7 @@ public class Database {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE AND GroupName='" + projectGroup + "'");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE GroupName='" + projectGroup + "'");
 			while (rs.next()) {
 				int id = rs.getInt("id");
 				reports.add(getTimeReport(id));
