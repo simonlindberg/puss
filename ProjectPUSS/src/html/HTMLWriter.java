@@ -232,11 +232,11 @@ public class HTMLWriter {
 		writer.print("<td>SRS</td>");
 		writer.print("<td><i><input" + cmd + " type='text' name='" + SRS_U + "' value='" + srs_u
 				+ "' size='3'></i></td>");
-		writer.print("<td><i><input" + cmd + " type='text' name='" + SRS_I + "' value='" + sdp_i
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SRS_I + "' value='" + srs_i
 				+ "' size='3'></i></td>");
-		writer.print("<td><i><input" + cmd + " type='text' name='" + SRS_F + "' value='" + sdp_f
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SRS_F + "' value='" + srs_f
 				+ "' size='3'></i></td>");
-		writer.print("<td><i><input" + cmd + " type='text' name='" + SRS_O + "' value='" + sdp_o
+		writer.print("<td><i><input" + cmd + " type='text' name='" + SRS_O + "' value='" + srs_o
 				+ "' size='3'></i></td>");
 		writer.print("<td><i> " + (srs_u + srs_i + srs_f + srs_o) + "</i></td>");
 		writer.print("</tr>");
