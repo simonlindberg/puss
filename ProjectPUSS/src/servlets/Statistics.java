@@ -101,8 +101,8 @@ public class Statistics extends ServletBase {
 				int startWeek = Integer.parseInt(start);
 				int stopWeek = Integer.parseInt(stop);
 
-				if (stopWeek <= startWeek) {
-					html.printErrorMessage("Slutveckan måste vara större än startveckan");
+				if (stopWeek < startWeek) {
+					html.printErrorMessage("Slutveckan måste vara större än eller lika med startveckan");
 				} else {
 					int startIndex = 0;
 					int stopIndex = 0;
@@ -214,8 +214,8 @@ public class Statistics extends ServletBase {
 				int startWeek = Integer.parseInt(start);
 				int stopWeek = Integer.parseInt(stop);
 
-				if (stopWeek <= startWeek) {
-					html.printErrorMessage("Slutveckan måste vara större än startveckan");
+				if (stopWeek < startWeek) {
+					html.printErrorMessage("Slutveckan måste vara större än eller lika startveckan");
 				} else {
 					int startIndex = 0;
 					int stopIndex = 0;
