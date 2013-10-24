@@ -686,7 +686,10 @@ public class Database {
 	}
 
 	/**
-	 * Start a transaction to the database
+	 * Startar en transaktion med databasen där alla mottagna querys ej
+	 * utförs direkt mot databasen.
+	 * Syftet är att användas i samband med testning av kommunikationen mellan
+	 * databas och det omgivande systemet
 	 * 
 	 * @throws SQLException
 	 */
@@ -695,7 +698,10 @@ public class Database {
 	}
 
 	/**
-	 * Rollback current transactions from the database
+	 * Återställer databasen genom att slänga alla ändringar som sparats i en
+	 * pågående transaktion.
+	 * Syftet är att användas i samband med testning av kommunikationen mellan
+	 * databas och det omgivande systemet
 	 * 
 	 * @throws SQLException
 	 */
