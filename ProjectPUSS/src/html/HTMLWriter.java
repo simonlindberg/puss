@@ -11,12 +11,10 @@ import items.User;
 
 import java.io.PrintWriter;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -430,12 +428,19 @@ public class HTMLWriter {
 			writer.print("</tbody>");
 			writer.print("</table>");
 
-			writer.print("<input type=\"submit\" value=\"" + submitName(command) + "\">");
+			writer.print("<input type=\"submit\" "+onclick(command) + " value=\"" + submitName(command) + "\">");
 
 			writer.print("</form>");
 		}
 	}
-	
+
+	private String onclick(Command command) {
+		if (Command.delete.equals(command)) {
+			return "onclick = \"return confirm('Vill du ta bort denna tidrapporten?')\"";
+		}
+		return "";
+	}
+
 	private String submitName(Command c){
 		switch (c) {
 		case delete:
