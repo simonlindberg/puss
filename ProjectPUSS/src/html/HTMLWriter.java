@@ -334,7 +334,7 @@ public class HTMLWriter {
 		writer.print("<td><i> " + (pfr_u + pfr_i + pfr_f + pfr_o) + "</i></td>");
 		writer.print("</tr>");
 		writer.print("<tr>");
-		writer.print("<td bgcolor='lightgrey' colspan='4'></td>");
+		writer.print("<td bgcolor='lightgrey' colspan='7'></td>");
 		writer.print("</tr>");
 		writer.print("<tr>");
 		writer.print("<td>21</td>");
@@ -406,10 +406,10 @@ public class HTMLWriter {
 		if(timereports.size() == 0){
 			printErrorMessage("Inga tidrapporter! Gå tillbaka till <a href=\"mainpage\">huvudsidan</a> och skapa en först.");
 		} else {
-			if (command.equals(Command.sign)) {
+			if (command.equals(Command.sign) || command.equals(Command.delete)) {
 				writer.print("<form method=\"POST\" action=\"listreports\">");
 			} else {
-				writer.print("<form action=\"timereport\">");
+				writer.print("<form method=\"GET\" action=\"timereport\">");
 			}
 			writer.print("<input type=\"hidden\" value=\"" + command.toString()+ "\" name=\"" + LIST_COMMAND + "\">");
 			writer.print("<table border=\"1\">");

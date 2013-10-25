@@ -1,5 +1,6 @@
 package servlets;
 
+import html.HTMLWriter;
 import items.Activity;
 import items.ActivitySubType;
 import items.ActivityType;
@@ -8,22 +9,14 @@ import items.Role;
 import items.TimeReport;
 import items.User;
 
-import java.beans.Statement;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import html.HTMLWriter;
-
-import javax.servlet.ServletRequest;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import database.Database;
 
 /**
  * Denna klass bygger ut ServletBase och renderar en sida, via HTMLWriter, för
@@ -37,7 +30,7 @@ public class DisplayTimeReport extends ServletBase {
 
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
-		Statistics.done=true;
+		Statistics.done = true;
 		User user = (User) request.getSession().getAttribute(USER);
 		String projectgroup = (String) request.getSession().getAttribute(PROJECT);
 		String page = (String) request.getParameter(HTMLWriter.LIST_COMMAND) == null ? "" : (String) request
@@ -46,7 +39,7 @@ public class DisplayTimeReport extends ServletBase {
 				.getParameter(HTMLWriter.ID);
 		Role role = database.getRole(user.getUsername(), projectgroup);
 		
-		if(role==null){
+		if(role == null){
 			html.printErrorMessage("Du saknar befogenhet för att skapa eller visa en tidrapport.");
 		} else {
 			// Check command
@@ -62,7 +55,12 @@ public class DisplayTimeReport extends ServletBase {
 				html.printTimeReport(t, Command.create, role);
 			} else if (page.equals(Command.update.toString())) {
 				TimeReport t = database.getTimeReport(Integer.parseInt(id));
-				html.printTimeReport(t, Command.update, role);
+				if(t.getSigned()){
+					html.printErrorMessage("Du kan inte uppdatera en rapport som är signerad!");
+					html.printTimeReport(t, Command.show, role);
+				} else {
+					html.printTimeReport(t, Command.update, role);
+				}
 			} else if (page.equals(Command.show.toString())) {
 				TimeReport t = database.getTimeReport(Integer.parseInt(id));
 				System.out.println(t.getActivities());
@@ -113,12 +111,6 @@ public class DisplayTimeReport extends ServletBase {
 				database.updateTimeReport(t);
 				doGet(request, response);
 			}
-		}
-		
-		String deleteReport = request.getParameter("deletereport");
-		if (deleteReport != null) {
-			database.deleteTimeReport(Integer.parseInt(id));
-			response.sendRedirect("mainpage");
 		}
 		
 		String signReport = request.getParameter("signreport");

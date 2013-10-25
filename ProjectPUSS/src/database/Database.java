@@ -110,7 +110,7 @@ public class Database {
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT * FROM TimeReports WHERE " + "Username='"
+			ResultSet rs = stmt.executeQuery("SELECT Id FROM TimeReports WHERE " + "Username='"
 					+ username + "' AND GroupName='" + projectGroup + "'");
 			while (rs.next()) {
 				int id = rs.getInt("id");
