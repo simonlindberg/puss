@@ -671,9 +671,11 @@ public class HTMLWriter {
 				writer.print("<tr><td>" + u.getUsername()
 						+ "</td><td><a href=\"projectoverview?action=demoteUser&project="
 						+ projectName + "&username=" + u.getUsername()
-						+ "\">Gör till användare</a></td><td>"
-						+ "<a href=\"projectoverview?action=deleteUser&project=" + projectName
-						+ "&username=" + u.getUsername() + "\">Ta bort</a>" + "</td></tr>");
+						+ "\">Gör till användare</a></td><td>");
+				printLinkWithConfirm("projectoverview?action=deleteUser&project=" + projectName
+						+ "&username=" + u.getUsername(), 
+						"Ta bort", "Är du säker på att du vill ta bort " + u.getUsername() + "?");
+				writer.print("</td></tr>");
 			}
 			writer.print("<tr><th>Användare</th><th></th><th></th></tr>");
 			for (User u : users) {
@@ -681,9 +683,11 @@ public class HTMLWriter {
 					writer.print("<tr><td>" + u.getUsername()
 							+ "</td><td><a href=\"projectoverview?action=promoteUser&project="
 							+ projectName + "&username=" + u.getUsername()
-							+ "\">Gör till projektledare</a></td><td>"
-							+ "<a href=\"projectoverview?action=deleteUser&project=" + projectName
-							+ "&username=" + u.getUsername() + "\">Ta bort</a>" + "</td></tr>");
+							+ "\">Gör till projektledare</a></td><td>");
+					printLinkWithConfirm("projectoverview?action=deleteUser&project=" + projectName
+							+ "&username=" + u.getUsername(), 
+							"Ta bort", "Är du säker på att du vill ta bort " + u.getUsername() + "?");
+					writer.print("</td></tr>");
 				}
 			}
 			writer.print("</table>");

@@ -124,7 +124,7 @@ public class HTMLWriterTest {
 		assertEquals("<table><tr><th>Projektledare</th><th></th><th></th></tr><tr>"
 				+ "<td>Alpha</td><td>"
 				+ "<a href=\"projectoverview?action=demoteUser&project=whatever&username=Alpha\">Gör till användare</a></td>"
-				+ "<td><a href=\"projectoverview?action=deleteUser&project=whatever&username=Alpha\">Ta bort</a></td>"
+				+ "<td><a href=\"projectoverview?action=deleteUser&project=whatever&username=Alpha\" onclick=\"return confirm('Är du säker på att du vill ta bort Alpha?')\">Ta bort</a></td>"
 				+ "</tr><tr><th>Användare</th><th></th><th></th></tr></table>", sw.toString());
 	}
 	
