@@ -112,7 +112,13 @@ public class DisplayTimeReport extends ServletBase {
 				doGet(request, response);
 			}
 		}
-		
+
+	     String deleteReport = request.getParameter("deletereport");
+         if (deleteReport != null) {
+                 database.deleteTimeReport(Integer.parseInt(id));
+                 response.sendRedirect("mainpage");
+         }
+         
 		String signReport = request.getParameter("signreport");
 		if (signReport != null) {
 			TimeReport t = database.getTimeReport(Integer.parseInt(id));
