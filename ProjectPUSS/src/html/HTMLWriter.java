@@ -597,9 +597,12 @@ public class HTMLWriter {
 			writer.print("<table><tr><th>Användare</th><th>Passwords</th><th></th></tr>");
 			for (User u : users) {
 				writer.print("<tr><td>" + u.getUsername() + "</td><td>" + u.getPassword()
-						+ "</td><td>"
-						+ "<a href=\"/ProjectPUSS/administration?action=deleteUser&username="
-						+ u.getUsername() + "\">Ta bort</a></td></tr>");
+						+ "</td><td>");
+				printLinkWithConfirm("/ProjectPUSS/administration?action=deleteUser&username="
+						+ u.getUsername(), 
+						"Ta bort", 
+						"Är du säker på att du vill ta bort " + u.getUsername() + "?");
+				writer.print("</td></tr>");
 			}
 			writer.print("</table>");
 		}
@@ -627,9 +630,12 @@ public class HTMLWriter {
 			writer.print("<table><tr><th>Projektgrupper</th><th></th></tr>");
 			for (String s : groups) {
 				writer.print("<tr><td>" + "<a href=\"projectoverview?project=" + s + "\">" + s
-						+ "</a>"
-						+ "</td><td><a href=\"projectadmin?action=removeProjectGroup&projectName="
-						+ s + "\">Ta bort</a></td></tr>");
+						+ "</a></td><td>");
+				printLinkWithConfirm("projectadmin?action=removeProjectGroup&projectName="
+						+ s, 
+						"Ta bort",
+						"Är du säker på att du vill ta bort " + s + "?");
+				writer.print("</td></tr>");
 			}
 
 			writer.print("</table>");
@@ -732,10 +738,24 @@ public class HTMLWriter {
 	 * @param text
 	 *            the text to display
 	 * 
-	 * @return HTML code for the link
 	 */
 	public void printLink(String url, String text) {
 		writer.println("<a href=\"" + url + "\">" + text + "</a>");
+	}
+	
+	/**
+	 * Generates a link that requires the user to confirm the action.
+	 * 
+	 * @param url
+	 *            the url to use for the link
+	 * @param text
+	 *            the text to display
+	 * @param message
+	 * 			  the message to display in the confirm dialog            
+	 * 
+	 */
+	public void printLinkWithConfirm(String url, String text, String confirmMessage) {
+		writer.print("<a href=\"" + url + "\" onclick=\"return confirm('" + confirmMessage + "')\">" + text + "</a>");
 	}
 
 	/**

@@ -77,7 +77,7 @@ public class HTMLWriterTest {
 		users.add(new User("abcde0", "password"));
 		hw.printAdminUserList(users);
 		assertEquals(
-				"<table><tr><th>Användare</th><th>Passwords</th><th></th></tr><tr><td>abcde0</td><td>password</td><td><a href=\"/ProjectPUSS/administration?action=deleteUser&username=abcde0\">Ta bort</a></td></tr></table>",
+				"<table><tr><th>Användare</th><th>Passwords</th><th></th></tr><tr><td>abcde0</td><td>password</td><td><a href=\"/ProjectPUSS/administration?action=deleteUser&username=abcde0\" onclick=\"return confirm('Är du säker på att du vill ta bort abcde0?')\">Ta bort</a></td></tr></table>",
 				sw.toString());
 	}
 
@@ -89,9 +89,9 @@ public class HTMLWriterTest {
 		users.add(new User("abcde2", "password2"));
 		hw.printAdminUserList(users);
 		assertEquals("<table><tr><th>Användare</th><th>Passwords</th><th></th></tr>"
-				+ "<tr><td>abcde0</td><td>password0</td><td><a href=\"/ProjectPUSS/administration?action=deleteUser&username=abcde0\">Ta bort</a></td></tr>"
-				+ "<tr><td>abcde1</td><td>password1</td><td><a href=\"/ProjectPUSS/administration?action=deleteUser&username=abcde1\">Ta bort</a></td></tr>"
-				+ "<tr><td>abcde2</td><td>password2</td><td><a href=\"/ProjectPUSS/administration?action=deleteUser&username=abcde2\">Ta bort</a></td></tr>" 
+				+ "<tr><td>abcde0</td><td>password0</td><td><a href=\"/ProjectPUSS/administration?action=deleteUser&username=abcde0\" onclick=\"return confirm('Är du säker på att du vill ta bort abcde0?')\">Ta bort</a></td></tr>"
+				+ "<tr><td>abcde1</td><td>password1</td><td><a href=\"/ProjectPUSS/administration?action=deleteUser&username=abcde1\" onclick=\"return confirm('Är du säker på att du vill ta bort abcde1?')\">Ta bort</a></td></tr>"
+				+ "<tr><td>abcde2</td><td>password2</td><td><a href=\"/ProjectPUSS/administration?action=deleteUser&username=abcde2\" onclick=\"return confirm('Är du säker på att du vill ta bort abcde2?')\">Ta bort</a></td></tr>" 
 				+ "</table>",
 				sw.toString());
 	}
@@ -137,8 +137,8 @@ public class HTMLWriterTest {
 		hw.printProjectGroups(groups);
 		
 		assertEquals("<table><tr><th>Projektgrupper</th><th></th></tr>"
-				+ "<tr><td><a href=\"projectoverview?project=Project1\">Project1</a></td><td><a href=\"projectadmin?action=removeProjectGroup&projectName=Project1\">Ta bort</a></td></tr>"
-				+ "<tr><td><a href=\"projectoverview?project=Project2\">Project2</a></td><td><a href=\"projectadmin?action=removeProjectGroup&projectName=Project2\">Ta bort</a></td></tr></table>",sw.toString());
+				+ "<tr><td><a href=\"projectoverview?project=Project1\">Project1</a></td><td><a href=\"projectadmin?action=removeProjectGroup&projectName=Project1\" onclick=\"return confirm('Är du säker på att du vill ta bort Project1?')\">Ta bort</a></td></tr>"
+				+ "<tr><td><a href=\"projectoverview?project=Project2\">Project2</a></td><td><a href=\"projectadmin?action=removeProjectGroup&projectName=Project2\" onclick=\"return confirm('Är du säker på att du vill ta bort Project2?')\">Ta bort</a></td></tr></table>",sw.toString());
 		
 		
 	}
