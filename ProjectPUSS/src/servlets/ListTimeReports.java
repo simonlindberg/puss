@@ -33,7 +33,6 @@ public class ListTimeReports extends ServletBase {
 
 		Command command = Command.valueOf(request.getParameter(HTMLWriter.LIST_COMMAND));
 		String message = request.getParameter("message");
-		System.out.println(message);
 		Role role = database.getRole(user.getUsername(), projectGroup);
 		if("success_create".equals(message)){
 			html.printSuccessMessage("Tidrapporten skapades");
@@ -67,6 +66,11 @@ public class ListTimeReports extends ServletBase {
 			}else{
 				database.signTimeReport(tr);
 			}
+		}
+		
+		if (Command.delete.equals(command) && id != null) {
+			System.out.println("yes");
+			database.deleteTimeReport(Integer.parseInt(id));
 		}
 		doGet(request, response);
 	}
