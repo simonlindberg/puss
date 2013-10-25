@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/timereport")
 public class DisplayTimeReport extends ServletBase {
 
+
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
 		Statistics.done = true;
@@ -45,7 +46,7 @@ public class DisplayTimeReport extends ServletBase {
 			// Check command
 			String submitReport = request.getParameter("submitreport");
 			if (page.equals(Command.create.toString()) && submitReport != null) {
-				List<Activity> activities = createActivityListFromRequest(request);
+				List<Activity> activities = createActivityListFromRequest(request, html);
 				int week = Integer.parseInt(request.getParameter(HTMLWriter.WEEK));
 				TimeReport t = new TimeReport(user, activities, false, 0, week, projectgroup);
 				html.printErrorMessage("Din inputdata är fel");
@@ -66,7 +67,7 @@ public class DisplayTimeReport extends ServletBase {
 				System.out.println(t.getActivities());
 				html.printTimeReport(t, Command.show, role);
 			} else {
-				html.printErrorMessage("Nothing here to see");
+				html.printErrorMessage("Inget att se här.");
 			}
 		}
 	}
@@ -82,7 +83,8 @@ public class DisplayTimeReport extends ServletBase {
 		
 		String submitReport = request.getParameter("submitreport");
 		if (submitReport != null) {
-			List<Activity> activities = createActivityListFromRequest(request);
+			HTMLWriter html = new HTMLWriter(response.getWriter());
+			List<Activity> activities = createActivityListFromRequest(request, html);
 			if (page.equals(Command.create.toString())) {
 				TimeReport t = new TimeReport(
 						user,
@@ -131,8 +133,11 @@ public class DisplayTimeReport extends ServletBase {
 		}
 	}
 	
-	private List<Activity> createActivityListFromRequest(HttpServletRequest request){
-		List<Activity> activities = Arrays.asList(
+	private List<Activity> createActivityListFromRequest(HttpServletRequest request, HTMLWriter html){
+		List<Activity> activities = null;
+		try{
+		activities = Arrays.asList(
+				
 				new Activity(ActivityType.SDP, Integer.parseInt(request.getParameter(HTMLWriter.SDP_F)), ActivitySubType.F),
 				new Activity(ActivityType.SDP, Integer.parseInt(request.getParameter(HTMLWriter.SDP_I)), ActivitySubType.I),
 				new Activity(ActivityType.SDP, Integer.parseInt(request.getParameter(HTMLWriter.SDP_O)), ActivitySubType.O),
@@ -183,6 +188,9 @@ public class DisplayTimeReport extends ServletBase {
 				new Activity(ActivityType.RegressionTest, Integer.parseInt(request.getParameter(HTMLWriter.REG_TEST)), ActivitySubType.noSubType),
 				new Activity(ActivityType.Meeting, Integer.parseInt(request.getParameter(HTMLWriter.MEETING)), ActivitySubType.noSubType)
 				);
+		}catch(NumberFormatException e){
+			html.printErrorMessage("Fel inputdata!");
+		}
 		return activities;
 	}
 
