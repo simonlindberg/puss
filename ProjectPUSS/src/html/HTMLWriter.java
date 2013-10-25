@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import database.Database;
+
 /**
  * Denna klassen innehåller funktionalitet för att skriva ut all den HTML kod
  * som systemets olika delar behöver, t.ex. för listning av tidrapporter i en
@@ -527,9 +529,11 @@ public class HTMLWriter {
 			writer.print("<p>Hejsan <b>" + user.getUsername()+ "</b>! Tryck ");
 			printLink("login", "här");
 			writer.print(" om du vill logga ut.</p>");
-			writer.print("<p>");
-			printLink("mainpage", "Startsidan");
-			writer.print("</p>");
+			if (!Database.ADMIN.equals(user.getUsername())) {
+				writer.print("<p>");
+				printLink("mainpage", "Startsidan");
+				writer.print("</p>");
+			}
 		}
 	}
 

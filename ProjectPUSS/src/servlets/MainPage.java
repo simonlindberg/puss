@@ -30,14 +30,12 @@ public class MainPage extends ServletBase {
 		User user = (User) session.getAttribute(USER);
 		List<String> projects = database.getProjects(user);
 		
-		String currentProjectGroup = (String) session.getAttribute(PROJECT);
-		
-		if (currentProjectGroup == null) {
-			currentProjectGroup = projects.get(0);					
-			session.setAttribute(PROJECT, projects.get(0));	
-		}
-
-		if (projects.size() > 0) {
+		if (!projects.isEmpty()) {
+			String currentProjectGroup = (String) session.getAttribute(PROJECT);
+			if (currentProjectGroup == null) {
+				currentProjectGroup = projects.get(0);					
+				session.setAttribute(PROJECT, projects.get(0));	
+			}
 			
 			html.printProjectChooser(projects.indexOf(currentProjectGroup), projects);
 			Role role = database.getRole(user.getUsername(), currentProjectGroup);
