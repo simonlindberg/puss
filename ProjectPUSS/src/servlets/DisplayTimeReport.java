@@ -62,7 +62,12 @@ public class DisplayTimeReport extends ServletBase {
 				html.printTimeReport(t, Command.create, role);
 			} else if (page.equals(Command.update.toString())) {
 				TimeReport t = database.getTimeReport(Integer.parseInt(id));
-				html.printTimeReport(t, Command.update, role);
+				if(t.getSigned()){
+					html.printErrorMessage("Du kan inte uppdatera en rapport som är signerad!");
+					html.printTimeReport(t, Command.show, role);
+				} else {
+					html.printTimeReport(t, Command.update, role);
+				}
 			} else if (page.equals(Command.show.toString())) {
 				TimeReport t = database.getTimeReport(Integer.parseInt(id));
 				System.out.println(t.getActivities());
