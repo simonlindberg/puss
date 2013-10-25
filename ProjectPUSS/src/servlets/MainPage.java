@@ -25,15 +25,16 @@ public class MainPage extends ServletBase {
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
 		HttpSession session = request.getSession();
+		Statistics.done=true;
 
 		User user = (User) session.getAttribute(USER);
 		List<String> projects = database.getProjects(user);
-
+		
 		String currentProjectGroup = (String) session.getAttribute(PROJECT);
 		
 		if (currentProjectGroup == null) {
 			currentProjectGroup = projects.get(0);					
-			session.setAttribute(PROJECT, projects.get(0));
+			session.setAttribute(PROJECT, projects.get(0));	
 		}
 
 		if (projects.size() > 0) {

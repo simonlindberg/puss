@@ -37,6 +37,7 @@ public class DisplayTimeReport extends ServletBase {
 
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
+		Statistics.done=true;
 		User user = (User) request.getSession().getAttribute(USER);
 		String projectgroup = (String) request.getSession().getAttribute(PROJECT);
 		String page = (String) request.getParameter(HTMLWriter.LIST_COMMAND) == null ? "" : (String) request

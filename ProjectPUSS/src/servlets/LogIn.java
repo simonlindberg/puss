@@ -72,6 +72,7 @@ public class LogIn extends ServletBase {
 
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
+		Statistics.done=true;
 		html.printLoginRequestForm();
 	}
 }

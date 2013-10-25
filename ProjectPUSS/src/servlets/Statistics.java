@@ -30,7 +30,7 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/statistics")
 public class Statistics extends ServletBase {
 
-	private boolean done = true;
+	public static boolean done = true;
 
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {

@@ -24,6 +24,7 @@ public class ShowMembers extends ServletBase {
 
 	@Override
 	protected void doWork(HttpServletRequest request, HTMLWriter html) {
+		Statistics.done=true;
 		User user = (User) request.getSession().getAttribute(ServletBase.USER);
 		String projectgroup = (String) request.getSession().getAttribute(ServletBase.PROJECT);
 		Role role = Role.NoRole;
