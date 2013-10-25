@@ -40,7 +40,7 @@ public class ListTimeReports extends ServletBase {
 		}
 		if (command == null) {
 			html.printErrorMessage("Du har inte anget något kommando! Gå tillbaka till <a href=\"mainpage\"> huvudsidan</a> och börja om! ");
-		} else if (Role.Manager.equals(role) && command.equals(Command.sign)){
+		} else if (Role.Manager.equals(role) && (command.equals(Command.sign) || command.equals(Command.show))){
 			List<TimeReport> timereports = database.getAllTimeReports(projectGroup);
 			html.printTimeReports(timereports, command, role);
 		} else{
