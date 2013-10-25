@@ -129,7 +129,11 @@ public class DisplayTimeReport extends ServletBase {
 		String signReport = request.getParameter("signreport");
 		if (signReport != null) {
 			TimeReport t = database.getTimeReport(Integer.parseInt(id));
-			database.signTimeReport(t);
+			if (t.getSigned()){
+				database.unsignTimeReport(t);
+			}else{
+				database.signTimeReport(t);
+			}
 			doGet(request, response);
 		}
 	}
