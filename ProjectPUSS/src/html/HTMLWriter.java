@@ -11,12 +11,10 @@ import items.User;
 
 import java.io.PrintWriter;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -406,10 +404,10 @@ public class HTMLWriter {
 		if(timereports.size() == 0){
 			printErrorMessage("Inga tidrapporter! Gå tillbaka till <a href=\"mainpage\">huvudsidan</a> och skapa en först.");
 		} else {
-			if (command.equals(Command.sign)) {
+			if (command.equals(Command.sign) || command.equals(Command.delete)) {
 				writer.print("<form method=\"POST\" action=\"listreports\">");
 			} else {
-				writer.print("<form action=\"timereport\">");
+				writer.print("<form method=\"GET\" action=\"timereport\">");
 			}
 			writer.print("<input type=\"hidden\" value=\"" + command.toString()+ "\" name=\"" + LIST_COMMAND + "\">");
 			writer.print("<table border=\"1\">");
@@ -430,12 +428,19 @@ public class HTMLWriter {
 			writer.print("</tbody>");
 			writer.print("</table>");
 
-			writer.print("<input type=\"submit\" value=\"" + submitName(command) + "\">");
+			writer.print("<input type=\"submit\" "+onclick(command) + " value=\"" + submitName(command) + "\">");
 
 			writer.print("</form>");
 		}
 	}
-	
+
+	private String onclick(Command command) {
+		if (Command.delete.equals(command)) {
+			return "onclick = \"return confirm('Vill du ta bort denna tidrapporten?')\"";
+		}
+		return "";
+	}
+
 	private String submitName(Command c){
 		switch (c) {
 		case delete:

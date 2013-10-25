@@ -475,6 +475,8 @@ public class Database {
 		} catch (SQLException e) {
 			System.out.println("");
 			e.printStackTrace();
+		} catch (Exception e) {
+			return false;
 		}
 
 		return false;
@@ -539,8 +541,17 @@ public class Database {
 	 */
 	public boolean deleteProjectGroup(String projectName) {
 		try {
+			ResultSet rs = conn.createStatement().executeQuery(
+					"SELECT Id FROM TimeReports WHERE GroupName='" + projectName + "'");
+			while (rs.next()) {
+				conn.createStatement().executeUpdate("DELETE FROM Activity WHERE Id=" + rs.getInt("Id"));
+			}
+			rs.close();
+			conn.createStatement().executeUpdate(
+					"DELETE FROM TimeReports WHERE GroupName='" + projectName + "'");
 			conn.createStatement().executeUpdate(
 					"DELETE FROM Memberships WHERE Groupname='" + projectName + "'");
+
 			return conn.createStatement().executeUpdate(
 					"DELETE FROM ProjectGroups WHERE Groupname='" + projectName + "'") == 1;
 		} catch (SQLException e) {
