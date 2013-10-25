@@ -56,6 +56,7 @@ public class LogIn extends ServletBase {
 		HttpSession session = request.getSession();
 		session.setAttribute(USER, null);
 		session.setAttribute(LOGGEDIN, false);
+		session.setAttribute(PROJECT, null);
 
 		try {
 			HTMLWriter writer = new HTMLWriter(response.getWriter());
