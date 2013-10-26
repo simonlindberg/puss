@@ -350,6 +350,7 @@ public class Database {
 	 * 
 	 * Försöker hämta en lista av alla användare i systemet från databasen
 	 * 
+	 * @return en lista med användare.
 	 */
 	public List<User> getUsers() {
 		List<User> users = new ArrayList<User>();
@@ -374,9 +375,9 @@ public class Database {
 	}
 
 	/**
-	 * 
 	 * Försöker hämta en lista av alla projekt i systemet från databasen
 	 * 
+	 * @return en lista med projekt.
 	 */
 	public List<String> getProjects() {
 		List<String> list = new ArrayList<>();
@@ -808,7 +809,14 @@ public class Database {
 		
 		return 0;
 	}
-
+	
+	/**
+	 * Hämtar alla Tidrapporterna som finns i ett visst projekt.
+	 * 
+	 * @param projectGroup
+	 *            det specifiserade projektnamnet.
+	 * @return
+	 */
 	public List<TimeReport> getAllTimeReports(String projectGroup) {
 		List<TimeReport> reports = new ArrayList<TimeReport>();
 		Statement stmt;
