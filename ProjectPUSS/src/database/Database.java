@@ -100,7 +100,7 @@ public class Database {
 	/**
 	 * 
 	 * @param username
-	 *            anv��ndarens id som tidrapporterna ��r kopplade till.
+	 *            användarens id som tidrapporterna är kopplade till.
 	 * @param projectGroup
 	 *            projektgruppen som tidrapporterna är kopplade till.
 	 * @return en lista med tidrepporter eller null om något går fel.
