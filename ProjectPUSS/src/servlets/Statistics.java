@@ -1,20 +1,18 @@
 package servlets;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ArrayList;
-
-import items.Activity;
+import html.HTMLWriter;
 import items.ActivityType;
 import items.GraphSettings;
 import items.Role;
 import items.TimeReport;
 import items.User;
-import html.HTMLWriter;
 
-import javax.servlet.ServletException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,7 +36,8 @@ public class Statistics extends ServletBase {
 		HttpSession session = request.getSession();
 
 		User user = (User) session.getAttribute(ServletBase.USER);
-		String projectGroup = (String) session.getAttribute(ServletBase.PROJECT);
+		String projectGroup = (String) session
+				.getAttribute(ServletBase.PROJECT);
 		Role userRole = database.getRole(user.getUsername(), projectGroup);
 
 		if (done) {
@@ -79,7 +78,8 @@ public class Statistics extends ServletBase {
 
 			Collections.sort(tr, new Comparator<TimeReport>() {
 				@Override
-				public int compare(final TimeReport object1, final TimeReport object2) {
+				public int compare(final TimeReport object1,
+						final TimeReport object2) {
 					return object1.getWeek() - object2.getWeek();
 				}
 			});
@@ -106,18 +106,28 @@ public class Statistics extends ServletBase {
 				} else {
 					int startIndex = 0;
 					int stopIndex = 0;
-					for (int i = 0; i < tr.size() - 1; i++) {
-						if (tr.get(i).getWeek() == startWeek || tr.get(i).getWeek() < startWeek) {
+					for (int i = 0; i < tr.size(); i++) {
+						if (tr.get(i).getWeek() <= startWeek) {
 							startIndex = tr.indexOf(tr.get(i));
 						}
-						if (tr.get(i).getWeek() == stopWeek || tr.get(i).getWeek() < stopWeek) {
-							stopIndex = tr.indexOf(tr.get(i + 1));
+						if (tr.get(i).getWeek() <= stopWeek) {
+							stopIndex = tr.indexOf(tr.get(i));
 						}
 					}
-					html.printSuccessMessage("Startvecka: " + start + ", Slutvecka: " + stop);
-					gs = new GraphSettings(graphType, null, "Veckonummer", "Arbetade minuter");
-					List<TimeReport> finalTimeReports = tr.subList(startIndex, stopIndex);
-					html.printGraph(finalTimeReports, gs);
+
+					if (startWeek == stopWeek
+							&& tr.get(stopIndex).getWeek() < stopWeek) {
+						html.printErrorMessage("Det finns ingen registrerad tidsrapport för denna vecka");
+					} else {
+
+						html.printSuccessMessage("Startvecka: " + start
+								+ ", Slutvecka: " + stop);
+						gs = new GraphSettings(graphType, null, "Veckonummer",
+								"Arbetade minuter");
+						List<TimeReport> finalTimeReports = tr.subList(
+								startIndex, stopIndex + 1);
+						html.printGraph(finalTimeReports, gs);
+					}
 				}
 				done = true;
 			} else {
@@ -139,7 +149,8 @@ public class Statistics extends ServletBase {
 				break;
 			}
 
-			gs = new GraphSettings(graphType, null, "Aktivitet", "Arbetade minuter");
+			gs = new GraphSettings(graphType, null, "Aktivitet",
+					"Arbetade minuter");
 			html.printGraph(tr, gs);
 			done = true;
 
@@ -148,11 +159,11 @@ public class Statistics extends ServletBase {
 		case "plUserTime":
 
 			users = database.getUsersInProject(projectGroup);
-			if(users == null || users.isEmpty()){
+			if (users == null || users.isEmpty()) {
 				html.printErrorMessage("Det finns inga registrerade användare i projektet");
 				break;
 			}
-			
+
 			tr = new ArrayList<TimeReport>();
 
 			for (User u : users) {
@@ -165,7 +176,8 @@ public class Statistics extends ServletBase {
 				break;
 			}
 
-			gs = new GraphSettings(graphType, null, "Användare", "Arbetade minuter");
+			gs = new GraphSettings(graphType, null, "Användare",
+					"Arbetade minuter");
 			html.printGraph(tr, gs);
 			done = true;
 			break;
@@ -173,11 +185,11 @@ public class Statistics extends ServletBase {
 		case "weekBurnDown":
 
 			users = database.getUsersInProject(projectGroup);
-			if(users == null || users.isEmpty()){
+			if (users == null || users.isEmpty()) {
 				html.printErrorMessage("Det finns inga registrerade användare i projektet");
 				break;
 			}
-			
+
 			tr = new ArrayList<TimeReport>();
 
 			for (User u : users) {
@@ -192,7 +204,8 @@ public class Statistics extends ServletBase {
 
 			Collections.sort(tr, new Comparator<TimeReport>() {
 				@Override
-				public int compare(final TimeReport object1, final TimeReport object2) {
+				public int compare(final TimeReport object1,
+						final TimeReport object2) {
 					return object1.getWeek() - object2.getWeek();
 				}
 			});
@@ -219,17 +232,21 @@ public class Statistics extends ServletBase {
 				} else {
 					int startIndex = 0;
 					int stopIndex = 0;
-					for (int i = 0; i < tr.size() - 1; i++) {
-						if (tr.get(i).getWeek() == startWeek || tr.get(i).getWeek() < startWeek) {
+					for (int i = 0; i < tr.size(); i++) {
+						if (tr.get(i).getWeek() <= startWeek) {
 							startIndex = tr.indexOf(tr.get(i));
 						}
-						if (tr.get(i).getWeek() == stopWeek || tr.get(i).getWeek() < stopWeek) {
-							stopIndex = tr.indexOf(tr.get(i + 1));
+						if (tr.get(i).getWeek() <= stopWeek) {
+							stopIndex = tr.indexOf(tr.get(i));
 						}
 					}
-					html.printSuccessMessage("Startvecka: " + start + ", Slutvecka: " + stop);
-					gs = new GraphSettings(graphType, null, "Veckonummer", "Arbetade minuter");
-					List<TimeReport> finalTimeReports = tr.subList(startIndex, stopIndex);
+
+					html.printSuccessMessage("Startvecka: " + start
+							+ ", Slutvecka: " + stop);
+					gs = new GraphSettings(graphType, null, "Veckonummer",
+							"Arbetade minuter");
+					List<TimeReport> finalTimeReports = tr.subList(startIndex,
+							stopIndex + 1);
 					html.printBurndownChart(finalTimeReports, gs);
 				}
 				done = true;
@@ -249,11 +266,11 @@ public class Statistics extends ServletBase {
 		case "activityBurnDown":
 
 			users = database.getUsersInProject(projectGroup);
-			if(users == null || users.isEmpty()){
+			if (users == null || users.isEmpty()) {
 				html.printErrorMessage("Det finns inga registrerade användare i projektet");
 				break;
 			}
-			
+
 			tr = new ArrayList<TimeReport>();
 
 			for (User u : users) {
@@ -271,7 +288,8 @@ public class Statistics extends ServletBase {
 			if (!actChoice.equals("inget val")) {
 				html.printSuccessMessage("Vald aktivitet: " + actChoice);
 				ActivityType activityChoice = ActivityType.valueOf(actChoice);
-				gs = new GraphSettings(graphType, activityChoice, "Veckonummer", "Arbetade minuter");
+				gs = new GraphSettings(graphType, activityChoice,
+						"Veckonummer", "Arbetade minuter");
 				html.printBurndownChart(tr, gs);
 				done = true;
 			} else {
@@ -284,13 +302,13 @@ public class Statistics extends ServletBase {
 		case "userBurnDown":
 
 			users = database.getUsersInProject(projectGroup);
-			if(users == null || users.isEmpty()){
+			if (users == null || users.isEmpty()) {
 				html.printErrorMessage("Det finns inga registrerade användare i projektet");
 				break;
 			}
 
 			String userChoice = (String) session.getAttribute("userChoice");
-			
+
 			if (!userChoice.equals("inget val")) {
 				html.printSuccessMessage("Vald användare: " + userChoice);
 				tr = database.getTimeReports(userChoice, projectGroup);
@@ -300,8 +318,9 @@ public class Statistics extends ServletBase {
 					done = true;
 					break;
 				}
-				
-				gs = new GraphSettings(graphType, null, "Veckonummer", "Arbetade minuter");
+
+				gs = new GraphSettings(graphType, null, "Veckonummer",
+						"Arbetade minuter");
 				html.printBurndownChart(tr, gs);
 				done = true;
 			} else {
@@ -313,8 +332,8 @@ public class Statistics extends ServletBase {
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws IOException {
+	protected void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
 		HttpSession session = request.getSession();
 
 		String graphChoice = (String) request.getParameter("graphChooser");
