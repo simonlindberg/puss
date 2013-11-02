@@ -47,10 +47,20 @@ public class DisplayTimeReport extends ServletBase {
 			String submitReport = request.getParameter("submitreport");
 			if (page.equals(Command.create.toString()) && submitReport != null) {
 				List<Activity> activities = createActivityListFromRequest(request, html);
-				int week = Integer.parseInt(request.getParameter(HTMLWriter.WEEK));
-				TimeReport t = new TimeReport(user, activities, false, 0, week, projectgroup);
-				html.printErrorMessage("Din inputdata är fel");
-				html.printTimeReport(t, Command.create, role);
+				int week = -1;
+				try {
+					week = Integer.parseInt(request.getParameter(HTMLWriter.WEEK));
+				} catch (NumberFormatException e) {}
+				if (activities != null && week != -1) {
+					// Enter here if we failed to save timereport to database
+					TimeReport t = new TimeReport(user, activities, false, 0, week, projectgroup);
+					html.printTimeReport(t, Command.create, role);
+				} else {
+					// Enter here if invalid input
+					html.printErrorMessage("Den information du angivit är felaktig. Var vänlig och fyll i formuläret igen med korrekt data.");
+					TimeReport t = new TimeReport(user, new ArrayList<Activity>(), false, 0, week, projectgroup);
+					html.printTimeReport(t, Command.create, role);
+				}
 			} else if (page.equals(Command.create.toString())) {
 				TimeReport t = new TimeReport(user, new ArrayList<Activity>(), false, 0, -1, projectgroup);
 				html.printTimeReport(t, Command.create, role);
@@ -85,35 +95,39 @@ public class DisplayTimeReport extends ServletBase {
 		if (submitReport != null) {
 			HTMLWriter html = new HTMLWriter(response.getWriter());
 			List<Activity> activities = createActivityListFromRequest(request, html);
-			if(activities!=null){
-				
-			}
-			if (page.equals(Command.create.toString())) {
-				TimeReport t = new TimeReport(
-						user,
-						activities,
-						false,
-						0,
-						Integer.parseInt(request.getParameter(HTMLWriter.WEEK)),
-						projectgroup
-						);
-				if(database.createTimeReport(t)){
-					response.sendRedirect("listreports?command=show&message=success_create");
+			int week = -1;
+			try {
+				week = Integer.parseInt(request.getParameter(HTMLWriter.WEEK));
+			} catch (NumberFormatException e) {}
+			
+			if (activities != null && week != -1) {
+				if (page.equals(Command.create.toString())) {
+					TimeReport t = new TimeReport(
+							user,
+							activities,
+							false,
+							0,
+							week,
+							projectgroup
+							);
+					if(database.createTimeReport(t)){
+						response.sendRedirect("listreports?command=show&message=success_create");
+					} else {
+						doGet(request, response);
+					}
 				} else {
+					TimeReport t = new TimeReport(
+							user,
+							activities,
+							false,
+							Integer.parseInt(id),
+							week,
+							projectgroup
+							);
+					database.updateTimeReport(t);
 					doGet(request, response);
 				}
-				
 			} else {
-				System.out.println("TEMP");
-				TimeReport t = new TimeReport(
-						user,
-						activities,
-						false,
-						Integer.parseInt(id),
-						Integer.parseInt(request.getParameter(HTMLWriter.WEEK)),
-						projectgroup
-						);
-				database.updateTimeReport(t);
 				doGet(request, response);
 			}
 		}
@@ -191,8 +205,8 @@ public class DisplayTimeReport extends ServletBase {
 				new Activity(ActivityType.RegressionTest, Integer.parseInt(request.getParameter(HTMLWriter.REG_TEST)), ActivitySubType.noSubType),
 				new Activity(ActivityType.Meeting, Integer.parseInt(request.getParameter(HTMLWriter.MEETING)), ActivitySubType.noSubType)
 				);
-		}catch(NumberFormatException e){
-			html.printErrorMessage("Fel inputdata!");
+		}catch(NullPointerException | NumberFormatException e){
+			return null;
 		}
 		return activities;
 		

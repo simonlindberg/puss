@@ -13,6 +13,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,7 +101,7 @@ public class Database {
 	/**
 	 * 
 	 * @param username
-	 *            anv��ndarens id som tidrapporterna ��r kopplade till.
+	 *            användarens id som tidrapporterna är kopplade till.
 	 * @param projectGroup
 	 *            projektgruppen som tidrapporterna är kopplade till.
 	 * @return en lista med tidrepporter eller null om något går fel.
@@ -350,6 +351,7 @@ public class Database {
 	 * 
 	 * Försöker hämta en lista av alla användare i systemet från databasen
 	 * 
+	 * @return en lista med användare.
 	 */
 	public List<User> getUsers() {
 		List<User> users = new ArrayList<User>();
@@ -374,9 +376,9 @@ public class Database {
 	}
 
 	/**
-	 * 
 	 * Försöker hämta en lista av alla projekt i systemet från databasen
 	 * 
+	 * @return en lista med projekt.
 	 */
 	public List<String> getProjects() {
 		List<String> list = new ArrayList<>();
@@ -808,7 +810,14 @@ public class Database {
 		
 		return 0;
 	}
-
+	
+	/**
+	 * Hämtar alla Tidrapporterna som finns i ett visst projekt.
+	 * 
+	 * @param projectGroup
+	 *            det specifiserade projektnamnet.
+	 * @return
+	 */
 	public List<TimeReport> getAllTimeReports(String projectGroup) {
 		List<TimeReport> reports = new ArrayList<TimeReport>();
 		Statement stmt;
@@ -827,5 +836,32 @@ public class Database {
 			System.out.println("VendorError: " + ex.getErrorCode());
 		}
 		return reports;
+	}
+	
+	public int getStatistics(String projectGroup, List<String> users, List<Role> roles, List<ActivityType> activities, int startWeek, int endWeek){
+		List<TimeReport> allReports = getAllTimeReports(projectGroup);
+		List<TimeReport> reports = new ArrayList<TimeReport>();
+		
+		for (TimeReport tp : allReports) {
+			String username = tp.getUser().getUsername();
+			int week = tp.getWeek();
+			boolean correctUser = users.contains(username);
+			boolean correctRole = roles.contains(getRole(username, projectGroup));
+			boolean correctWeek = week >= startWeek && week <= endWeek;
+			
+			if(correctUser && correctRole && correctWeek){
+				reports.add(tp);
+			}
+		}
+		
+		int sum = 0;
+		for (TimeReport tp : reports){
+			for (Activity act : tp.getActivities()) {
+				if(activities.contains(act.getType())){
+					sum += act.getLength();
+				}
+			}
+		}
+		return sum;
 	}
 }

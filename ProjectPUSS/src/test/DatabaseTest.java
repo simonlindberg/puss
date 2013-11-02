@@ -624,4 +624,9 @@ public class DatabaseTest {
 		
 		assertEquals(0, u.getTimeForActivity(ActivityType.Meeting, 2));
 	}
+	
+	@Test
+	public void testGetStatistics() {
+		
+	}
 }

@@ -1084,11 +1084,13 @@ public class HTMLWriter {
 
 		html += "var line = [";
 
-		int totalTime;
+		int totalTime = 0;
+		HashMap<Integer, Integer> weekTime = null;
 
 		Collections.sort(timeReports, new Comparator<TimeReport>() {
 			@Override
-			public int compare(final TimeReport object1, final TimeReport object2) {
+			public int compare(final TimeReport object1,
+					final TimeReport object2) {
 				return object1.getWeek() - object2.getWeek();
 			}
 		});
@@ -1096,39 +1098,48 @@ public class HTMLWriter {
 		switch (gs.getGraphType()) {
 		case "weekBurnDown":
 			title = "Burn down chart för tid mellan specifierade veckor";
-			totalTime = 0;
+
+			weekTime = new HashMap<Integer, Integer>();
 
 			for (int i = 0; i < timeReports.size(); i++) {
-
 				List<Activity> activities = timeReports.get(i).getActivities();
 
 				for (Activity a : activities) {
+
 					totalTime += a.getLength();
-				}
 
+					if (weekTime.containsKey(timeReports.get(i).getWeek())) {
+						weekTime.put(
+								timeReports.get(i).getWeek(),
+								weekTime.get(timeReports.get(i).getWeek())
+										+ a.getLength());
+					} else {
+						weekTime.put(timeReports.get(i).getWeek(),
+								a.getLength());
+					}
+
+				}
 			}
 
-			for (int i = 0; i < timeReports.size(); i++) {
-				int weekTime = 0;
+			if (!weekTime.isEmpty()) {
+				Object[] keys = weekTime.keySet().toArray();
+				Arrays.sort(keys);
 
-				List<Activity> activities = timeReports.get(i).getActivities();
+				for (int i = 0; i < keys.length; i++) {
+					html += "[" + keys[i] + "," + totalTime + "],";
 
-				for (Activity a : activities) {
-					weekTime += a.getLength();
+					totalTime = totalTime - weekTime.get(keys[i]);
 				}
-
-				html += "[" + timeReports.get(i).getWeek() + "," + totalTime + "],";
-
-				totalTime = totalTime - weekTime;
+				html = html.substring(0, html.length() - 1);
+			} else {
+				printErrorMessage("Det finns ingen arbetstid registrerad för projektgruppen");
 			}
-
-			html = html.substring(0, html.length() - 1);
 
 			break;
+
 		case "activityBurnDown":
 			title = "Burn down chart för specifierad aktivitet";
-			totalTime = 0;
-			HashMap<Integer, Integer> weekTime = new HashMap<Integer, Integer>();
+			weekTime = new HashMap<Integer, Integer>();
 
 			for (int i = 0; i < timeReports.size(); i++) {
 				List<Activity> activities = timeReports.get(i).getActivities();
@@ -1139,9 +1150,11 @@ public class HTMLWriter {
 
 						if (weekTime.containsKey(timeReports.get(i).getWeek())) {
 							weekTime.put(timeReports.get(i).getWeek(),
-									weekTime.get(timeReports.get(i).getWeek()) + a.getLength());
+									weekTime.get(timeReports.get(i).getWeek())
+											+ a.getLength());
 						} else {
-							weekTime.put(timeReports.get(i).getWeek(), a.getLength());
+							weekTime.put(timeReports.get(i).getWeek(),
+									a.getLength());
 						}
 					}
 				}
@@ -1178,11 +1191,13 @@ public class HTMLWriter {
 					totalTime += a.getLength();
 
 					if (userWeekTime.containsKey(timeReports.get(i).getWeek())) {
-						int time = userWeekTime.remove(timeReports.get(i).getWeek());
+						int time = userWeekTime.remove(timeReports.get(i)
+								.getWeek());
 						time += a.getLength();
 						userWeekTime.put(timeReports.get(i).getWeek(), time);
 					} else {
-						userWeekTime.put(timeReports.get(i).getWeek(), a.getLength());
+						userWeekTime.put(timeReports.get(i).getWeek(),
+								a.getLength());
 					}
 				}
 			}
@@ -1192,14 +1207,14 @@ public class HTMLWriter {
 				Arrays.sort(keys);
 
 				System.out.println(keys.length);
-				
+
 				for (int i = 0; i < keys.length; i++) {
 					html += "[" + keys[i] + "," + totalTime + "],";
 
 					totalTime = totalTime - userWeekTime.get(keys[i]);
 				}
 				html = html.substring(0, html.length() - 1);
-			}else {
+			} else {
 				printErrorMessage("Det finns ingen arbetstid registrerad för användaren");
 			}
 			break;
@@ -1256,5 +1271,62 @@ public class HTMLWriter {
 
 		writer.print(html);
 	}
+
+	public void printOtherStatsChoice() {
+		writer.print("<a href='statistics?moreStats'>Mer statistik</a>");
+	}
+
+	public void printStatPanel(List<User> usersInProject, int firstWeek, int lastWeek) {
+		writer.print("<form action='' method='post'>"
+				+ "<table border=1 valign='top' style='vertical-align:top'><tr><td valign='top'>"
+				+ "<table><tr><td><b>Användare</b></td></tr>");
+					for(User u : usersInProject){
+						writer.print("<tr><td>"
+								+ "<input type='checkbox' checked name='user_"
+								+ u.getUsername() + "' />"
+								+ u.getUsername()
+								+ "</td></tr>");
+					}
+		writer.print("</table></td>"
+				+ "<td valign='top'><table><tr><td><b>Roller</b></td></tr>");
+				for(Role r : Role.values()){
+					writer.print("<tr><td>"
+							+ "<input type='checkbox' checked name='role_"
+							+ r.name() + "' />"
+							+ r.name()
+							+ "</td></tr>");
+				}
+		writer.print("</table></td>");
+		
+		writer.print("<td valign='top'><table><tr><td><b>Aktiviteter</b></td></tr>");
+				for(ActivityType a : ActivityType.values()){
+					writer.print("<tr><td>"
+							+ "<input type='checkbox' checked name='activity_"
+							+ a.name() + "' />"
+							+ a.name()
+							+ "</td></tr>");
+				}
+		writer.print("</table></td>");
+		
+		writer.print("<td valign='top'><table><tr><td><b>Period</b></td></tr>");
+		writer.print("<tr><td>Startvecka<br/><select name='startweek'>");
+				for(int i = firstWeek; i<=lastWeek; i++){
+					writer.print("<option value='" + i + "'>vecka " + i + "</option>");
+				}
+		writer.print("</select>");
+		writer.print("<tr><td>Slutvecka<br/><select name='endweek'>");
+		for(int i = firstWeek; i<=lastWeek; i++){
+			writer.print("<option value='" + i + "'>vecka " + i + "</option>");
+		}
+		writer.print("</select>");
+		writer.print("</table></td></tr>");
+		
+
+		writer.print("<tr><td align='right' colspan='4'><input type='submit' value='Visa statistik' name='moreStats' /></td></tr>");
+		
+		writer.print("</table></form>");
+		
+	}
+
 
 }
