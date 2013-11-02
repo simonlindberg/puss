@@ -928,7 +928,7 @@ public class HTMLWriter {
 
 				html += "[" + timeReports.get(i).getWeek() + "," + totalTime + "],";
 			}
-			html = html.substring(0, html.length() - 1);
+			html += html.substring(0, html.length() - 1);
 
 			break;
 
@@ -957,7 +957,7 @@ public class HTMLWriter {
 				for (ActivityType t : types) {
 					html += "['" + t.toString() + "'," + actTimes.get(t).toString() + "],";
 				}
-				html = html.substring(0, html.length() - 1);
+				html += html.substring(0, html.length() - 1);
 			} else {
 				printErrorMessage("Det finns ingen arbetstid registrerad för användaren");
 			}
@@ -991,7 +991,7 @@ public class HTMLWriter {
 				html += "['" + u + "'," + userTimes.get(u).toString() + "],";
 				System.out.println(u + " " + userTimes.get(u).toString());
 			}
-			html = html.substring(0, html.length() - 1);
+			html += html.substring(0, html.length() - 1);
 
 			break;
 		}
