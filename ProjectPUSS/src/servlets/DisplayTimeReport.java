@@ -85,6 +85,9 @@ public class DisplayTimeReport extends ServletBase {
 		if (submitReport != null) {
 			HTMLWriter html = new HTMLWriter(response.getWriter());
 			List<Activity> activities = createActivityListFromRequest(request, html);
+			if(activities!=null){
+				
+			}
 			if (page.equals(Command.create.toString())) {
 				TimeReport t = new TimeReport(
 						user,
@@ -192,6 +195,7 @@ public class DisplayTimeReport extends ServletBase {
 			html.printErrorMessage("Fel inputdata!");
 		}
 		return activities;
+		
 	}
 
 }
