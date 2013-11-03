@@ -381,7 +381,7 @@ public class Database {
 	 * @return en lista med projekt.
 	 */
 	public List<String> getProjects() {
-		List<String> list = new ArrayList<>();
+		List<String> list = new ArrayList<String>();
 		ResultSet rs;
 		try {
 			rs = conn.createStatement().executeQuery("select * from ProjectGroups;");
@@ -408,7 +408,7 @@ public class Database {
 	 * 
 	 */
 	public List<User> getUsersInProject(String projectName) {
-		List<User> list = new ArrayList<>();
+		List<User> list = new ArrayList<User>();
 		try {
 			ResultSet rs = conn.createStatement().executeQuery(
 					"select Username from Memberships where Groupname = '" + projectName + "';");
@@ -761,7 +761,7 @@ public class Database {
 	 * @return en lista med projektnamn
 	 */
 	public List<String> getProjects(User user) throws NullPointerException {
-		List<String> list = new ArrayList<>();
+		List<String> list = new ArrayList<String>();
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery("select Groupname from Memberships where Username = '"
