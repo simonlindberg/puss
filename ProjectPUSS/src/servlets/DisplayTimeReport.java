@@ -205,7 +205,7 @@ public class DisplayTimeReport extends ServletBase {
 				new Activity(ActivityType.RegressionTest, Integer.parseInt(request.getParameter(HTMLWriter.REG_TEST)), ActivitySubType.noSubType),
 				new Activity(ActivityType.Meeting, Integer.parseInt(request.getParameter(HTMLWriter.MEETING)), ActivitySubType.noSubType)
 				);
-		}catch(NullPointerException | NumberFormatException e){
+		}catch(Exception e){
 			return null;
 		}
 		return activities;
