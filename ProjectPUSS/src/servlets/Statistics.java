@@ -374,9 +374,9 @@ public class Statistics extends ServletBase {
 		String moreStats = (String) request.getParameter("moreStats");
 
 		if(moreStats != null){
-			List<String> users = new ArrayList<>();
-			List<Role> roles = new ArrayList<>();
-			List<ActivityType> activities = new ArrayList<>();
+			List<String> users = new ArrayList<String>();
+			List<Role> roles = new ArrayList<Role>();
+			List<ActivityType> activities = new ArrayList<ActivityType>();
 			int startWeek = 0;
 			int endWeek = 0;
 			
