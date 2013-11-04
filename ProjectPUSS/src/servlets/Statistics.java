@@ -80,7 +80,7 @@ public class Statistics extends ServletBase {
 			Object sum = session.getAttribute("moreStats");
 			
 			if (sum != null){
-				html.printSuccessMessage("Ditt resultat: " + (int) sum);
+				html.printSuccessMessage("Ditt resultat: " + (int) sum + " minuter");
 			}
 			
 			session.setAttribute("moreStats", null);
