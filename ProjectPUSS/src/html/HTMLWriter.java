@@ -555,7 +555,7 @@ public class HTMLWriter {
 	 * 
 	 Skriver ut en dropdown där användaren får välja projektgrupp.
 	 * 
-	 * @param i
+	 * @param n
 	 *            är nuvarande projektgrupp.
 	 * @param projects
 	 *            är samtliga tillgängliga projekt.
@@ -726,8 +726,6 @@ public class HTMLWriter {
 
 	/**
 	 * Generates a form for login.
-	 * 
-	 * @return HTML code for the form
 	 */
 	public void printLoginRequestForm() {
 		writer.println("<p>Användarnamn och Lösenord, tack!</p>");
@@ -759,7 +757,7 @@ public class HTMLWriter {
 	 *            the url to use for the link
 	 * @param text
 	 *            the text to display
-	 * @param message
+	 * @param confirmMessage
 	 * 			  the message to display in the confirm dialog            
 	 * 
 	 */
@@ -801,7 +799,7 @@ public class HTMLWriter {
 	 * 
 	 * @param startWeek
 	 *            Första veckan användaren kan välja.
-	 * @param lastWeek
+	 * @param stopWeek
 	 *            Sista veckan användaren kan välja.
 	 */
 	public void printWeekChoice(int startWeek, int stopWeek) {

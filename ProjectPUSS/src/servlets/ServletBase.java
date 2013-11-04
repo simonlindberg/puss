@@ -28,7 +28,9 @@ public abstract class ServletBase extends HttpServlet {
 	public ServletBase() {
 		try {
 			database = Database.getInstance();
-		} catch (ClassNotFoundException | SQLException e) {
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}

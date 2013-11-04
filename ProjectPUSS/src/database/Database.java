@@ -728,7 +728,7 @@ public class Database {
 	 * 
 	 * @param username
 	 * @param projectgroup
-	 * @return
+	 * @return the role of the given username and project. 
 	 */
 	public Role getRole(String username, String projectgroup) {
 		String role = "";
@@ -816,7 +816,7 @@ public class Database {
 	 * 
 	 * @param projectGroup
 	 *            det specifiserade projektnamnet.
-	 * @return
+	 * @return en lista med tidrapporter.
 	 */
 	public List<TimeReport> getAllTimeReports(String projectGroup) {
 		List<TimeReport> reports = new ArrayList<TimeReport>();
